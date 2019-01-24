@@ -1,24 +1,22 @@
 <!DOCTYPE html>
 <HTML>
   <HEAD>
-    <META name="generator"
-    content="HTML Tidy for HTML5 (experimental) for Windows https://github.com/w3c/tidy-html5/tree/c63cc39" />
     <TITLE>Testing</TITLE>
     <LINK rel="stylesheet" type="text/css" href="myStyle.css" />
-	<script>
-	function testPass(text){
-		if(document.getElementById("SourceCodeInput").value == ""){
-			alert("empty");
-		}
-	}
-	</script>
+    <SCRIPT>
+        function testPass(text){
+                if(document.getElementById(&quot;SourceCodeInput&quot;).value == &quot;&quot;){
+                        alert(&quot;empty&quot;);
+                }
+        }
+</SCRIPT>
   </HEAD>
   <BODY>
-    <h1>Cummins Compiler</h1>
+    <H1>Cummins Compiler</H1>
     <DIV class="center">
-    <TEXTAREA id="SourceCodeInput" rows="30" cols="50"></TEXTAREA>  
-    <TEXTAREA id="CompiledCodeOutput" rows="30" cols="50" readonly="readonly"></TEXTAREA></br>
-	<INPUT type="button" id="CompileThis" value="Compile Code" onclick="testPass();" />
-	</DIV>
+    <TEXTAREA id="SourceCodeInput" rows="30" cols="50"></TEXTAREA> 
+    <TEXTAREA id="CompiledCodeOutput" rows="30" cols="50" readonly="readonly"></TEXTAREA>
+    <BR />
+    <INPUT type="button" id="CompileThis" value="Compile Code" onclick="testPass();" /></DIV>
   </BODY>
 </HTML>
