@@ -3,20 +3,20 @@
   <HEAD>
     <TITLE>Testing</TITLE>
     <LINK rel="stylesheet" type="text/css" href="myStyle.css" />
-    <SCRIPT>
-        function testPass(text){
-                if(document.getElementById(&quot;SourceCodeInput&quot;).value == &quot;&quot;){
-                        alert(&quot;empty&quot;);
-                }
-        }
-</SCRIPT>
+	<script>
+	function testPass(text){
+		if(document.getElementById("SourceCodeInput").value == ""){
+			alert("empty");
+		}
+	}
+	</script>
   </HEAD>
   <BODY>
-    <H1>Cummins Compiler</H1>
+    <h1>Cummins Compiler</h1>
     <DIV class="center">
-    <TEXTAREA id="SourceCodeInput" rows="30" cols="50"></TEXTAREA> 
-    <TEXTAREA id="CompiledCodeOutput" rows="30" cols="50" readonly="readonly"></TEXTAREA>
-    <BR />
-    <INPUT type="button" id="CompileThis" value="Compile Code" onclick="testPass();" /></DIV>
+    <TEXTAREA id="SourceCodeInput" rows="30" cols="50"></TEXTAREA>  
+    <TEXTAREA id="CompiledCodeOutput" rows="30" cols="50" readonly="readonly"></TEXTAREA></br>
+	<INPUT type="button" id="CompileThis" value="Compile Code" onclick="testPass();" />
+	</DIV>
   </BODY>
 </HTML>
