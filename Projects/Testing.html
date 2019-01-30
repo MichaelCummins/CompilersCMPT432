@@ -5,6 +5,7 @@
     <LINK rel="stylesheet" type="text/css" href="myStyle.css" />
 	<script type = text/javascript>
         function init(){
+            document.getElementById("CompiledCodeOutput").value = "";
             var token = "";
             var index = 0;
             var currentToken = "";
@@ -14,7 +15,9 @@
          
         }
         function clickTheButton(){
-            
+            init();
+            document.getElementById("CompiledCodeOutput").value = "Testing button";
+            document.getElementById("SourceCodeInput").value = "";
         }
 	</script>
   </HEAD>
@@ -22,8 +25,8 @@
     <h1>Cummins Compiler</h1>
     <DIV class="center">
     <TEXTAREA id="SourceCodeInput" rows="30" cols="50"></TEXTAREA>  
-    <TEXTAREA id="CompiledCodeOutput" rows="30" cols="50" readonly="readonly"></TEXTAREA></br>
-	<INPUT type="button" id="CompileThis" value="Compile Code" onclick="button();" />
+    <TEXTAREA id="CompiledCodeOutput" rows="30" cols="50" readonly></TEXTAREA></br>
+	<INPUT type="button" id="CompileThis" value="Compile Code" onclick="clickTheButton();" />
 	</DIV>
   </BODY>
 </HTML>
