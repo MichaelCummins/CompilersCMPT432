@@ -11,13 +11,32 @@
             var currentToken = "";
             var numErrors = 0;
         }
-        function lexer(){
-         
+        function createTokens(){
+           return var code = document.getElementById("SourceCodeInput").value;
         }
         function clickTheButton(){
             init();
-            document.getElementById("CompiledCodeOutput").value = "Testing button";
+            outputMessage("Testing Message");
             document.getElementById("SourceCodeInput").value = "";
+            token = createTokens();
+        }
+        function Lex(){
+            if (currentToken == "{")
+                outputMessage()
+        
+        }
+        
+        function outputMessage(message){
+            document.getElementById("CompiledCodeOutput").value += message + "\n";
+        }
+        function getNextToken(){
+            var ThisToken = EOF;
+            if (index < token.length){
+                thisToken = token[index];
+                outputMessage("Current token: " + thisToken);
+                index++;
+            }
+            return thisToken;
         }
 	</script>
   </HEAD>
