@@ -10,6 +10,8 @@
             var index = 0;
             var currentToken = "";
             var numErrors = 0;
+            var lineNumber = 0;
+            var rowNumber = 0;
         }
         
         function createTokens(){
@@ -30,19 +32,37 @@
         function Lex(){
             if (currentToken == "{"){
                 outputMessage("DEBUG Lexer - L_BRACE [ " + currentToken + "]" + "found at " + index);
+                index++;
             }else if (currentToken == "}"){
                 outputMessage("DEBUG Lexer - R_BRACE [ " + currentToken + "]" + "found at " + index);
+                index++;
             }else if (currentToken == "="){
-                outputMessage("DEBUG Lexer - ASSIGN_OP [ " + currentToken + "]" + "found at " + index);
-            }else if (currentToken == "$"{
-                outputMessage("DEBUG Lexer - EOP [" + currentToken + "]" +"found at " + index);
-            // GO TO NEXT PROGRAM
+                if(CheckTheIndexAhead1Space){
+                    outputMessage("DEBUG Lexer - EQUALITY_OP [ " + currentToken + currentToken+1 + "found at " + index) 
+                }else{
+                    outputMessage("DEBUG Lexer - ASSIGN_OP [ " + currentToken + "]" + "found at " + index);
+                    index++;
+                }
             }else if (currentToken == "/"){
                 outputMessage("DEBUG Lexer - ")
+            }else if (currentToken == " "){
+                //Skip
+                index++;
+            }else if (currentToken == "\n"){
+                //Skip
+                index++;
+            }else if (currentToken == "\t"){
+                //Skip
+                index++;
+            }else if (currentToken == "\r"){
+                
             }
         
-        
-        
+            
+            else if (currentToken == "$"{
+                outputMessage("DEBUG Lexer - EOP [" + currentToken + "]" +"found at " + index);
+                // GO TO NEXT PROGRAM SOMEHOW
+            }
             else {
                 outputMessage("ERROR Lexer - Error Unrecognized Token: " + currentToken);
             }
