@@ -16,6 +16,11 @@ Textarea {
 	margin-bottom: 50px;
 	background-color: pink;
 	border: solid;
+    font-size: 20px;
+    width: 400px;
+    height: 500px;
+    border-color: black;
+    overflow-y: scroll;
 }
 .button {
 	text-align: center;

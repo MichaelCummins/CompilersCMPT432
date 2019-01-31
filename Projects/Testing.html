@@ -11,24 +11,56 @@
             var currentToken = "";
             var numErrors = 0;
         }
+        
         function createTokens(){
-           return var code = document.getElementById("SourceCodeInput").value;
+            var code = document.getElementById("SourceCodeInput").value;
+            return code;
         }
+        
+        
+        
         function clickTheButton(){
-            init();
-            outputMessage("Testing Message");
+            
+            outputMessage("Is this thing on ");
             document.getElementById("SourceCodeInput").value = "";
             token = createTokens();
         }
+        
+        
         function Lex(){
-            if (currentToken == "{")
-                outputMessage()
+            if (currentToken == "{"){
+                outputMessage("DEBUG Lexer - L_BRACE [ " + currentToken + "]" + "found at " + index);
+            }else if (currentToken == "}"){
+                outputMessage("DEBUG Lexer - R_BRACE [ " + currentToken + "]" + "found at " + index);
+            }else if (currentToken == "="){
+                outputMessage("DEBUG Lexer - ASSIGN_OP [ " + currentToken + "]" + "found at " + index);
+            }else if (currentToken == "$"{
+                outputMessage("DEBUG Lexer - EOP [" + currentToken + "]" +"found at " + index);
+            // GO TO NEXT PROGRAM
+            }else if (currentToken == "/"){
+                outputMessage("DEBUG Lexer - ")
+            }
+        
+        
+        
+            else {
+                outputMessage("ERROR Lexer - Error Unrecognized Token: " + currentToken);
+            }
         
         }
         
+
+        
+        function testing(){
+            document.getElementById("CompiledCodeOutput").value += "Testing button";
+            document.getElementById("SourceCodeInput").value = "";
+        }
+         
         function outputMessage(message){
             document.getElementById("CompiledCodeOutput").value += message + "\n";
+            
         }
+        
         function getNextToken(){
             var ThisToken = EOF;
             if (index < token.length){
@@ -38,6 +70,7 @@
             }
             return thisToken;
         }
+        
 	</script>
   </HEAD>
   <BODY onload = "init();">
