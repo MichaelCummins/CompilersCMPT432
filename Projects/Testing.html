@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <HTML>
   <HEAD>
-    <TITLE>Testing</TITLE>
+    <TITLE>Michael Cummins Compiler Project</TITLE>
     <LINK rel="stylesheet" type="text/css" href="myStyle.css" />
 	<script type = text/javascript>
         function init(){
@@ -31,26 +31,40 @@
         
         function Lex(){
             if (currentToken == "{"){
-                outputMessage("DEBUG Lexer - L_BRACE [ " + currentToken + "]" + "found at " + index);
+                outputMessage("DEBUG Lexer - L_BRACE [ " + currentToken + "]" 
+                              + "found at " + linenumber + "," + rowNumber);
                 index++;
             }else if (currentToken == "}"){
-                outputMessage("DEBUG Lexer - R_BRACE [ " + currentToken + "]" + "found at " + index);
+                outputMessage("DEBUG Lexer - R_BRACE [ " + currentToken + "]" + 
+                              "found at " + linenumber + "," + rowNumber);
                 index++;
             }else if (currentToken == "="){
-                if(CheckTheIndexAhead1Space){
-                    outputMessage("DEBUG Lexer - EQUALITY_OP [ " + currentToken + currentToken+1 + "found at " + index) 
+                if(CheckTheIndexAhead1Space == "="){
+                    outputMessage("DEBUG Lexer - EQUALITY_OP [ " + currentToken + currentToken+1 + 
+                                  "] found at " + linenumber + "," + rowNumber) 
                 }else{
-                    outputMessage("DEBUG Lexer - ASSIGN_OP [ " + currentToken + "]" + "found at " + index);
+                    outputMessage("DEBUG Lexer - ASSIGN_OP [ " + currentToken + "]" + 
+                                  "] found at " + linenumber + "," + rowNumber);
                     index++;
                 }
             }else if (currentToken == "/"){
-                outputMessage("DEBUG Lexer - ")
+                if(currentToken++ == "*"){
+                    while(currentToken =! "/"){
+                        index++;
+                        currentToken = currentToken++;
+                    }
+                }else{
+                    outputMessage("DEBUG Lexer - SLASH [ " + curentToken + 
+                                  "] found at " + lineNumber + "," + rowNumber);
+                    index++;
+                }
             }else if (currentToken == " "){
                 //Skip
                 index++;
             }else if (currentToken == "\n"){
                 //Skip
                 index++;
+                lineNumber++;
             }else if (currentToken == "\t"){
                 //Skip
                 index++;
