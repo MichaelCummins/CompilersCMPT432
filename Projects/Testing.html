@@ -4,16 +4,18 @@
     <TITLE>Michael Cummins Compiler Project</TITLE>
     <LINK rel="stylesheet" type="text/css" href="myStyle.css" />
 	<script type = text/javascript>
+        
+        var tokens = "";
+        var tokenIndex = 0;
+        var currentToken = "";
+        var numErrors = 0;
+        var EOF = "$";
         function init(){
             document.getElementById("CompiledCodeOutput").value = "";
-            var tokens = "";
-            var index = 0;
-            var currentToken = "";
-            var numErrors = 0;
-            var lineNumber = 0;
-            var rowNumber = 0;
-            var currentProgram = 1;
-            var completedPrograms = 0;
+            tokens = "";
+            tokenIndex = 0;
+            currentToken = ' ';
+            numErrors = 0;
         }
         
         function createTokens(){
@@ -24,113 +26,46 @@
         
         
         function clickTheButton(){
-            tokens = testLexPartTwo();
-            outputMessage("Lex Return [ " + tokens + " ]")
-            document.getElementById("SourceCodeInput").value = "";
+            init();
+            outputMessage("Compilation Started");
+            tokens = getSourceCode();
+            outputMessage("Lex Returned [ " + tokens + " ]");
+            lex();
         }
-        /*
-        function testLex(userInput){
-            var numberOfLines = userInput.split("\n");
-            for (var currentLine = 0; currentLine < numberOfLines.length; currentLine++){
-                var lineNumber = lines[currentLine];
-                for(var currentColumn = 0; currentColumn.length; currentColumn++){
-                    var currentToken = numberOfLines[currentColumn];
-                    
-                    if(currenToken == "{"){
-                        outputMessage("INFO Lexer = Lexing program 1... \n");
-                    }
-                }
-            }
-        }
-        */
         function trim(str){
             return str.replace(/\s/g, "");
         }
         
-        function testLexPartTwo(){
+        function getSourceCode(){
             var sourceCode = document.getElementById("SourceCodeInput").value;
             sourceCode = trim(sourceCode);
             return sourceCode;
         }
         
-        /*
-        function Lex(){
-            for(var currentLine = 0; currentLine < numberOfLines.length; currentLine++){
-                lineNumber = lines[currentLine];
-                for(var currentColumn = 0; currentColumn.length; currentColumn++;){
-                    var currentToken = numberOfLines[currentColumn];
-                    
-                    if(currentProgram != completedPrograms){
-                        outputMessage("INFO Lexer - Lexing program 1... \n");
-                        completedPrograms++;
-                    }
-                    if (currentToken == "{"){
-                        outputMessage("DEBUG Lexer - L_BRACE [ " + currentToken 
-                                      + " ]found at ") + lineNumber + "," + rowNumber);
-                        index++;
-                    }else if (currentToken == "}"){
-                        outputMessage("DEBUG Lexer - R_BRACE [ " + currentToken + 
-                                      " ] found at " + lineNumber + "," + rowNumber);
-                        index++;
-                    }else if (currentToken == "="){
-                        if(currentToken+1 == "="){
-                            outputMessage("DEBUG Lexer - EQUALITY_OP [ " + currentToken + currentToken+1 + 
-                                          " ] found at " + lineNumber + "," + rowNumber) 
-                        }else{
-                            outputMessage("DEBUG Lexer - ASSIGN_OP [ " + currentToken + "]" + 
-                                          " ] found at " + lineNumber + "," + rowNumber);
-                            index++;
-                        }
-                    }else if (currentToken == "/"){
-                        if(currentToken++ == "*"){
-                            while(currentToken =! "/"){
-                                index++;
-                                currentToken = currentToken++;
-                            }
-                        }else{
-                            outputMessage("DEBUG Lexer - SLASH [ " + curentToken + 
-                                          "] found at " + lineNumber + "," + rowNumber);
-                            index++;
-                        }
-                    }else if (currentToken == " "){
-                        //Skip
-                        index++;
-                    }else if (currentToken == "\n"){
-                        //Skip
-                        index++;
-                        lineNumber++;
-                    }else if (currentToken == "\t"){
-                        //Skip
-                        index++;
-                    }else if (currentToken == "\r"){
-
-                    }
-                    else if (currentToken == "$"){
-                        outputMessage("DEBUG Lexer - EOP [" + currentToken + "]" + " found at " + index);
-                        // GO TO NEXT PROGRAM SOMEHOW
-                    }
-                    else {
-                        outputMessage("ERROR Lexer - Error Unrecognized Token: " + currentToken);
-                    }
-                }
-            }
+        function lex(){
+            currentToken = getNextToken();
+            outputMessage(currentToken);
+            outputMessage("Hi");
+ //           outputMessage("Hello" + currentToken);
         }
-    */
-         
+        
         function outputMessage(message){
             document.getElementById("CompiledCodeOutput").value += message + "\n";
-            
         }
         
         function getNextToken(){
-            var ThisToken = EOF;
-            if (index < token.length){
-                thisToken = token[index];
+            var thisToken = EOF;
+            if (tokenIndex < tokens.length){
+                thisToken = tokens[tokenIndex];
                 outputMessage("Current token: " + thisToken);
-                index++;
+                tokenIndex++;
             }
             return thisToken;
         }
+        
+        
+  
+         
         
 	</script>
   </HEAD>
