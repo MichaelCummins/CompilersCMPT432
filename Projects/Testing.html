@@ -20,6 +20,9 @@
             tokenIndex = 0;
             currentToken = ' ';
             numErrors = 0;
+            EOF = "$";
+            currentProgram = 0;
+            completedPrograms = 0;
         }
         
         function createTokens(){
@@ -41,18 +44,17 @@
         
         function getSourceCode(){
             var sourceCode = document.getElementById("SourceCodeInput").value;
-            sourceCode = trim(sourceCode);
             return sourceCode;
         }
         
         function parse(){
         //    currentToken = getNextToken();
-            newLex(document.getElementById("SourceCodeInput").value);
+            newLex(getSourceCode);
             outputMessage("Parsing found " + numErrors + " error(s).");
         }
         
         function newLex(userInput){
-            var lines = userInput.split("\n");
+            var lines = userInput.toString().split("\n");
             var line;
             
             for(var currentLine = 0; currentLine > lines.length; currentLine++){
