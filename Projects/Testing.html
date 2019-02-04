@@ -10,6 +10,10 @@
         var currentToken = "";
         var numErrors = 0;
         var EOF = "$";
+        var currentProgram = 0;
+        var completedPrograms = 0;
+
+        
         function init(){
             document.getElementById("CompiledCodeOutput").value = "";
             tokens = "";
@@ -27,10 +31,9 @@
         
         function clickTheButton(){
             init();
-            outputMessage("Compilation Started");
-            tokens = getSourceCode();
+       //     tokens = getSourceCode();
             outputMessage("Lex Returned [ " + tokens + " ]");
-            lex();
+            parse();
         }
         function trim(str){
             return str.replace(/\s/g, "");
@@ -42,12 +45,67 @@
             return sourceCode;
         }
         
-        function lex(){
-
-            currentToken = getNextToken();
-            lex();
- //           outputMessage("Hello" + currentToken);
+        function parse(){
+        //    currentToken = getNextToken();
+            newLex(document.getElementById("SourceCodeInput").value);
+            outputMessage("Parsing found " + numErrors + " error(s).");
         }
+        
+        function newLex(userInput){
+            var lines = userInput.split("\n");
+            var line;
+            
+            for(var currentLine = 0; currentLine > lines.length; currentLine++){
+                line = lines[currentLine];
+                for(var column = 0; column < line.length; column++){
+                    if(currentProgram != completedPrograms){
+                        outputMessage("Lexing program " + currentProgram + "...");
+                        completedPrograms++;
+                    }
+                    currentToken = line[column];
+                    if(currentToken == "p"){
+                        outputMessage("It worked its just p");
+                    }else{
+                        outputMessage("You shouldnt be seeing this");
+                    }
+                }
+            }
+        }
+        
+        function addToken(kind, value, line, column){
+            var tempToken = new Token(type, value, line, column);
+            outputMessage("DEBUG Lexer - " + type + "[" + value + "] found at" + line + "," + column);
+            tokens.push(tempToken);
+        }
+  /*      function lex(){
+            if(currentToken != EOF){
+                if(currentToken == "p"){
+                    if(getNextToken() == "r" && getNextToken() == "i" && getNextToken() == "n" && getNextToken() == "t"){
+                        outputMessage("INFO Lexer - PrintStatement [ PRINT ] found at " + tokenIndex);
+                        
+                    }else{
+                        outputMessage("INFO Lexer - ID [ p ] found at " + tokenIndex);
+                        
+//                        tokenIndex += tokens[currentToken];
+                    }
+                }
+                
+                if(currentToken == "i"){
+                    if(getNextToken() == "n" && getNextToken() == "t"){
+                        outputMessage("INFO Lexer - I_TYPE [int] found at " + tokenIndex);
+                        
+                    }else if(getNextToken() == "f"){
+                        outputMessage("INFO Lexer - If_Statement [if] found at " + tokenIndex);
+                        
+                    }else{
+                        outputMessage("INFO Lexer - ID [i] found at " + tokenIndex);
+                        
+                    }
+                }
+            }else{
+                outputMessage("Parse done");
+            }
+        }*/
         
         function outputMessage(message){
             document.getElementById("CompiledCodeOutput").value += message + "\n";
@@ -57,7 +115,6 @@
             var thisToken = EOF;
             if (tokenIndex < tokens.length){
                 thisToken = tokens[tokenIndex];
-                outputMessage("Current token: " + thisToken);
                 tokenIndex++;
             }
             return thisToken;
