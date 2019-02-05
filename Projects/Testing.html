@@ -75,9 +75,12 @@
                     if(currentTokenTwo == "p"){
                         if(line[column + 1] == "r" && line[column + 2] == "i" 
                            && line[column + 3 ] == "n" && line[column + 4] == "t"){
-                            
+                            addToken("KEYWORD", "print", currentLine, column);
+                            column += 4;
+                            continue;
                         }else{
                             addToken("ID", "p", currentLine, column);
+                            continue;
                         }
                     //    outputMessage("It worked its just p");
                     }
@@ -85,10 +88,15 @@
                     if(currentTokenTwo == "i"){
                         if(line[column + 1] == "n" && line[column + 2] == "t"){
                             addToken("INT", "", currentLine, column);
+                            column += 2;
+                            continue;
                         }else if(line[column + 1] == "f"){
                             addToken("", "if", currentLine, column);
+                            column += 1;
+                            continue;
                         }else{
                             addToken("id", "i", currentLine, column);
+                            continue;
                         }
                     }
                 }
