@@ -5,7 +5,7 @@
     <LINK rel="stylesheet" type="text/css" href="myStyle.css" />
 	<script type = text/javascript>
         
-        var tokens = "";
+        var tokens = [];
         var tokenIndex = 0;
         var currentToken = "";
         var numErrors = 0;
@@ -16,7 +16,7 @@
         
         function init(){
             document.getElementById("CompiledCodeOutput").value = "";
-            tokens = "";
+            tokens = [];
             tokenIndex = 0;
             currentToken = ' ';
             numErrors = 0;
@@ -49,34 +49,61 @@
         
         function parse(){
         //    currentToken = getNextToken();
-            newLex(getSourceCode);
+            newLex(getSourceCode());
             outputMessage("Parsing found " + numErrors + " error(s).");
         }
         
         function newLex(userInput){
             var lines = userInput.toString().split("\n");
             var line;
+            //var character;
+            var currentTokenTwo;
             
-            for(var currentLine = 0; currentLine > lines.length; currentLine++){
+            for(var currentLine = 0; currentLine < lines.length; currentLine++){
+                
                 line = lines[currentLine];
+                
                 for(var column = 0; column < line.length; column++){
+                    
                     if(currentProgram != completedPrograms){
                         outputMessage("Lexing program " + currentProgram + "...");
                         completedPrograms++;
                     }
-                    currentToken = line[column];
-                    if(currentToken == "p"){
-                        outputMessage("It worked its just p");
-                    }else{
-                        outputMessage("You shouldnt be seeing this");
+                    
+                    currentTokenTwo = line[column];
+                    
+                    if(currentTokenTwo == "p"){
+                        if(line[column + 1] == "r" && line[column + 2] == "i" 
+                           && line[column + 3 ] == "n" && line[column + 4] == "t"){
+                            
+                        }else{
+                            addToken("ID", "p", currentLine, column);
+                        }
+                    //    outputMessage("It worked its just p");
+                    }
+                    
+                    if(currentTokenTwo == "i"){
+                        if(line[column + 1] == "n" && line[column + 2] == "t"){
+                            addToken("INT", "", currentLine, column);
+                        }else if(line[column + 1] == "f"){
+                            addToken("", "if", currentLine, column);
+                        }else{
+                            addToken("id", "i", currentLine, column);
+                        }
                     }
                 }
             }
         }
         
+        function Token(kind, value, line, column){
+            this.kind = kind;
+            this.value = value;
+            this.line = line;
+            this.column = column;
+        }
         function addToken(kind, value, line, column){
-            var tempToken = new Token(type, value, line, column);
-            outputMessage("DEBUG Lexer - " + type + "[" + value + "] found at" + line + "," + column);
+            var tempToken = new Token(kind, value, line, column);
+            outputMessage("DEBUG Lexer - " + kind + "[" + value + "] found at " + line + "," + column);
             tokens.push(tempToken);
         }
   /*      function lex(){
@@ -137,3 +164,4 @@
 	</DIV>
   </BODY>
 </HTML>
+
