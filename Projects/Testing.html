@@ -34,8 +34,6 @@
         
         function clickTheButton(){
             init();
-       //     tokens = getSourceCode();
-            outputMessage("Lex Returned [ " + tokens + " ]");
             parse();
         }
         function trim(str){
@@ -75,29 +73,124 @@
                     if(currentTokenTwo == "p"){
                         if(line[column + 1] == "r" && line[column + 2] == "i" 
                            && line[column + 3 ] == "n" && line[column + 4] == "t"){
-                            addToken("KEYWORD", "print", currentLine, column);
+                            addToken("Print", "print", currentLine, column);
                             column += 4;
                             continue;
                         }else{
                             addToken("ID", "p", currentLine, column);
                             continue;
                         }
-                    //    outputMessage("It worked its just p");
                     }
                     
                     if(currentTokenTwo == "i"){
                         if(line[column + 1] == "n" && line[column + 2] == "t"){
-                            addToken("INT", "", currentLine, column);
+                            addToken("INT", "int", currentLine, column);
                             column += 2;
                             continue;
                         }else if(line[column + 1] == "f"){
-                            addToken("", "if", currentLine, column);
+                            addToken("If", "if", currentLine, column);
                             column += 1;
                             continue;
                         }else{
-                            addToken("id", "i", currentLine, column);
+                            addToken("Id", "i", currentLine, column);
                             continue;
                         }
+                    }
+                    if(currentTokenTwo == "b"){
+                        if(line[column + 1] == "o" && line[column + 2] == "o" && line[column + 3] == "l"
+                          && line[column + 4] == "e" && line[column + 5] == "a" && line[column + 6] == "n"){
+                            addToken("Boolean", "boolean", currentLine, column);
+                            continue;
+                            column += 6;
+                        }else{
+                            addToken("Id", "b", currentLine, column);
+                            continue;
+                        }
+                    }
+                    if(currentTokenTwo == "f"){
+                        if(line[column + 1] == "a" && line[column + 2] == "l" 
+                           && line[column + 3] == "s" && line[column + 4] == "e"){
+                            addToken("False", "false", currentLine, column);
+                            column += 4;
+                            continue;
+                        }else{
+                            addToken("Id", "f", currentLine, column);
+                            continue;
+                        }
+                    }
+                    if(currentTokenTwo == "{"){
+                        addToken("L_Bracket", "{", currentLine, column);
+                        continue;
+                    }
+                    if(currentTokenTwo == "}"){
+                        addToken("R_Bracket", "}", currentLine, column);
+                        continue;
+                    }
+                    if(currentTokenTwo == "("){
+                        addToken("L_Paren", "(", currentLine, column);
+                        continue;
+                    }
+                    if(currentTokenTwo == ")"){
+                        addToken("R_Paren",")", currentLine, column);
+                        continue;
+                    }
+                    if(typeof currentTokenTwo == "number"){
+                        addToken("Digit", line, currentLine, column);
+                        continue;
+                    }
+                    if(currentTokenTwo == EOF){
+                        currentProgram++;
+                    }
+                    if(currentTokenTwo == "!"){
+                        if(line[column + 1]== "="){
+                            addToken("Not_Equal", "!=", currentLine, column);
+                            column++;
+                            continue;
+                        }else{
+                            addToken("Factorial", "!", currentLine, column);
+                            continue;
+                        }
+                    }
+                    if(currentTokenTwo == "t"){
+                        if(line[column + 1]== "r" && line[column + 2] == "u" && line[column + 3] == "e"){
+                            addToken("Boolean", "True", currentLine, column);
+                            column += 3;
+                            continue;
+                        }else{
+                        addToken("id", "t", currentLine, column);
+                        continue;
+                        }
+                    }
+                    if(currentTokenTwo == " "){
+                        continue;
+                    }
+                    if(currentTokenTwo == "/n"){
+                        line++;
+                        continue;
+                    }
+                    if(currentTokenTwo == "/t"){
+                        column += 8;
+                        continue;
+                    }
+                    if(currentTokenTwo == "\""){
+                       addToken("\"", "\"", currentLine, column);
+                        continue;
+                    }
+                    if(currentTokenTwo == "'"){
+                        addToken("'", "'", currentLine, column);
+                        continue;
+                    }
+                    if(currentTokenTwo == "="){
+                        if(line[column + 1] == "="){
+                            addToken("OP_Equality", "==", currentLine, column);
+                            column++;
+                            continue;
+                        }else{
+                            addToken("OP_Assignment", "=", currentLine, column);
+                        }
+                    }
+                    if(currentTokenTwo == "+"){
+                        addToken("intop", "+", currentLine, column);
                     }
                 }
             }
@@ -111,38 +204,10 @@
         }
         function addToken(kind, value, line, column){
             var tempToken = new Token(kind, value, line, column);
-            outputMessage("DEBUG Lexer - " + kind + "[" + value + "] found at " + line + "," + column);
+            outputMessage("DEBUG Lexer - " + kind + "[ " + value + " ] found at " + line + "," + column);
             tokens.push(tempToken);
         }
-  /*      function lex(){
-            if(currentToken != EOF){
-                if(currentToken == "p"){
-                    if(getNextToken() == "r" && getNextToken() == "i" && getNextToken() == "n" && getNextToken() == "t"){
-                        outputMessage("INFO Lexer - PrintStatement [ PRINT ] found at " + tokenIndex);
-                        
-                    }else{
-                        outputMessage("INFO Lexer - ID [ p ] found at " + tokenIndex);
-                        
-//                        tokenIndex += tokens[currentToken];
-                    }
-                }
-                
-                if(currentToken == "i"){
-                    if(getNextToken() == "n" && getNextToken() == "t"){
-                        outputMessage("INFO Lexer - I_TYPE [int] found at " + tokenIndex);
-                        
-                    }else if(getNextToken() == "f"){
-                        outputMessage("INFO Lexer - If_Statement [if] found at " + tokenIndex);
-                        
-                    }else{
-                        outputMessage("INFO Lexer - ID [i] found at " + tokenIndex);
-                        
-                    }
-                }
-            }else{
-                outputMessage("Parse done");
-            }
-        }*/
+
         
         function outputMessage(message){
             document.getElementById("CompiledCodeOutput").value += message + "\n";
