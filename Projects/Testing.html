@@ -134,8 +134,8 @@
                         addToken("R_Paren",")", currentLine, column);
                         continue;
                     }
-                    if(typeof currentTokenTwo == "number"){
-                        addToken("Digit", line, currentLine, column);
+                    if(currentTokenTwo >= "0" && currentTokenTwo <= "9"){
+                        addToken("Digit", currentTokenTwo, currentLine, column);
                         continue;
                     }
                     if(currentTokenTwo == EOF){
@@ -152,7 +152,7 @@
                         }
                     }
                     if(currentTokenTwo == "t"){
-                        if(line[column + 1]== "r" && line[column + 2] == "u" && line[column + 3] == "e"){
+                        if(line[column + 1] == "r" && line[column + 2] == "u" && line[column + 3] == "e"){
                             addToken("Boolean", "True", currentLine, column);
                             column += 3;
                             continue;
@@ -191,6 +191,12 @@
                     }
                     if(currentTokenTwo == "+"){
                         addToken("intop", "+", currentLine, column);
+                    }
+                    if(currentTokenTwo == "$"){
+                        addToken("EOF", "$", currentLine, column);
+                        outputMessage("\n");
+                        currentProgram++;
+                        continue;
                     }
                 }
             }
