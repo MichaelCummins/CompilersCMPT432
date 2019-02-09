@@ -4,99 +4,132 @@
     <TITLE>Michael Cummins Compiler Project</TITLE>
     <LINK rel="stylesheet" type="text/css" href="myStyle.css" />
 	<script type = text/javascript>
-        
+        //Declare global variables
         var tokens = [];
         var tokenIndex = 0;
-        var currentToken = "";
         var numErrors = 0;
-        var EOF = "$";
-        var currentProgram = 0;
+        var EOF = "$"; //End of program operator
+        var currentProgram = 1;
         var completedPrograms = 0;
 
         
         function init(){
+            //clear all values
             document.getElementById("CompiledCodeOutput").value = "";
             tokens = [];
             tokenIndex = 0;
-            currentToken = ' ';
             numErrors = 0;
             EOF = "$";
-            currentProgram = 0;
+            currentProgram = 1;
             completedPrograms = 0;
         }
-        
-        function createTokens(){
-            var code = document.getElementById("SourceCodeInput").value;
-            return code;
-        }
-        
-        
-        
+            
         function clickTheButton(){
+            //Clear all values
             init();
-            parse();
+            //Call parse function
+            lex(getSourceCode());
+            outputMessage("Parsing found " + numErrors + " error(s).");
         }
+        /*     
         function trim(str){
             return str.replace(/\s/g, "");
         }
+        */
         
         function getSourceCode(){
             var sourceCode = document.getElementById("SourceCodeInput").value;
             return sourceCode;
         }
-        
+        /*       
         function parse(){
-        //    currentToken = getNextToken();
-            newLex(getSourceCode());
+            lex(getSourceCode());
             outputMessage("Parsing found " + numErrors + " error(s).");
         }
         
-        function newLex(userInput){
+        */
+        
+        function lex(userInput){
+            //Create a variable that separates the users input
+            //Get the total number of lines that the user submitted and separate by commas
             var lines = userInput.toString().split("\n");
+            //Track what line we are currently on
             var line;
-            //var character;
-            var currentTokenTwo;
+            //Track what token we are currently handling
+            var currentToken;
             
+            //Search line by line
             for(var currentLine = 0; currentLine < lines.length; currentLine++){
                 
+                //Track what line we are currentlyon
                 line = lines[currentLine];
                 
+                //Search column by column
                 for(var column = 0; column < line.length; column++){
                     
+                    /*If the current program we are lexing is less than 
+                    the amount of programs that have been completed this pass,
+                    output that a new program is being lexed now
+                    */
                     if(currentProgram != completedPrograms){
                         outputMessage("Lexing program " + currentProgram + "...");
                         completedPrograms++;
                     }
                     
-                    currentTokenTwo = line[column];
+                    /* Track what token we are currently operating on.
+                    Do this by looking at the current line that is being worked on
+                    and go to the index of the current column that is being worked on
+                    */
+                    currentToken = line[column];
                     
-                    if(currentTokenTwo == "p"){
+                    /*If the current token is 'p' we know 
+                    we are looking for either 'PRINT' or a 'p' id
+                    */
+                    if(currentToken == "p"){
+                        //Look ahead 1-4 spaces ahead for the remaining letters of PRINT
                         if(line[column + 1] == "r" && line[column + 2] == "i" 
                            && line[column + 3 ] == "n" && line[column + 4] == "t"){
+                            //If found add the token print
                             addToken("Print", "print", currentLine, column);
+                            //Advance 4 columns to acount for already lexed letters of PRINT
                             column += 4;
+                            //Continue lexing
                             continue;
                         }else{
+                            //Else add the ID p token and continue lexing
                             addToken("ID", "p", currentLine, column);
                             continue;
                         }
                     }
                     
-                    if(currentTokenTwo == "i"){
+                    /*
+                    If the current token is 'i' we know 
+                    we are looking for either 'int' or 'if'
+                    if we dont find either it is id 'i'
+                    */
+                    if(currentToken == "i"){
                         if(line[column + 1] == "n" && line[column + 2] == "t"){
+                            //Add int token
                             addToken("INT", "int", currentLine, column);
+                            //Advance to columns to account for 'n' and 't'
                             column += 2;
+                            //Continue lexing
                             continue;
                         }else if(line[column + 1] == "f"){
+                            //If the next character is an f we can add the 'if' token
                             addToken("If", "if", currentLine, column);
+                            //Advance 1 column
                             column += 1;
+                            //continue lexing
                             continue;
                         }else{
+                            //Else add the 'i' id
                             addToken("Id", "i", currentLine, column);
+                            //continue lexing
                             continue;
                         }
                     }
-                    if(currentTokenTwo == "b"){
+                    if(currentToken == "b"){
                         if(line[column + 1] == "o" && line[column + 2] == "o" && line[column + 3] == "l"
                           && line[column + 4] == "e" && line[column + 5] == "a" && line[column + 6] == "n"){
                             addToken("Boolean", "boolean", currentLine, column);
@@ -107,7 +140,7 @@
                             continue;
                         }
                     }
-                    if(currentTokenTwo == "f"){
+                    if(currentToken == "f"){
                         if(line[column + 1] == "a" && line[column + 2] == "l" 
                            && line[column + 3] == "s" && line[column + 4] == "e"){
                             addToken("False", "false", currentLine, column);
@@ -118,30 +151,38 @@
                             continue;
                         }
                     }
-                    if(currentTokenTwo == "{"){
+                    if(currentToken == "w"){
+                        if(line[column + 1] == "h" && line[column + 2] == "i" && 
+                          line[column + 3] == "l" && line[column + 4] == "e"){
+                            addToken("While", "while", currentLine, column);
+                            column += 4;
+                            continue;
+                        }else{
+                            addToken("id", "w", currentLine, column);
+                            continue;
+                        }
+                    }
+                    if(currentToken == "{"){
                         addToken("L_Bracket", "{", currentLine, column);
                         continue;
                     }
-                    if(currentTokenTwo == "}"){
+                    if(currentToken == "}"){
                         addToken("R_Bracket", "}", currentLine, column);
                         continue;
                     }
-                    if(currentTokenTwo == "("){
+                    if(currentToken == "("){
                         addToken("L_Paren", "(", currentLine, column);
                         continue;
                     }
-                    if(currentTokenTwo == ")"){
+                    if(currentToken == ")"){
                         addToken("R_Paren",")", currentLine, column);
                         continue;
                     }
-                    if(currentTokenTwo >= "0" && currentTokenTwo <= "9"){
-                        addToken("Digit", currentTokenTwo, currentLine, column);
+                    if(currentToken >= "0" && currentToken <= "9"){
+                        addToken("Digit", currentToken, currentLine, column);
                         continue;
                     }
-                    if(currentTokenTwo == EOF){
-                        currentProgram++;
-                    }
-                    if(currentTokenTwo == "!"){
+                    if(currentToken == "!"){
                         if(line[column + 1]== "="){
                             addToken("Not_Equal", "!=", currentLine, column);
                             column++;
@@ -151,7 +192,7 @@
                             continue;
                         }
                     }
-                    if(currentTokenTwo == "t"){
+                    if(currentToken == "t"){
                         if(line[column + 1] == "r" && line[column + 2] == "u" && line[column + 3] == "e"){
                             addToken("Boolean", "True", currentLine, column);
                             column += 3;
@@ -161,26 +202,26 @@
                         continue;
                         }
                     }
-                    if(currentTokenTwo == " "){
+                    if(currentToken == " "){
                         continue;
                     }
-                    if(currentTokenTwo == "/n"){
+                    if(currentToken == "/n"){
                         line++;
                         continue;
                     }
-                    if(currentTokenTwo == "/t"){
+                    if(currentToken == "/t"){
                         column += 8;
                         continue;
                     }
-                    if(currentTokenTwo == "\""){
-                       addToken("\"", "\"", currentLine, column);
+                    if(currentToken == "\""){
+                        addToken("\"", "\"", currentLine, column);
                         continue;
                     }
-                    if(currentTokenTwo == "'"){
+                    if(currentToken == "'"){
                         addToken("'", "'", currentLine, column);
                         continue;
                     }
-                    if(currentTokenTwo == "="){
+                    if(currentToken == "="){
                         if(line[column + 1] == "="){
                             addToken("OP_Equality", "==", currentLine, column);
                             column++;
@@ -189,28 +230,46 @@
                             addToken("OP_Assignment", "=", currentLine, column);
                         }
                     }
-                    if(currentTokenTwo == "+"){
+                    if(currentToken == "+"){
                         addToken("intop", "+", currentLine, column);
+                        continue;
                     }
-                    if(currentTokenTwo == "$"){
+                    if(currentToken == "$"){
                         addToken("EOF", "$", currentLine, column);
                         outputMessage("\n");
                         currentProgram++;
                         continue;
                     }
+                    if(currentToken.search("acdeghjklmnoqruvxyz")){
+                        addToken("id", currentToken, currentLine, column);
+                        continue;
+                    }
+                    outputMessage("ERROR TOKEN NOT FOUND");
+                    numErrors++;
+                    continue;
                 }
             }
         }
         
+        /*Function to store attributes of each token
+        What the type or kind of the token is
+        The value of the token
+        What line the token is on
+        What column the token is located in
+        */
         function Token(kind, value, line, column){
             this.kind = kind;
             this.value = value;
             this.line = line;
             this.column = column;
         }
+        
         function addToken(kind, value, line, column){
+            //Create a variable of an empty temporary token
             var tempToken = new Token(kind, value, line, column);
+            //Output the results of what the token is to the user
             outputMessage("DEBUG Lexer - " + kind + "[ " + value + " ] found at " + line + "," + column);
+            //Push the created token to the tokens array
             tokens.push(tempToken);
         }
 
