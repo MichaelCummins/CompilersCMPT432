@@ -102,6 +102,37 @@
                     */
                     currentToken = line[column];
                     
+                    
+                    if(currentToken == "/"){
+                        if(line[column + 1] == "*"){
+                            column++;
+                            outputMessage("Test");
+                            if(comment){
+                                comment = false;
+                            }else{
+                                comment = true;
+                            }
+                            continue;
+                        }
+                        
+                    }
+                    
+                    if(currentToken == "*"){
+                        if(line[column + 1] == "/"){
+                            column++;
+                            if(comment){
+                                comment = false;
+                            }else{
+                                comment = true;
+                            }
+                            continue;
+                        }
+                    }
+                    
+                    if(comment){
+                        continue;
+                    }
+                    
                     /*If the current token is 'p' we know 
                     we are looking for either 'PRINT' or a 'p' id
                     */
@@ -355,30 +386,7 @@
                     }
                     
              
-
-                    if(currentToken == "/" && line[column + 1] == "*"){
-                        column++;
-                        if(comment){
-                            comment = false;
-                        }else{
-                            comment = true;
-                        }
-                        continue;
-                    }
                     
-                    if(currentToken == "*" && line[column + 1] == "/"){
-                        column++;
-                        if(comment){
-                            comment = false;
-                        }else{
-                            comment = true;
-                        }
-                        continue;
-                    }
-                    
-                    if(comment){
-                        continue;
-                    }
                     
                     //If the current token is the End of Program operator
                     if(currentToken == "$"){
@@ -394,12 +402,12 @@
                     
                     //Search for every other letter that is not a part
                     //of a keyword and make it into an id
-                    if("acdeghjklmnoqrsuvxyz".indexOf(currentToken) != -1){
+         /*           if("acdeghjklmnoqrsuvxyz".indexOf(currentToken) != -1){
                         //Add the id to the array
                         addToken("id", currentToken, currentLine, column);
                         //Continue lexing
                         continue;
-                    }
+                    }*/
                     /*If the character was not found then it was not
                     a part of the grammar for the compiler and an error occured
                     */
