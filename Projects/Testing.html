@@ -11,7 +11,6 @@
         var EOF = "$"; //End of program operator
         var currentProgram = 1;
         var completedPrograms = 0;
-
         
         function init(){
             //clear all values
@@ -66,6 +65,7 @@
             inform them. If the position of the EOF operator is -1 when know its not 
             in the input
             */
+            /*
             if(userInput.indexOf(EOF) == -1){
                 //Inform them of the error
                 outputMessage("ERROR detected, no end of program operator ($) found");
@@ -76,7 +76,7 @@
                 numErrors++;
                 //Update lines variable
                 lines = userInput;
-            }
+            }*/
             
             //Search line by line
             for(var currentLine = 0; currentLine < lines.length; currentLine++){
@@ -106,7 +106,6 @@
                     if(currentToken == "/"){
                         if(line[column + 1] == "*"){
                             column++;
-                            outputMessage("Test");
                             if(comment){
                                 comment = false;
                             }else{
@@ -367,7 +366,6 @@
                     /*If we see a single plus sign then we know 
                     we are either looking at an increment or addition operator
                     */
-
                     if(currentToken == "+"){
                         if(line[column + 1] == "+"){
                             //If the next character is another '+' we add
@@ -402,12 +400,12 @@
                     
                     //Search for every other letter that is not a part
                     //of a keyword and make it into an id
-         /*           if("acdeghjklmnoqrsuvxyz".indexOf(currentToken) != -1){
+                    if("acdeghjklmnoqrsuvxyz".indexOf(currentToken) != -1){
                         //Add the id to the array
                         addToken("id", currentToken, currentLine, column);
                         //Continue lexing
                         continue;
-                    }*/
+                    }
                     /*If the character was not found then it was not
                     a part of the grammar for the compiler and an error occured
                     */
@@ -442,7 +440,6 @@
             //Push the created token to the tokens array
             tokens.push(tempToken);
         }
-
         //Function that outputs results to the output text area
         function outputMessage(message){
             document.getElementById("CompiledCodeOutput").value += message + "\n";
@@ -460,4 +457,3 @@
 	</DIV>
   </BODY>
 </HTML>
-
