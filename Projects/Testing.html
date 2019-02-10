@@ -65,7 +65,7 @@
             inform them. If the position of the EOF operator is -1 when know its not 
             in the inputs
             */
-            /*
+            
             if(userInput.indexOf(EOF) == -1){
                 //Inform them of the error
                 outputMessage("ERROR detected, no end of program operator ($) found");
@@ -74,9 +74,7 @@
                 userInput += EOF;
                 //Increase number of errors
                 numErrors++;
-                //Update lines variable
-                lines = userInput;
-            }*/
+            }
             
             //Search line by line
             for(var currentLine = 0; currentLine < lines.length; currentLine++){
