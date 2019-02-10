@@ -31,23 +31,16 @@
             lex(getSourceCode());
             outputMessage("Parsing found " + numErrors + " error(s).");
         }
-        /*     
+            
         function trim(str){
             return str.replace(/\s/g, "");
         }
-        */
+        
         
         function getSourceCode(){
             var sourceCode = document.getElementById("SourceCodeInput").value;
             return sourceCode;
         }
-        /*       
-        function parse(){
-            lex(getSourceCode());
-            outputMessage("Parsing found " + numErrors + " error(s).");
-        }
-        
-        */
         
         function lex(userInput){
             //Create a variable that separates the users input
@@ -57,6 +50,18 @@
             var line;
             //Track what token we are currently handling
             var currentToken;
+            
+            //First we look to see if the user submitted anything into the first textfield
+            if(userInput.trim(userInput) == ""){
+                //if they did not we output that there isnt any source code
+                outputMessage("Nothing to Lex");
+                //Increase the number of errors found
+                numErrors++;
+                //Return the function as false to stop lexing
+                return false;
+            }
+            
+            if(userInput.)
             
             //Search line by line
             for(var currentLine = 0; currentLine < lines.length; currentLine++){
@@ -129,123 +134,244 @@
                             continue;
                         }
                     }
+                    
+                    /*If the current character being lexed is a 'b',
+                    we know we are either looking for 'boolean'
+                    or the id 'b'
+                    */
                     if(currentToken == "b"){
                         if(line[column + 1] == "o" && line[column + 2] == "o" && line[column + 3] == "l"
                           && line[column + 4] == "e" && line[column + 5] == "a" && line[column + 6] == "n"){
+                            //Add the boolean token to the array
                             addToken("Boolean", "boolean", currentLine, column);
-                            continue;
+                            //Advance 6 columns to account for already lexed characters
                             column += 6;
+                            //Continue lexing
+                            continue;
                         }else{
+                            //Add 'b' id to the array
                             addToken("Id", "b", currentLine, column);
+                            //Continue lexing
                             continue;
                         }
                     }
+                    
+                    /*If the current character we are lexing is an 'f'
+                    we know we are either looking for 'false' or the id 'f'
+                    */
                     if(currentToken == "f"){
                         if(line[column + 1] == "a" && line[column + 2] == "l" 
                            && line[column + 3] == "s" && line[column + 4] == "e"){
+                            //Add the 'False' token to the array
                             addToken("False", "false", currentLine, column);
+                            //Advance 4 columns
                             column += 4;
+                            //Continue lexing
                             continue;
                         }else{
+                            //Add 'f' id to the array
                             addToken("Id", "f", currentLine, column);
+                            //Continue lexing
                             continue;
                         }
                     }
+                    
+                    /* If the current token we are looking at is a 'w'
+                    we know we are looking for the 'while' keyword or
+                    the 'w' id
+                    */
                     if(currentToken == "w"){
                         if(line[column + 1] == "h" && line[column + 2] == "i" && 
                           line[column + 3] == "l" && line[column + 4] == "e"){
+                            //Add the 'while' token to the array
                             addToken("While", "while", currentLine, column);
+                            //Advance 4 columns
                             column += 4;
+                            //Continue lexing
                             continue;
                         }else{
+                            //Add the 'w' id to the array
                             addToken("id", "w", currentLine, column);
+                            //Continue lexing
                             continue;
                         }
                     }
+                    
+                    //If the current token is a bracket, add it as an id
                     if(currentToken == "{"){
                         addToken("L_Bracket", "{", currentLine, column);
+                        //Continue lexing
                         continue;
                     }
+                    
+                    //if the current token is a bracket, add it as an id
                     if(currentToken == "}"){
                         addToken("R_Bracket", "}", currentLine, column);
+                        //Continue
                         continue;
                     }
+                    
+                    //If the current token is a parenthesis, add it as an id
                     if(currentToken == "("){
                         addToken("L_Paren", "(", currentLine, column);
+                        //Continue lexing
                         continue;
                     }
+                    
+                    //If the current token is a parenthesis, add it as an id
                     if(currentToken == ")"){
                         addToken("R_Paren",")", currentLine, column);
+                        //Continue lexing
                         continue;
                     }
+                    
+                    /*If the current token is a digit that is greater than or 
+                    equal to 0 and less than or equal to 9, push it to the
+                    arrray
+                    */
                     if(currentToken >= "0" && currentToken <= "9"){
                         addToken("Digit", currentToken, currentLine, column);
+                        //continue
                         continue;
                     }
+                    
+                    /*If the current token is a '!' we know we are either 
+                    looking for a not equal operator or just a factorial
+                    */
                     if(currentToken == "!"){
                         if(line[column + 1]== "="){
+                            /*If the next column is an equal sign
+                            Add the "not equal" token to the array
+                            */
                             addToken("Not_Equal", "!=", currentLine, column);
+                            //Advance 1 column for '='
                             column++;
+                            //Continue lexing
                             continue;
                         }else{
+                            //Add '!' alone
+                            //Not sure if this should be an error or not
                             addToken("Factorial", "!", currentLine, column);
+                            //Continue lexing
                             continue;
                         }
                     }
+                    
+                    /* If the current token is a 't' we know we
+                    are looking for either the keyword 'true'
+                    or the id 't'
+                    */
                     if(currentToken == "t"){
                         if(line[column + 1] == "r" && line[column + 2] == "u" && line[column + 3] == "e"){
+                            //Add "True token to the array
                             addToken("Boolean", "True", currentLine, column);
+                            //Advance 3 columns
                             column += 3;
+                            //Continue lexing
                             continue;
                         }else{
-                        addToken("id", "t", currentLine, column);
-                        continue;
+                            //Add 't' id to the array
+                            addToken("id", "t", currentLine, column);
+                            //Continue lexing
+                            continue;
                         }
                     }
                     if(currentToken == " "){
+                        //If space continue
                         continue;
                     }
                     if(currentToken == "/n"){
+                        //If new line go to the next line
                         line++;
                         continue;
                     }
                     if(currentToken == "/t"){
+                        //If tab advance 8 spaces and continue lexing
                         column += 8;
                         continue;
                     }
                     if(currentToken == "\""){
+                        //If double quote add '"' to the array
                         addToken("\"", "\"", currentLine, column);
+                        //Continue lexing
                         continue;
                     }
                     if(currentToken == "'"){
+                        //If single quote add ''' to the array
                         addToken("'", "'", currentLine, column);
+                        //Continue lexing
                         continue;
                     }
+                    
+                    /*if we see a single equals sign we know
+                    we are either looking at an equality or an assignment operator
+                    If another equals sign follows it is for equality
+                    If there isnt then it is for assignment
+                    */
                     if(currentToken == "="){
                         if(line[column + 1] == "="){
+                            //Add Equality operator to the array
                             addToken("OP_Equality", "==", currentLine, column);
+                            //Advance 1 column
                             column++;
+                            //Continue lexing
                             continue;
                         }else{
+                            //Add assignment operator to the array
                             addToken("OP_Assignment", "=", currentLine, column);
+                            //Continue lexing
+                            continue;
                         }
                     }
+                    
+                    /*If we see a single plus sign then we know 
+                    we are either looking at an increment or addition operator
+                    */
                     if(currentToken == "+"){
-                        addToken("intop", "+", currentLine, column);
-                        continue;
+                        if(line[column + 1] == "+"){
+                            //If the next character is another '+' we add
+                            //Increment to the array
+                            addToken("Increment", "++", currentLine, column);
+                            //Advance 1 column
+                            column++;
+                            //Continue lexing
+                            continue;
+                        }else{
+                            //Add addition operator to the array
+                            addToken("intop", "+", currentLine, column);
+                            //Continue lexing
+                            continue;
+                        }
                     }
+                    
+                    //If the current token is the End of Program operator
                     if(currentToken == "$"){
+                        //Add the '$' token to the array
                         addToken("EOF", "$", currentLine, column);
+                        //Output a new line for clarity
                         outputMessage("\n");
+                        //Increment which program is currently being lexed
                         currentProgram++;
+                        //Continue with the next program
                         continue;
                     }
+                    
+                    //Search for every other letter that is not a part
+                    //of a keyword and make it into an id
                     if(currentToken.search("acdeghjklmnoqruvxyz")){
+                        //Add the id to the array
                         addToken("id", currentToken, currentLine, column);
+                        //Continue lexing
                         continue;
                     }
+                    /*If the character was not found then it was not
+                    a part of the grammar for the compiler and an error occured
+                    */
+                    //Output an error message
                     outputMessage("ERROR TOKEN NOT FOUND");
+                    //Increment the number of errors found so far
                     numErrors++;
+                    //Continue lexing
                     continue;
                 }
             }
@@ -273,24 +399,12 @@
             tokens.push(tempToken);
         }
 
-        
+        //Function that outputs results to the output text area
         function outputMessage(message){
             document.getElementById("CompiledCodeOutput").value += message + "\n";
         }
         
-        function getNextToken(){
-            var thisToken = EOF;
-            if (tokenIndex < tokens.length){
-                thisToken = tokens[tokenIndex];
-                tokenIndex++;
-            }
-            return thisToken;
-        }
-        
-        
   
-         
-        
 	</script>
   </HEAD>
   <BODY onload = "init();">
