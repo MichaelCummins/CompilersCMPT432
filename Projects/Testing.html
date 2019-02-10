@@ -27,7 +27,7 @@
         function clickTheButton(){
             //Clear all values
             init();
-            //Call parse function
+            //Call function to lex user input
             lex(getSourceCode());
             outputMessage("Parsing found " + numErrors + " error(s).");
         }
@@ -61,7 +61,13 @@
                 return false;
             }
             
-            if(userInput.)
+            if(userInput.indexOf(EOF) == -1){
+                outputMessage("ERROR detected, no end of program operator ($) found");
+                outputMessage("Adding one to the end of your input");
+                userInput += EOF;
+                numErrors++;
+                lines = userInput;
+            }
             
             //Search line by line
             for(var currentLine = 0; currentLine < lines.length; currentLine++){
