@@ -61,11 +61,19 @@
                 return false;
             }
             
+            /*If the user did not end their input with an End of Program operator
+            inform them. If the position of the EOF operator is -1 when know its not 
+            in the input
+            */
             if(userInput.indexOf(EOF) == -1){
+                //Inform them of the error
                 outputMessage("ERROR detected, no end of program operator ($) found");
+                //Correct error
                 outputMessage("Adding one to the end of your input");
                 userInput += EOF;
+                //Increase number of errors
                 numErrors++;
+                //Update lines variable
                 lines = userInput;
             }
             
