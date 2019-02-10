@@ -50,6 +50,7 @@
             var line;
             //Track what token we are currently handling
             var currentToken;
+            var comment;
             
             //First we look to see if the user submitted anything into the first textfield
             if(userInput.trim(userInput) == ""){
@@ -285,7 +286,7 @@
                             continue;
                         }else{
                             //Add 't' id to the array
-                            addToken("id", "t", currentLine, column);
+                            addToken("Id", "t", currentLine, column);
                             //Continue lexing
                             continue;
                         }
@@ -294,20 +295,14 @@
                         //If space continue
                         continue;
                     }
-                    if(currentToken == "/n"){
+                    if(currentToken == "\n"){
                         //If new line go to the next line
                         line++;
                         continue;
                     }
-                    if(currentToken == "/t"){
+                    if(currentToken == "\t"){
                         //If tab advance 8 spaces and continue lexing
-                        column += 8;
-                        continue;
-                    }
-                    if(currentToken == "\""){
-                        //If double quote add '"' to the array
-                        addToken("\"", "\"", currentLine, column);
-                        //Continue lexing
+                        column++;
                         continue;
                     }
                     if(currentToken == "'"){
@@ -341,6 +336,7 @@
                     /*If we see a single plus sign then we know 
                     we are either looking at an increment or addition operator
                     */
+
                     if(currentToken == "+"){
                         if(line[column + 1] == "+"){
                             //If the next character is another '+' we add
@@ -358,6 +354,32 @@
                         }
                     }
                     
+             
+
+                    if(currentToken == "/" && line[column + 1] == "*"){
+                        column++;
+                        if(comment){
+                            comment = false;
+                        }else{
+                            comment = true;
+                        }
+                        continue;
+                    }
+                    
+                    if(currentToken == "*" && line[column + 1] == "/"){
+                        column++;
+                        if(comment){
+                            comment = false;
+                        }else{
+                            comment = true;
+                        }
+                        continue;
+                    }
+                    
+                    if(comment){
+                        continue;
+                    }
+                    
                     //If the current token is the End of Program operator
                     if(currentToken == "$"){
                         //Add the '$' token to the array
@@ -372,7 +394,7 @@
                     
                     //Search for every other letter that is not a part
                     //of a keyword and make it into an id
-                    if(currentToken.search("acdeghjklmnoqruvxyz")){
+                    if("acdeghjklmnoqrsuvxyz".indexOf(currentToken) != -1){
                         //Add the id to the array
                         addToken("id", currentToken, currentLine, column);
                         //Continue lexing
@@ -382,11 +404,11 @@
                     a part of the grammar for the compiler and an error occured
                     */
                     //Output an error message
-                    outputMessage("ERROR TOKEN NOT FOUND");
+                    outputMessage("ERROR TOKEN " + currentToken  + " NOT FOUND");
                     //Increment the number of errors found so far
                     numErrors++;
                     //Continue lexing
-                    continue;
+        //            continue;
                 }
             }
         }
