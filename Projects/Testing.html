@@ -8,7 +8,7 @@
         var tokens = [];
         var tokenIndex = 0;
         var numErrors = 0;
-        var EOF = "$"; //End of program operator
+        var EOF; //End of program operator
         var currentProgram = 1;
         var completedPrograms = 0;
         
@@ -18,7 +18,7 @@
             tokens = [];
             tokenIndex = 0;
             numErrors = 0;
-            EOF = "$";
+            EOF = '$';
             currentProgram = 1;
             completedPrograms = 0;
         }
@@ -42,15 +42,7 @@
         }
         
         function lex(userInput){
-            //Create a variable that separates the users input
-            //Get the total number of lines that the user submitted and separate by commas
-            //The .replace function removes all comments, will change at a later date how I handle those
-            var lines = userInput.toString().replace(/\/\*.+?\*\/|\/\/.*(?=[\n\r])/g, '').split("\n");
-            //Track what line we are currently on
-            var line;
-            //Track what token we are currently handling
-            var currentToken;
-            var comment;
+            
             
             //First we look to see if the user submitted anything into the first textfield
             if(userInput.trim(userInput) == ""){
@@ -67,17 +59,25 @@
             users input is "$" (End of Program operator) if it is then we dont
             need to display an error message. If not add it to the end
             */
-            
             if(userInput.slice(-1) != EOF){
                 //Inform them of the error
                 outputMessage("ERROR detected, no end of program operator ($) found");
                 //Correct error
                 outputMessage("Adding one to the end of your input");
-                lines += EOF;
+                userInput += EOF;
                 //Increase number of errors
                 numErrors++;
             }
-            
+            //Create a variable that separates the users input
+            //Get the total number of lines that the user submitted and separate by commas
+            //The .replace function removes all comments, will change at a later date how I handle those
+            var lines = userInput.toString().replace(/\/\*.+?\*\/|\/\/.*(?=[\n\r])/g, '').split("\n");
+            //Track what line we are currently on
+            var line;
+            //Track what token we are currently handling
+            var currentToken;
+            var comment;
+
             //Search line by line
             for(var currentLine = 0; currentLine < lines.length; currentLine++){
                 
@@ -192,6 +192,19 @@
                         }
                     }
                     
+                    if(currentToken == "s"){
+                        if(line[column + 1] == "t" && line[column + 2] == "r" &&
+                           line[column + 3] == "i" && line[column + 4] == "n" &&
+                           line[column + 5] == "g"){
+                            addToken("String", "string", currentLine, column);
+                            column +=5;
+                            continue;
+                        }else{
+                            addToken("Id", "s", currentLine, column);
+                            continue;
+                        }
+                    }
+                    
                     /* If the current token we are looking at is a 'w'
                     we know we are looking for the 'while' keyword or
                     the 'w' id
@@ -271,6 +284,11 @@
                             //Continue lexing
                             continue;
                         }
+                    }
+                    
+                    if(currentToken == '"'){
+                        addToken('"','"', currentLine, column);
+                        continue;
                     }
                     
                     /* If the current token is a 't' we know we
@@ -371,7 +389,7 @@
                     
                     //Search for every other letter that is not a part
                     //of a keyword and make it into an id
-                    if("acdeghjklmnoqrsuvxyz".indexOf(currentToken) != -1){
+                    if("acdeghjklmnoqruvxyz".indexOf(currentToken) != -1){
                         //Add the id to the array
                         addToken("id", currentToken, currentLine, column);
                         //Continue lexing
