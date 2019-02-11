@@ -44,6 +44,7 @@
         function lex(userInput){
             //Create a variable that separates the users input
             //Get the total number of lines that the user submitted and separate by commas
+            //The .replace function removes all comments, will change at a later date how I handle those
             var lines = userInput.toString().replace(/\/\*.+?\*\/|\/\/.*(?=[\n\r])/g, '').split("\n");
             //Track what line we are currently on
             var line;
@@ -100,32 +101,6 @@
                     */
                     currentToken = line[column];
                     
-                    /*
-                    if(currentToken == "/" && line[column + 1] == "*"{
-                            column++;
-                            if(comment){
-                                comment = false;
-                            }else{
-                                comment = true;
-                            }
-                            continue;
-                        
-                    }
-                    
-                    if(currentToken == "*" && line[column + 1] == "/"){
-
-                            column++;
-                            if(comment){
-                                comment = false;
-                            }else{
-                                comment = true;
-                            }
-                            continue;
-                    }
-                    
-                    if(comment){
-                        continue;
-                    }*/
                     
                     /*If the current token is 'p' we know 
                     we are looking for either 'PRINT' or a 'p' id
