@@ -39,3 +39,11 @@ Textarea {
 h1 {
 	text-align: center;
 }
+
+.error{
+    color: red;
+}
+
+.warning{
+    color: blue;
+}

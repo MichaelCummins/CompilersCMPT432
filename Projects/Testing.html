@@ -62,7 +62,7 @@
             */
             if(userInput.slice(-1) != EOF){
                 //Inform them of the error
-                outputMessage("Warning detected, no end of program operator ($) found");
+                outputMessage( "Warning detected, no end of program operator ($) found");
                 //Correct error
                 outputMessage("Adding one to the end of your input");
                 userInput += EOF;
@@ -85,12 +85,13 @@
             //Track what token we are currently handling
             var currentToken;
 
-            //Search line by line
+            //Search through each line
             for(var currentLine = 0; currentLine < numLines.length; currentLine++){
                 
                 //Track what line we are currently on
                 line = numLines[currentLine];
-                //Search column by column
+                
+                //Search through each column
                 for(var currentColumn = 0; currentColumn < line.length; currentColumn++){
                     
                     /*If the current program we are lexing is less than 
