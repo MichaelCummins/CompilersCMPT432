@@ -6,7 +6,6 @@
 	<script type = text/javascript>
         //Declare global variables
         var tokens = [];
-        var tokenIndex = 0;
         var numErrors = 0;
         var EOF; //End of program operator
         var currentProgram = 1;
@@ -16,7 +15,6 @@
             //clear all values
             document.getElementById("CompiledCodeOutput").value = "";
             tokens = [];
-            tokenIndex = 0;
             numErrors = 0;
             EOF = '$';
             currentProgram = 1;
@@ -249,7 +247,7 @@
                     
                     //If the current token is a parenthesis, add it as an id
                     if(currentToken == ")"){
-                        addToken("R_Paren",")", currentLine, column);
+                        addToken("R_Paren", ")", currentLine, column);
                         //Continue lexing
                         continue;
                     }
@@ -268,7 +266,7 @@
                     looking for a not equal operator or just a factorial
                     */
                     if(currentToken == "!"){
-                        if(line[column + 1]== "="){
+                        if(line[column + 1] == "="){
                             /*If the next column is an equal sign
                             Add the "not equal" token to the array
                             */
