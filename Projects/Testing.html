@@ -10,6 +10,7 @@
         var EOF; //End of program operator
         var currentProgram = 1;
         var completedPrograms = 0;
+        var numWarnings = 0;
         
         function init(){
             //clear all values
@@ -19,6 +20,7 @@
             EOF = "$";
             currentProgram = 1;
             completedPrograms = 0;
+            numWarnings = 0;
         }
             
         function clickTheButton(){
@@ -27,8 +29,10 @@
             //Call function to lex user input
             lex(getSourceCode());
             outputMessage("Parsing found " + numErrors + " error(s).");
+            outputMessage("Parsing found " + numWarnings + " warning(s)")
         }
-            
+        
+        //
         function trim(str){
             return str.replace(/\s/g, "");
         }
@@ -59,27 +63,29 @@
             */
             if(userInput.slice(-1) != EOF){
                 //Inform them of the error
-                outputMessage("ERROR detected, no end of program operator ($) found");
+                outputMessage("Warning detected, no end of program operator ($) found");
                 //Correct error
                 outputMessage("Adding one to the end of your input");
                 userInput += EOF;
                 //Increase number of errors
-                numErrors++;
+                numWarnings++;
             }
             //Create a variable that separates the users input
             //Get the total number of lines that the user submitted and separate by commas
             //The .replace function removes all comments, will change at a later date how I handle those
+            //Found the regular expression used on stackoverflow
+            //https://stackoverflow.com/questions/5989315/regex-for-match-replacing-javascript-comments-both-multiline-and-inline
+            //Band aid fix while I figure out how to do comments
             var lines = userInput.toString().replace(/\/\*.+?\*\/|\/\/.*(?=[\n\r])/g, '').split("\n");
             //Track what line we are currently on
             var line;
             //Track what token we are currently handling
             var currentToken;
-            var comment;
 
             //Search line by line
             for(var currentLine = 0; currentLine < lines.length; currentLine++){
                 
-                //Track what line we are currentlyon
+                //Track what line we are currently on
                 line = lines[currentLine];
                 
                 //Search column by column
@@ -100,7 +106,11 @@
                     */
                     currentToken = line[currentColumn];
                     
+                    /*Used method shown in class on what not to do as a baseline
+                    Then improved it a bit by just looking for the rest of the 
+                    keyword after the start of a keyword was found
                     
+                    */
                     /*If the current token is 'p' we know 
                     we are looking for either 'PRINT' or a 'p' id
                     */
@@ -435,6 +445,7 @@
             tokens.push(token);
         }
         //Function that outputs results to the output text area
+        //From javascript template for project 0 on labouseur.com
         function outputMessage(message){
             document.getElementById("CompiledCodeOutput").value += message + "\n";
         }
