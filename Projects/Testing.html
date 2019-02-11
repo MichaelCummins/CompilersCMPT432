@@ -109,14 +109,14 @@
                         if(line[currentColumn + 1] == "r" && line[currentColumn + 2] == "i" 
                            && line[currentColumn + 3 ] == "n" && line[currentColumn + 4] == "t"){
                             //If found add the token print
-                            addToken("Print", "print", currentLine, currentColumn);
+                            addToken("print", "print", currentLine, currentColumn);
                             //Advance 4 columns to acount for already lexed letters of PRINT
                             currentColumn += 4;
                             //Continue lexing
                             continue;
                         }else{
-                            //Else add the ID p token and continue lexing
-                            addToken("ID", "p", currentLine, currentColumn);
+                            //Else add the id p token and continue lexing
+                            addToken("id", "p", currentLine, currentColumn);
                             continue;
                         }
                     }
@@ -136,14 +136,14 @@
                             continue;
                         }else if(line[currentColumn + 1] == "f"){
                             //If the next character is an f we can add the 'if' token
-                            addToken("If", "if", currentLine, currentColumn);
+                            addToken("if", "if", currentLine, currentColumn);
                             //Advance 1 currentColumn
                             currentColumn += 1;
                             //continue lexing
                             continue;
                         }else{
                             //Else add the 'i' id
-                            addToken("Id", "i", currentLine, currentColumn);
+                            addToken("id", "i", currentLine, currentColumn);
                             //continue lexing
                             continue;
                         }
@@ -157,14 +157,14 @@
                         if(line[currentColumn + 1] == "o" && line[currentColumn + 2] == "o" && line[currentColumn + 3] == "l"
                           && line[currentColumn + 4] == "e" && line[currentColumn + 5] == "a" && line[currentColumn + 6] == "n"){
                             //Add the boolean token to the array
-                            addToken("Boolean", "boolean", currentLine, currentColumn);
+                            addToken("boolean", "boolean", currentLine, currentColumn);
                             //Advance 6 columns to account for already lexed characters
                             currentColumn += 6;
                             //Continue lexing
                             continue;
                         }else{
                             //Add 'b' id to the array
-                            addToken("Id", "b", currentLine, currentColumn);
+                            addToken("id", "b", currentLine, currentColumn);
                             //Continue lexing
                             continue;
                         }
@@ -177,14 +177,14 @@
                         if(line[currentColumn + 1] == "a" && line[currentColumn + 2] == "l" 
                            && line[currentColumn + 3] == "s" && line[currentColumn + 4] == "e"){
                             //Add the 'False' token to the array
-                            addToken("False", "false", currentLine, currentColumn);
+                            addToken("false", "false", currentLine, currentColumn);
                             //Advance 4 columns
                             currentColumn += 4;
                             //Continue lexing
                             continue;
                         }else{
                             //Add 'f' id to the array
-                            addToken("Id", "f", currentLine, currentColumn);
+                            addToken("id", "f", currentLine, currentColumn);
                             //Continue lexing
                             continue;
                         }
@@ -196,14 +196,14 @@
                            line[currentColumn + 3] == "i" && line[currentColumn + 4] == "n" &&
                            line[currentColumn + 5] == "g"){
                             //Add String token
-                            addToken("String", "string", currentLine, currentColumn);
+                            addToken("string", "string", currentLine, currentColumn);
                             //Advance 5 columns
                             currentColumn +=5;
                             //Continue lexing
                             continue;
                         }else{
                             //Add 's' id
-                            addToken("Id", "s", currentLine, currentColumn);
+                            addToken("id", "s", currentLine, currentColumn);
                             //Continue lexing
                             continue;
                         }
@@ -217,7 +217,7 @@
                         if(line[currentColumn + 1] == "h" && line[currentColumn + 2] == "i" && 
                           line[currentColumn + 3] == "l" && line[currentColumn + 4] == "e"){
                             //Add the 'while' token to the array
-                            addToken("While", "while", currentLine, currentColumn);
+                            addToken("while", "while", currentLine, currentColumn);
                             //Advance 4 columns
                             currentColumn += 4;
                             //Continue lexing
@@ -302,14 +302,14 @@
                     if(currentToken == "t"){
                         if(line[currentColumn + 1] == "r" && line[currentColumn + 2] == "u" && line[currentColumn + 3] == "e"){
                             //Add "True token to the array
-                            addToken("Boolean", "True", currentLine, currentColumn);
+                            addToken("Boolean", "true", currentLine, currentColumn);
                             //Advance 3 columns
                             currentColumn += 3;
                             //Continue lexing
                             continue;
                         }else{
                             //Add 't' id to the array
-                            addToken("Id", "t", currentLine, currentColumn);
+                            addToken("id", "t", currentLine, currentColumn);
                             //Continue lexing
                             continue;
                         }
