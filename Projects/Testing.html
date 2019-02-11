@@ -63,16 +63,17 @@
             }
             
             /*If the user did not end their input with an End of Program operator
-            inform them. If the position of the EOF operator is -1 when know its not 
-            in the inputs
+            inform them. First check to see if the very last character of the 
+            users input is "$" (End of Program operator) if it is then we dont
+            need to display an error message. If not add it to the end
             */
             
-            if(userInput.indexOf(EOF) == -1){
+            if(userInput.slice(-1) != EOF){
                 //Inform them of the error
                 outputMessage("ERROR detected, no end of program operator ($) found");
                 //Correct error
                 outputMessage("Adding one to the end of your input");
-                userInput += EOF;
+                lines += EOF;
                 //Increase number of errors
                 numErrors++;
             }
