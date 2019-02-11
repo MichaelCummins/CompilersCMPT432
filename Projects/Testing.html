@@ -28,8 +28,8 @@
             init();
             //Call function to lex user input
             lex(getSourceCode());
-            outputMessage("Parsing found " + numErrors + " error(s).");
-            outputMessage("Parsing found " + numWarnings + " warning(s)")
+            outputMessage("Parsing found " + numErrors + " error(s)");
+            outputMessage("Parsing found " + numWarnings + " warning(s)");
         }
         
         //
@@ -44,7 +44,6 @@
         }
         
         function lex(userInput){
-            
             
             //First we look to see if the user submitted anything into the first textfield
             if(userInput.trim(userInput) == ""){
@@ -70,24 +69,27 @@
                 //Increase number of errors
                 numWarnings++;
             }
+            
             //Create a variable that separates the users input
-            //Get the total number of lines that the user submitted and separate by commas
+            //Get the total number of numLines that the user submitted and separate by commas
             //The .replace function removes all comments, will change at a later date how I handle those
             //Found the regular expression used on stackoverflow
             //https://stackoverflow.com/questions/5989315/regex-for-match-replacing-javascript-comments-both-multiline-and-inline
             //Band aid fix while I figure out how to do comments
-            var lines = userInput.toString().replace(/\/\*.+?\*\/|\/\/.*(?=[\n\r])/g, '').split("\n");
-            //Track what line we are currently on
+            //Total number of lines gotten by separting with commas
+            var numLines = userInput.toString().replace(/\/\*.+?\*\/|\/\/.*(?=[\n\r])/g, '').split("\n");
+            
+            //Line variable is a section of numLines if numLines is printintboolean,intbool,print
+            //line would be equal to either 'printintboolean' or 'intbool' or 'print depending on iteration
             var line;
             //Track what token we are currently handling
             var currentToken;
 
             //Search line by line
-            for(var currentLine = 0; currentLine < lines.length; currentLine++){
+            for(var currentLine = 0; currentLine < numLines.length; currentLine++){
                 
                 //Track what line we are currently on
-                line = lines[currentLine];
-                
+                line = numLines[currentLine];
                 //Search column by column
                 for(var currentColumn = 0; currentColumn < line.length; currentColumn++){
                     
@@ -104,6 +106,7 @@
                     Do this by looking at the current line that is being worked on
                     and go to the index of the current column that is being worked on
                     */
+                    //Looking at the nth spot in the line
                     currentToken = line[currentColumn];
                     
                     /*Used method shown in class on what not to do as a baseline
@@ -335,7 +338,7 @@
                     }
                     if(currentToken == "\t"){
                         //If tab advance 8 spaces and continue lexing
-                        currentColumn++;
+                        currentColumn+=5;
                         continue;
                     }
                     if(currentToken == "'"){
