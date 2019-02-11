@@ -44,7 +44,7 @@
         function lex(userInput){
             //Create a variable that separates the users input
             //Get the total number of lines that the user submitted and separate by commas
-            var lines = userInput.toString().split("\n");
+            var lines = userInput.toString().replace(/\/\*.+?\*\/|\/\/.*(?=[\n\r])/g, '').split("\n");
             //Track what line we are currently on
             var line;
             //Track what token we are currently handling
@@ -100,9 +100,8 @@
                     */
                     currentToken = line[column];
                     
-                    
-                    if(currentToken == "/"){
-                        if(line[column + 1] == "*"){
+                    /*
+                    if(currentToken == "/" && line[column + 1] == "*"{
                             column++;
                             if(comment){
                                 comment = false;
@@ -110,12 +109,11 @@
                                 comment = true;
                             }
                             continue;
-                        }
                         
                     }
                     
-                    if(currentToken == "*"){
-                        if(line[column + 1] == "/"){
+                    if(currentToken == "*" && line[column + 1] == "/"){
+
                             column++;
                             if(comment){
                                 comment = false;
@@ -123,12 +121,11 @@
                                 comment = true;
                             }
                             continue;
-                        }
                     }
                     
                     if(comment){
                         continue;
-                    }
+                    }*/
                     
                     /*If the current token is 'p' we know 
                     we are looking for either 'PRINT' or a 'p' id
