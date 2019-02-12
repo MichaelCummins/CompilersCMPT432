@@ -395,8 +395,10 @@
                     if(currentToken == "$"){
                         //Add the '$' token to the array
                         addToken("EOF", "$", currentLine, currentColumn);
+                        //Output errors and warnings
                         outputMessage("Lexing Program " + currentProgram + " done \n");
                         outputMessage("Lexer found " + numErrors + " error(s) & " + numWarnings + " warning(s)");
+                        //Reset errors and warnings
                         numErrors = 0;
                         numWarnings = 0;
                         //Output a new line for clarity
