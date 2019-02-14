@@ -4,6 +4,10 @@
     <TITLE>Michael Cummins Compiler Project</TITLE>
     <LINK rel="stylesheet" type="text/css" href="myStyle.css" />
 	<script type = text/javascript>
+        
+        //TO DO: Make this look nicer
+        
+        
         //Declare global variables
         var tokens = [];
         var numErrors = 0;
@@ -132,6 +136,7 @@
                     if(stillInComment){
                         continue;
                     }
+                    
                     /*If the currentToken we are lexing is a '/' we know the
                     only correct character that could follow is a '*'
                     */
@@ -143,6 +148,7 @@
                         //Continue lexing
                         continue;
                     }
+                    
                     /*If the currentToken we are lexing is a '*' we know the
                     only correct character that could follow is a '/'
                     */
@@ -154,7 +160,6 @@
                         //Continue lexing
                         continue;
                     }
-                    
                     
                     /*If the current token is 'p' we know 
                     we are looking for either 'PRINT' or a 'p' id
@@ -245,6 +250,7 @@
                             continue;
                         }
                     }
+                    
                     //If the current token is 's' we know we are looking for either
                     //the keyword 'string' or the 's' id
                     if(currentToken == "s"){
@@ -370,20 +376,24 @@
                             continue;
                         }
                     }
+                    
                     if(currentToken == " "){
                         //If space continue
                         continue;
                     }
+                    
                     if(currentToken == "\n"){
                         //If new line go to the next line
                         line++;
                         continue;
                     }
+                    
                     if(currentToken == "\t"){
                         //If tab advance 8 spaces and continue lexing
                         currentColumn+=5;
                         continue;
                     }
+                    
                     if(currentToken == "'"){
                         //If single quote add ''' to the array
                         addToken("'", "'", currentLine, currentColumn);
@@ -431,9 +441,6 @@
                             continue;
                         }
                     }
-                    
-             
-                    
                     
                     //If the current token is the End of Program operator
                     if(currentToken == "$"){
