@@ -30,7 +30,6 @@
             lex(getSourceCode());
         }
         
-        //
         function trim(str){
             return str.replace(/\s/g, "");
         }
@@ -68,17 +67,30 @@
                 numWarnings++;
             }
             
-            //Create a variable that separates the users input
-            //Get the total number of numLines that the user submitted and separate by commas
-            //The .replace function removes all comments, will change at a later date how I handle those
-            //Found the regular expression used on stackoverflow
-            //https://stackoverflow.com/questions/5989315/regex-for-match-replacing-javascript-comments-both-multiline-and-inline
-            //Band aid fix while I figure out how to do comments
-            //Total number of lines gotten by separting with commas
-            var numLines = userInput.toString().replace(/\/\*.+?\*\/|\/\/.*(?=[\n\r])/g, '').split("\n");
             
+            /*  
+            
+            Unimportant now and probably unimportant for the future, felt cute might delete later
+        
+            Create a variable that separates the users input
+            Get the total number of numLines that the user submitted and separate by commas
+            The .replace function removes all comments, will change at a later date how I handle those
+            Found the regular expression used on stackoverflow
+            https://stackoverflow.com/questions/5989315/regex-for-match-replacing-javascript-comments-both-multiline-and-inline
+            Band aid fix while I figure out how to do comments
+            Total number of lines gotten by separting with commas
+            var numLines = userInput.toString().replace(/\/\*.+?\*\/|\/\/.*(?=[\n\r])/g, '').split("\n");    
+            */
+            
+          
+            /*     
+            Create a variable that separates the users input
+            Get the total number of numLines that the user submitted and separate by commas
+            Convert it to a string so we can actually split it
+            */
+            var numLines = userInput.toString().split("\n");
             //Line variable is a section of numLines if numLines is printintboolean,intbool,print
-            //line would be equal to either 'printintboolean' or 'intbool' or 'print depending on iteration
+            //line would be equal to either 'printintboolean' or 'intbool' or 'print' depending on iteration
             var line;
             //Track what token we are currently handling
             var currentToken;
@@ -101,6 +113,7 @@
                         completedPrograms++;
                     }
                     
+                    
                     /* Track what token we are currently operating on.
                     Do this by looking at the current line that is being worked on
                     and go to the index of the current column that is being worked on
@@ -111,8 +124,38 @@
                     /*Used method shown in class on what not to do as a baseline
                     Then improved it a bit by just looking for the rest of the 
                     keyword after the start of a keyword was found
-                    
                     */
+                    //Create variable that tracks whether we are in a comment or not
+                    var stillInComment;
+                    //If that variable is true then we are in a comment and must
+                    //Just continue lexing, skipping until we see the end of a comment
+                    if(stillInComment){
+                        continue;
+                    }
+                    /*If the currentToken we are lexing is a '/' we know the
+                    only correct character that could follow is a '*'
+                    */
+                    if(currentToken == "/" && line[currentColumn + 1] == "*"){
+                        //Set stillInComment to true so we can skip commented characters
+                        stillInComment = true;
+                        //Account for already looked at '*' character
+                        currentColumn++;
+                        //Continue lexing
+                        continue;
+                    }
+                    /*If the currentToken we are lexing is a '*' we know the
+                    only correct character that could follow is a '/'
+                    */
+                    if(currentToken == "*" && line[currentColumn + 1] == "/"){
+                        //Set stillInComment to false so we can stop skipping characters
+                        stillInComment = false;
+                        //Account for already looked at '/' character
+                        currentColumn++;
+                        //Continue lexing
+                        continue;
+                    }
+                    
+                    
                     /*If the current token is 'p' we know 
                     we are looking for either 'PRINT' or a 'p' id
                     */
@@ -166,8 +209,9 @@
                     or the id 'b'
                     */
                     if(currentToken == "b"){
-                        if(line[currentColumn + 1] == "o" && line[currentColumn + 2] == "o" && line[currentColumn + 3] == "l"
-                          && line[currentColumn + 4] == "e" && line[currentColumn + 5] == "a" && line[currentColumn + 6] == "n"){
+                        if(line[currentColumn + 1] == "o" && line[currentColumn + 2] == "o"
+                           && line[currentColumn + 3] == "l" && line[currentColumn + 4] == "e" 
+                           && line[currentColumn + 5] == "a" && line[currentColumn + 6] == "n"){
                             //Add the boolean token to the array
                             addToken("boolean", "boolean", currentLine, currentColumn);
                             //Advance 6 columns to account for already lexed characters
@@ -448,7 +492,7 @@
             //Create a variable of an empty temporary token
             var token = new Token(kind, value, currentLine, currentColumn);
             //Output the results of what the token is to the user
-            outputMessage("DEBUG Lexer - " + kind + "[ " + value + " ] found at " + currentLine + "," + currentColumn);
+            outputMessage("DEBUG Lexer - " + kind + " [ " + value + " ] found at " + currentLine + "," + currentColumn);
             //Push the created token to the tokens array
             tokens.push(token);
         }
