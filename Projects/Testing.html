@@ -7,8 +7,9 @@
     <script type = "text/javascript" src = "Lexer.js"></script>
     <script type = "text/javascript" src = "Utilities.js"></script>
     <script type = "text/javascript" src = "Tokens.js"></script>
-      <script>
-                //Declare global variables
+    <script type = "text/javascript" src = "Parser.js"></script>
+    <script>
+        //Declare global variables
         var tokens = [];
         var numErrors = 0;
         var EOF; //End of program operator
@@ -43,21 +44,13 @@
             var sourceCode = document.getElementById("SourceCodeInput").value;
             return sourceCode;
         }
+        
         //Function that outputs results to the output text area
         //From javascript template for project 0 on labouseur.com
         function outputMessage(message){
             document.getElementById("CompiledCodeOutput").value += message + "\n";
         }
-        
-        
-    /*    
-        function Parser(){
-            var tree = new Tree();
-            
-        }
-        */
-        
-  
+
 	</script>
   </HEAD>
   <BODY onload = "init();">
