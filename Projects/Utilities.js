@@ -1,21 +1,11 @@
-<!DOCTYPE html>
-<HTML>
-  <HEAD>
-    <TITLE>Michael Cummins Compiler Project</TITLE>
-    <LINK rel = "stylesheet" type="text/css" href="myStyle.css" />
-    <script type = "text/javascript" src = "Tree.js"></script>
-    <script type = "text/javascript" src = "Lexer.js"></script>
-    <script type = "text/javascript" src = "Utilities.js"></script>
-    <script type = "text/javascript" src = "Tokens.js"></script>
-      <script>
-                //Declare global variables
+        //Declare global variables
         var tokens = [];
         var numErrors = 0;
         var EOF; //End of program operator
         var currentProgram = 1;
         var completedPrograms = 0;
         var numWarnings = 0;
-          
+        
         function init(){
             //clear all values
             document.getElementById("CompiledCodeOutput").value = "";
@@ -48,24 +38,3 @@
         function outputMessage(message){
             document.getElementById("CompiledCodeOutput").value += message + "\n";
         }
-        
-        
-    /*    
-        function Parser(){
-            var tree = new Tree();
-            
-        }
-        */
-        
-  
-	</script>
-  </HEAD>
-  <BODY onload = "init();">
-    <h1>Cummins Compiler</h1>
-    <DIV class="center">
-    <TEXTAREA id="SourceCodeInput" rows="30" cols="50"></TEXTAREA>  
-    <TEXTAREA id="CompiledCodeOutput" rows="30" cols="50" readonly></TEXTAREA></br>
-	<INPUT type="button" id="CompileThis" value="Compile Code" onclick="clickTheButton();" />
-	</DIV>
-  </BODY>
-</HTML>
