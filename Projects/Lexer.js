@@ -32,13 +32,16 @@ function lex(userInput){
     //https://stackoverflow.com/questions/5989315/regex-for-match-replacing-javascript-comments-both-multiline-and-inline
     //Band aid fix while I figure out how to do comments
     //Total number of lines gotten by separting with commas
-    var numLines = userInput.toString().replace(/\/\*.+?\*\/|\/\/.*(?=[\n\r])/g, '').split("\n");
-
+    //var numLines = userInput.toString().replace(/\/\*.+?\*\/|\/\/.*(?=[\n\r])/g, '').split("\n");
+    var numLines = userInput.toString().split("\n");
     //Line variable is a section of numLines if numLines is printintboolean,intbool,print
     //line would be equal to either 'printintboolean' or 'intbool' or 'print depending on iteration
     var line;
     //Track what token we are currently handling
-    var currentToken;
+    var currentToken;  
+    var stillInString;
+    var stillInComment;
+    
     //Search through each line
     for(var currentLine = 0; currentLine < numLines.length; currentLine++){
 
@@ -56,14 +59,39 @@ function lex(userInput){
                 outputMessage("Lexing program " + currentProgram + "...");
                 completedPrograms++;
             }
-
+            
             /* Track what token we are currently operating on.
             Do this by looking at the current line that is being worked on
             and go to the index of the current column that is being worked on
             */
             //Looking at the nth spot in the line
             currentToken = line[currentColumn];
+            
+            
+            
+            if(currentToken == "/" && line[currentColumn + 1] == "*"){
+                if(stillInComment){
+                    stillInComment = false;
+                }else{
+                    stillInComment = true;
+                }
+                currentColumn++;
+                continue;
+            }
+            
+            if(currentToken == "*" && line[currentColumn + 1] == "/"){
+                if(stillInComment){
+                    stillInComment = false;
+                }else{
+                    stillInComment = true;
+                }
+                currentColumn++;
+                continue;
+            }
 
+            if(stillInComment){
+                continue;
+            }
             /*Used method shown in class on what not to do as a baseline
             Then improved it a bit by just looking for the rest of the 
             keyword after the start of a keyword was found
