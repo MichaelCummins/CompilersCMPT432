@@ -1,3 +1,11 @@
+//Declare global variables
+var tokens = [];
+var numErrors = 0;
+var EOF; //End of program operator
+var currentProgram = 1;
+var completedPrograms = 0;
+var numWarnings = 0;
+
 function lex(userInput){
 
     //First we look to see if the user submitted anything into the first textfield
