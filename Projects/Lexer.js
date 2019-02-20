@@ -55,6 +55,12 @@ function lex(userInput){
 
         //Track what line we are currently on
         line = numLines[currentLine];
+        
+        if(stillInString){
+            outputMessage("ERROR, unterminated string");
+            numErrors++;
+            stillInString = false;
+        }
 
         //Search through each column
         for(var currentColumn = 0; currentColumn < line.length; currentColumn++){
@@ -97,9 +103,29 @@ function lex(userInput){
                 continue;
             }
 
-            if(stillInComment){
+            if(currentToken == '"'){
+                addToken('"','"', currentLine, currentColumn);
+                if(stillInString){
+                    stillInString = false;
+                }else{
+                    stillInString = true;
+                }
                 continue;
             }
+            
+            if(stillInString){
+                if(" abcdefghijklmnopqrstuvwxyz".indexOf(currentToken) != -1){
+                    addToken("char", currentToken, currentLine, currentColumn);
+                    continue;
+                }else{
+                    outputMessage("ERROR, invalid character at " + currentLine + "," + currentColumn +
+                                 " expected an alphabetic character and received " + currentToken);
+                    numErrors++;
+                    continue;
+                }
+                
+            }
+            
             /*Used method shown in class on what not to do as a baseline
             Then improved it a bit by just looking for the rest of the 
             keyword after the start of a keyword was found
@@ -294,11 +320,6 @@ function lex(userInput){
                 }
             }
 
-            if(currentToken == '"'){
-                addToken('"','"', currentLine, currentColumn);
-                continue;
-            }
-
             /* If the current token is a 't' we know we
             are looking for either the keyword 'true'
             or the id 't'
@@ -419,5 +440,10 @@ function lex(userInput){
             //Continue lexing
             continue;
         }
+    }
+    if(stillInString){
+        outputMessage("ERROR, unterminated string");
+        numErrors++;
+        stillInString = false;
     }
 }
