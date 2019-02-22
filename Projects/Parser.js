@@ -1,3 +1,17 @@
+//Declare global variables
+var currentToken;
+var Tokens = [];
+var numParseErrors;
+var tree = new Tree();
+
+tree.addNode("Root","Branch");
+
+
+function parse(userInput){
+    tokens = userInput;
+    parseProgram();
+}
+
 function parseProgram(){
     parseBlock();
     matchAndConsume(EOF);
@@ -101,6 +115,6 @@ function parseIntOP(){
 }
     
     
-function matchAndConsume(){
+function matchAndConsume(Token){
     
 }
