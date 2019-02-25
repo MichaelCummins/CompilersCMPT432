@@ -119,7 +119,7 @@ function lex(userInput){
                     continue;
                 }else{
                     outputMessage("ERROR, invalid character at " + currentLine + "," + currentColumn +
-                                 " expected an alphabetic character and received " + currentToken);
+                                 " expected a lowercase alphabetic character and received " + currentToken);
                     numErrors++;
                     continue;
                 }
@@ -159,7 +159,7 @@ function lex(userInput){
             if(currentToken == "i"){
                 if(line[currentColumn + 1] == "n" && line[currentColumn + 2] == "t"){
                     //Add int token
-                    addToken("INT", "int", currentLine, currentColumn);
+                    addToken("int", "int", currentLine, currentColumn);
                     //Advance two columns to account for 'n' and 't'
                     currentColumn += 2;
                     //Continue lexing
@@ -293,7 +293,7 @@ function lex(userInput){
             arrray
             */
             if(currentToken >= "0" && currentToken <= "9"){
-                addToken("Digit", currentToken, currentLine, currentColumn);
+                addToken("digit", currentToken, currentLine, currentColumn);
                 //continue
                 continue;
             }

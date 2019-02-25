@@ -31,26 +31,40 @@ function parseStatementList(){
 }
 
 function parseStatement(){
+    
+    //Since a statement can be many things in our grammar check what it starts with
+    //If it starts with the token PRINT its a print statement
     if(currentToken == "print"){
+        //Go to print statement
         parsePrintStatement():
-    }else if(currentToken == "Assignment"){
+    //If its an id it goes to assignment 
+    }else if(currentToken == "id"){
+        //Go to assignment statement
         parseAssignmentStatement();
-    }else if(currentToken == "VarDecl"){
+    //If it starts with int string or boolean it is a variable declaration
+    }else if(currentToken == "int" || currentToken == "string" || currentToken == "boolean"){
+        //Go to variable declaration
         parseVarDecl();
+    //If it is while it is the start of a while statement
     }else if(currentToken == "while"){
+        //Go to while statement
         parseWhileStatement();
+    //If it is if it is the start of an if statement
     }else if(currentToken == "if"){
+        //Go to if statement
         parseIfStatement();
+    //If anything else, parse as a block statment
     }else{
+        //Go to block statement
         parseBlock();
     }
 }
 
 function parsePrintStatement(){
     matchAndConsume("print");
-    matchAndConsume("(");
+    matchAndConsume("L_Paren);
     parseExpr();
-    matchAndConsume(")");
+    matchAndConsume("R_Paren");
 }
 
 function parseAssignmentStatement(){
@@ -77,14 +91,16 @@ function parseIfStatement(){
 }
 
 function parseExpr(){
-    if(currentToken == digit???){
+    if(currentToken == "digit"){
        parseIntExpr();
     }else if(currentToken == '"'){
        parseStringExpr();
-    }else if(currentToken == "("){
+    }else if(currentToken == "R_Paren" || currentToken == "boolean"){
         parseBooleanExpr();
-    }else{
+    }else if(currentToken == "id"){
         parseId();
+    }else{
+        numParseErrors++;
     }
 }
 
@@ -101,11 +117,11 @@ function parseStringExpr(){
 }
 
 function parseBooleanExpr(){
-    matchAndConsume("(");
+    matchAndConsume("L_Paren");
     parseExpr();
     parseBoolOP();
     parseExpr();
-    matchAndConsume(")");
+    matchAndConsume("R_Paren");
 }
 
 function parseId(){
@@ -123,8 +139,12 @@ function parseCharlist(){
 }
 
 function parseType(){
-    if(matchAndConsume("int") || matchAndConsume("string") || matchAndConsume("boolean")){
-        return true;
+    if(currentToken == "int"){
+        matchAndConsume("int");
+    }else if(currentToken == "string"){
+        matchAndConsume("string");
+    }else{
+        matchAndConsume("boolean");
     }
 }
 
@@ -159,7 +179,7 @@ function parseBoolVal(){
 }
 
 function parseIntOP(){
-    matchAndConsume("+");
+    matchAndConsume("intop");
 }
     
     
