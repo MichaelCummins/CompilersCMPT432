@@ -85,7 +85,7 @@ function parseWhileStatement(){
 }
 
 function parseIfStatement(){
-    matchAndConsume("if");
+    matchAndConsume("iff");
     parseBooleanExpr;
     parseBlock;
 }
