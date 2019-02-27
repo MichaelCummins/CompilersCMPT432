@@ -13,25 +13,30 @@ function parseStart(userInput){
 }
 
 function parseProgram(){
+    addNode("program", "branch");
     parseBlock();
     matchAndConsume(EOF);
 }
 
 function parseBlock(){
+    addNode("block", "branch");
     matchAndConsume("{");
     parseStatementList();
     matchAndConsume("}");
+    endChildren();
 }
 
 function parseStatementList(){
+    addNode("Statement List", "branch");
     if(parseStatement() && parseStatementList()){
         return true;
     }
     return false;
+    endChildren();
 }
 
 function parseStatement(){
-    
+    addNode("Statement", "branch");
     //Since a statement can be many things in our grammar check what it starts with
     //If it starts with the token PRINT its a print statement
     if(currentToken == "print"){
@@ -58,39 +63,51 @@ function parseStatement(){
         //Go to block statement
         parseBlock();
     }
+    endChildren();
 }
 
 function parsePrintStatement(){
+    addNode("Print Statement", "branch");
     matchAndConsume("print");
-    matchAndConsume("L_Paren);
+    matchAndConsume("L_Paren");
     parseExpr();
     matchAndConsume("R_Paren");
+    endChildren();
 }
 
 function parseAssignmentStatement(){
+    addNode("Assignment Statement", "branch");
     parseId();
     matchAndConsume("=");
     parseExpr();
+    endChildren();
 }
 
 function parseVarDecl(){
+    addToken("Variable Declaration", "branch");
     parseType();
     parseId();
+    endChildren();
 }
 
 function parseWhileStatement(){
+    addNode("While Statement", "branch");
     matchAndConsume("while");
     parseBooleanExpr();
     parseBlock();
+    endChildren();
 }
 
 function parseIfStatement(){
-    matchAndConsume("iff");
+    addNode("If Statement", "branch");
+    matchAndConsume("if");
     parseBooleanExpr;
     parseBlock;
+    endChildren();
 }
 
 function parseExpr(){
+    addNode("Expression", "branch");
     if(currentToken == "digit"){
        parseIntExpr();
     }else if(currentToken == '"'){
@@ -102,43 +119,55 @@ function parseExpr(){
     }else{
         numParseErrors++;
     }
+    endChildren();
 }
 
 function parseIntExpr(){
+    addNode("Int expression", "branch");
     parseDigit();
     parseIntOP();
     parseExpr();
+    endChildren();
 }
 
 function parseStringExpr(){
+    addNode("String expression", "branch");
     matchAndConsume('"');
     parseCharlist();
     matchAndConsume('"');
+    endChildren();
 }
 
 function parseBooleanExpr(){
+    addNode("Boolean Expression", "branch");
     matchAndConsume("L_Paren");
     parseExpr();
     parseBoolOP();
     parseExpr();
     matchAndConsume("R_Paren");
+    endChildren();
 }
 
 function parseId(){
+    addNode("Id", "branch");
     parseChar();
+    endChildren();
 }
 
 function parseCharlist(){
+    addNode("Char list", "branch");
     if(parsechar() && parseCharList()){
         return true;
-    }else if(parseSpace() && parseCharlist{
+    }else if(parseSpace() && parseCharlist){
         return true;
     }else{
         
     }
+    endChildren();
 }
 
 function parseType(){
+    addNode("Type", "branch");
     if(currentToken == "int"){
         matchAndConsume("int");
     }else if(currentToken == "string"){
@@ -146,21 +175,29 @@ function parseType(){
     }else{
         matchAndConsume("boolean");
     }
+    endChildren();
 }
 
 function parseChar(){
+    addNode("Char", "branch");
     matchAndConsume();
+    endChildren();
 }
 
 function parseSpace(){
+    addNode("Space", "branch");
     matchAndConsume(" ");
+    endChildren();
 }
 
 function parseDigit(){
+    addNode("Digit", "branch");
     matchAndConsume();
+    endChildren();
 }
 
 function parseBoolOP(){
+    addNode("Boolean Operation", "branch");
     if(currentToken == "="){
         matchAndConsume("=");
         matchAndConsume("=");
@@ -168,18 +205,23 @@ function parseBoolOP(){
         matchAndConsume("!");
         matchAndConsume("=")
     }
+    endChildren();
 }
 
 function parseBoolVal(){
+    addNode("Boolean Value", "branch");
     if(currentToken == "false"){
         matchAndConsume("false");
     }else{
         matchAndConsume("true");
     }
+    endChildren();
 }
 
 function parseIntOP(){
+    addNode("Int Operation");
     matchAndConsume("intop");
+    endChildren();
 }
     
     
