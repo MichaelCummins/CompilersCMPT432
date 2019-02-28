@@ -2,12 +2,12 @@
 var tokens = [];
 var numErrors = 0;
 var EOF; //End of program operator
-var currentProgram = 1;
+var program = 1;
 var completedPrograms = 0;
 var numWarnings = 0;
 
 function lex(userInput){
-
+    tokens = [];
     //First we look to see if the user submitted anything into the first textfield
     if(userInput.trim(userInput) == ""){
         //if they did not we output that there isnt any source code
@@ -69,8 +69,8 @@ function lex(userInput){
             the amount of programs that have been completed this pass,
             output that a new program is being lexed now
             */
-            if(currentProgram != completedPrograms){
-                outputMessage("Lexing program " + currentProgram + "...");
+            if(program != completedPrograms){
+                outputMessage("Lexing program " + program + "...");
                 completedPrograms++;
             }
             
@@ -409,7 +409,7 @@ function lex(userInput){
                 //Add the '$' token to the array
                 addToken("EOF", "$", currentLine, currentColumn);
                 //Output errors and warnings
-      //          outputMessage("Lexing Program " + currentProgram + " done \n");
+      //          outputMessage("Lexing Program " + program + " done \n");
      //           outputMessage("Lexer found " + numErrors + " error(s) & " + numWarnings + " warning(s)");
                 //Reset errors and warnings
       //          numErrors = 0;
@@ -417,7 +417,7 @@ function lex(userInput){
                 //Output a new line for clarity
                 outputMessage("\n");
                 //Increment which program is currently being lexed
-       //         currentProgram++;
+                program++;
                 //Continue with the next program
                 continue;
             }
@@ -444,12 +444,10 @@ function lex(userInput){
     if(stillInString){
         outputMessage("ERROR, unterminated string");
         numErrors++;
-        stillInString = false;
     }
     
-    if(numErrors != 0){
+    if(numErrors){
         tokens = false;
-        outputMessage("Lexer Failed with " + numErrors + " errors and " + numWarnings + " warnings");
     }
     
     return tokens;

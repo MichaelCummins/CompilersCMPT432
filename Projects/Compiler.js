@@ -18,14 +18,14 @@ function compile(){
         }
         var input = programs[i];
         
-        if(lex(input)){
+        if(compilerLexer(input)){
             for(var j = 0; j < tokens.length; j++){
                 programTokens.push(tokens[j]);
             }
             outputMessage("Program " + currentProgram + " passed \n");
-     //       if(parse() == 0){
+         /*   if(parseStart(tokens) == 0){
                 
-    //        }
+            }*/
         }else{
             lexerFailed++;
         }
@@ -58,12 +58,12 @@ function getInput(){
 	//returns programs
 	return programs;
 }
-/*
+
 function compilerLexer(userInput){
     if(tokensLexed = lex(userInput)){
-        outputMessage("Lexer passed");
+        outputMessage("Lexer passed with 0 errors and " + numWarnings + " warnings");
     }else{
-        outputMessage("Lexer failed wsssith " + numErrors + " ersssrors");
+        outputMessage("Lexer failed with " + numErrors + " errors " + numWarnings + " warnings");
     }
     return tokensLexed;
-}*/
+}

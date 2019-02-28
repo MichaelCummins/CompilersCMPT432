@@ -4,7 +4,7 @@ function init(){
     tokens = [];
     numErrors = 0;
     EOF = "$";
-    currentProgram = 1;
+    program = 1;
     completedPrograms = 0;
     numWarnings = 0;
 }

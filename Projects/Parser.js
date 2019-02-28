@@ -2,9 +2,9 @@
 var currentToken;
 var Tokens = [];
 var numParseErrors;
-var Tree = new Tree();
+//var Tree = new Tree();
 
-Tree.addNode("Root","Branch");
+//Tree.addNode("Root","Branch");
 
 
 function parseStart(userInput){
