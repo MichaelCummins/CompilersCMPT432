@@ -16,7 +16,7 @@ function clickTheButton(){
     lex(getSourceCode());
 }
 
-function trim(str){
+function trims(str){
     return str.replace(/\s/g, "");
 }
 

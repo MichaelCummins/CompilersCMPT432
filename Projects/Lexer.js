@@ -57,7 +57,7 @@ function lex(userInput){
         line = numLines[currentLine];
         
         if(stillInString){
-            outputMessage("ERROR, unterminated string");
+            outputMessage("ERROR, unterminated string at " + currentLine);
             numErrors++;
             stillInString = false;
         }
@@ -409,15 +409,15 @@ function lex(userInput){
                 //Add the '$' token to the array
                 addToken("EOF", "$", currentLine, currentColumn);
                 //Output errors and warnings
-                outputMessage("Lexing Program " + currentProgram + " done \n");
-                outputMessage("Lexer found " + numErrors + " error(s) & " + numWarnings + " warning(s)");
+      //          outputMessage("Lexing Program " + currentProgram + " done \n");
+     //           outputMessage("Lexer found " + numErrors + " error(s) & " + numWarnings + " warning(s)");
                 //Reset errors and warnings
-                numErrors = 0;
-                numWarnings = 0;
+      //          numErrors = 0;
+     //           numWarnings = 0;
                 //Output a new line for clarity
                 outputMessage("\n");
                 //Increment which program is currently being lexed
-                currentProgram++;
+       //         currentProgram++;
                 //Continue with the next program
                 continue;
             }
@@ -446,4 +446,11 @@ function lex(userInput){
         numErrors++;
         stillInString = false;
     }
+    
+    if(numErrors != 0){
+        tokens = false;
+        outputMessage("Lexer Failed with " + numErrors + " errors and " + numWarnings + " warnings");
+    }
+    
+    return tokens;
 }

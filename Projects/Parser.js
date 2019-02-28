@@ -2,9 +2,9 @@
 var currentToken;
 var Tokens = [];
 var numParseErrors;
-var tree = new Tree();
+var Tree = new Tree();
 
-tree.addNode("Root","Branch");
+Tree.addNode("Root","Branch");
 
 
 function parseStart(userInput){
@@ -13,8 +13,16 @@ function parseStart(userInput){
 }
 
 function parseProgram(){
-    addNode("program", "branch");
-    parseBlock();
+    if(programLevel != programCounter){
+        outputMessage("Parsing Program " + program);
+        programCounter++;
+    }
+    if(currentToken == "L_Brace"){
+        addNode("program", "branch");
+        parseBlock();    
+    }else{
+        numParseErrors++;
+    }
     matchAndConsume(EOF);
 }
 
@@ -41,7 +49,7 @@ function parseStatement(){
     //If it starts with the token PRINT its a print statement
     if(currentToken == "print"){
         //Go to print statement
-        parsePrintStatement():
+        parsePrintStatement();
     //If its an id it goes to assignment 
     }else if(currentToken == "id"){
         //Go to assignment statement
