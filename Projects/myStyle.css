@@ -18,9 +18,9 @@ Textarea {
 	margin-bottom: 50px;
 	background-color: pink;
 	border: solid;
-    font-size: 19px;
+    font-size: 18px;
     width: 600px;
-    height: 500px;
+    height: 650px;
     border-color: black;
     overflow-y: scroll;
 }
@@ -28,12 +28,15 @@ Textarea {
 .button {
 	text-align: center;
 	padding: 15px 32px;
-	
+	color: black;
+    border: solid;
+    background-color: pink;
+    font-size: 18px;
 }
 
 .center {
 	text-align: center;
-	padding-top: 200px;
+	padding-top: 50px;
 }
 
 h1 {
@@ -47,3 +50,4 @@ h1 {
 .warning{
     color: blue;
 }
+

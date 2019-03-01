@@ -10,6 +10,7 @@ function lex(userInput){
     tokens = [];
     numErrors = 0;
     numWarnings = 0;
+    
     //First we look to see if the user submitted anything into the first textfield
     if(userInput.trim(userInput) == ""){
         //if they did not we output that there isnt any source code

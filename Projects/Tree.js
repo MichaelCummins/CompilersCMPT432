@@ -5,7 +5,7 @@
 // work by Michael Ardizzone and Tim Smith.
 //-----------------------------------------
 
-function Tree() {
+function Tree(){
     // ----------
     // Attributes
     // ----------
@@ -30,7 +30,8 @@ function Tree() {
         if ( (this.root == null) || (!this.root) ){
             // We are the root node.
             this.root = node;
-        }else{
+        }
+        else{
             // We are the children.
             // Make our parent the CURrent node...
             node.parent = this.cur;
@@ -58,7 +59,7 @@ function Tree() {
     };
 
     // Return a string representation of the tree.
-    this.toString = function() {
+    this.toString = function(){
         // Initialize the result string.
         var traversalResult = "";
 
@@ -71,12 +72,14 @@ function Tree() {
             }
 
             // If there are no children (i.e., leaf nodes)...
-            if (!node.children || node.children.length === 0){
+            if (!node.children || node.children.length === 0)
+            {
                 // ... note the leaf node.
                 traversalResult += "[" + node.name + "]";
                 traversalResult += "\n";
             }
-            else{
+            else
+            {
                 // There are children, so note these interior/branch nodes and ...
                 traversalResult += "<" + node.name + "> \n";
                 // .. recursively expand them.

@@ -4,11 +4,11 @@
     <TITLE>Michael Cummins Compiler Project</TITLE>
     <LINK rel="stylesheet" type="text/css" href="myStyle.css"/>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type = "text/javascript" src = "tree.js"></script>
     <script type = "text/javascript" src = "Lexer.js"></script>
     <script type = "text/javascript" src = "Tokens.js"></script>
     <script type = "text/javascript" src = "Utilities.js"></script>
     <script type = "text/javascript" src = "Parser.js"></script>
-    <script type = "text/javascript" src = "Tree.js"></script>
     <script type = "text/javascript" src = "Compiler.js"></script>
   </HEAD>
   <BODY onload = "init();">
@@ -16,7 +16,7 @@
     <DIV class="center">
     <TEXTAREA id="SourceCodeInput" rows="30" cols="50"></TEXTAREA>
     <TEXTAREA id="CompiledCodeOutput" rows="30" cols="50" readonly></TEXTAREA></br>
-	<INPUT type="button" id="CompileThis" value="Compile Code" onclick = "compile()" />
+	<INPUT class = "button" type="button" id="CompileThis" value="Compile Code" onclick = "compile()"/>
 	</DIV>
   </BODY>
 </HTML>

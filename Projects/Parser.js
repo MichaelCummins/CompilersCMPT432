@@ -1,11 +1,17 @@
 //Declare global variables
 var currentToken;
-var Tokens = [];
-var numParseErrors;
-//var Tree = new Tree();
+var tokens = [];
+var numParseErrors = 0;
+var tree = new Tree();
+tree.addNode("Root", "Branch");
 
-//Tree.addNode("Root","Branch");
-
+function initializeParse(){
+    currentToken;
+    tokens = [];
+    numParseErrors = 0;
+    tree = new Tree();
+    tree.addNode("Root", "Branch");
+}
 
 function parseStart(userInput){
     tokens = userInput;
