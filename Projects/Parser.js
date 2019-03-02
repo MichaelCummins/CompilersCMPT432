@@ -33,6 +33,7 @@ function parseProgram(){
 }
 
 function parseBlock(){
+    outputMessage("parseBlock()");
     addNode("block", "branch");
     matchAndConsume("{");
     parseStatementList();
@@ -41,6 +42,7 @@ function parseBlock(){
 }
 
 function parseStatementList(){
+    outputMessage("parseStatementList()");
     addNode("Statement List", "branch");
     if(parseStatement() && parseStatementList()){
         return true;
@@ -50,6 +52,7 @@ function parseStatementList(){
 }
 
 function parseStatement(){
+    outputMessage("parseStatement()");
     addNode("Statement", "branch");
     //Since a statement can be many things in our grammar check what it starts with
     //If it starts with the token PRINT its a print statement
@@ -81,6 +84,7 @@ function parseStatement(){
 }
 
 function parsePrintStatement(){
+    outputMessage("parsePrintStatement()");
     addNode("Print Statement", "branch");
     matchAndConsume("print");
     matchAndConsume("L_Paren");
@@ -90,6 +94,7 @@ function parsePrintStatement(){
 }
 
 function parseAssignmentStatement(){
+    outputMessage("parseAssignementStatement()");
     addNode("Assignment Statement", "branch");
     parseId();
     matchAndConsume("=");
@@ -98,6 +103,7 @@ function parseAssignmentStatement(){
 }
 
 function parseVarDecl(){
+    outputMessage("parseVarDecl()");
     addToken("Variable Declaration", "branch");
     parseType();
     parseId();
@@ -105,6 +111,7 @@ function parseVarDecl(){
 }
 
 function parseWhileStatement(){
+    outputMessage("parseWhileStatement()");
     addNode("While Statement", "branch");
     matchAndConsume("while");
     parseBooleanExpr();
@@ -113,6 +120,7 @@ function parseWhileStatement(){
 }
 
 function parseIfStatement(){
+    outputMessage("parseIfStatement");
     addNode("If Statement", "branch");
     matchAndConsume("if");
     parseBooleanExpr;
@@ -121,6 +129,7 @@ function parseIfStatement(){
 }
 
 function parseExpr(){
+    outputMessage("parseExpr")
     addNode("Expression", "branch");
     if(currentToken == "digit"){
        parseIntExpr();
@@ -137,6 +146,7 @@ function parseExpr(){
 }
 
 function parseIntExpr(){
+    outputMessage("parseIntExpr()");
     addNode("Int expression", "branch");
     parseDigit();
     parseIntOP();
@@ -145,6 +155,7 @@ function parseIntExpr(){
 }
 
 function parseStringExpr(){
+    outputMessage("parseStringExpr()");
     addNode("String expression", "branch");
     matchAndConsume('"');
     parseCharlist();
@@ -153,6 +164,7 @@ function parseStringExpr(){
 }
 
 function parseBooleanExpr(){
+    outputMessage("parseBooleanExpr()");
     addNode("Boolean Expression", "branch");
     matchAndConsume("L_Paren");
     parseExpr();
@@ -163,12 +175,14 @@ function parseBooleanExpr(){
 }
 
 function parseId(){
+    outputMessage("parseId()");
     addNode("Id", "branch");
     parseChar();
     endChildren();
 }
 
 function parseCharlist(){
+    outputMessage("parseCharList()");
     addNode("Char list", "branch");
     if(parsechar() && parseCharList()){
         return true;
@@ -181,6 +195,7 @@ function parseCharlist(){
 }
 
 function parseType(){
+    outputMessage("parseType");
     addNode("Type", "branch");
     if(currentToken == "int"){
         matchAndConsume("int");
@@ -211,6 +226,7 @@ function parseDigit(){
 }
 
 function parseBoolOP(){
+    outputMessage("parseBoolOP()");
     addNode("Boolean Operation", "branch");
     if(currentToken == "="){
         matchAndConsume("=");
@@ -223,6 +239,7 @@ function parseBoolOP(){
 }
 
 function parseBoolVal(){
+    outputMessage("parseBoolVal()");
     addNode("Boolean Value", "branch");
     if(currentToken == "false"){
         matchAndConsume("false");
@@ -233,6 +250,7 @@ function parseBoolVal(){
 }
 
 function parseIntOP(){
+    outputMessage("parseIntOP()");
     addNode("Int Operation");
     matchAndConsume("intop");
     endChildren();
