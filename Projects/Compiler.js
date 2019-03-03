@@ -23,9 +23,8 @@ function compile(){
                 programTokens.push(tokens[j]);
             }
             outputMessage("Program " + currentProgram + " passed \n");
-         /*   if(parseStart(tokens) == 0){
-                
-            }*/
+            //Parse each program if lex was successful
+            compilerParser();
         }else{
             lexerFailed++;
         }
@@ -66,4 +65,8 @@ function compilerLexer(userInput){
         outputMessage("Lexer failed with " + numErrors + " errors " + numWarnings + " warnings");
     }
     return tokensLexed;
+}
+
+function compilerParser(){
+    if()
 }

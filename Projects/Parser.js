@@ -44,11 +44,23 @@ function parseBlock(){
 function parseStatementList(){
     outputMessage("parseStatementList()");
     addNode("Statement List", "branch");
-    if(parseStatement() && parseStatementList()){
-        return true;
+    if(currentToken.kind == "R_Brace"){
+        tree.endChildren();
+        parseBlock();
+    }else if(currentToken.kind == "print" || currentToken.kind == "Id"
+        || currentToken.kind == "int" || currentToken.kind == "string"
+        || currentToken.kind == "boolean" || currentToken.kind == "while"
+        || currentToken.kind == "if" || currentToken.kind == "L_Brace"){
+        parseStatement();
+        while(currentToken.kind != "EOP"){
+            //getToken();
+            parseStatementList();
+        }
+    }else{
+        numParseErrors++;
     }
-    return false;
-    endChildren();
+    tree.endChildren();
+    return;
 }
 
 function parseStatement(){
