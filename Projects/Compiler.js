@@ -68,5 +68,7 @@ function compilerLexer(userInput){
 }
 
 function compilerParser(){
-    if()
+    if(!parseStart(tokens)){
+        outputMessage("Parser successful");
+    }
 }

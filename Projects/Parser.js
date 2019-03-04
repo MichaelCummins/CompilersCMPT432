@@ -2,20 +2,30 @@
 var currentToken;
 var tokens = [];
 var numParseErrors = 0;
+var programLevel = 0;
+var programCounter = 0;
 var tree = new Tree();
 tree.addNode("Root", "Branch");
 
-function initializeParse(){
+function initializeParser(){
     currentToken;
     tokens = [];
     numParseErrors = 0;
+    var programLevel = 0;
+    var programCounter = 0;
     tree = new Tree();
     tree.addNode("Root", "Branch");
 }
 
 function parseStart(userInput){
+    initializeParser();
     tokens = userInput;
     parseProgram();
+    
+    if(numParseErrors != 0){
+        outputMessage("Parser failed with " + numParseErrors + " errors");
+    }
+    return numParseErrors;
 }
 
 function parseProgram(){
