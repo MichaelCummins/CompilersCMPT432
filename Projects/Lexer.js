@@ -265,14 +265,14 @@ function lex(userInput){
 
             //If the current token is a bracket, add it as an id
             if(currentToken == "{"){
-                addToken("L_Bracket", "{", currentLine, currentColumn);
+                addToken("L_Brace", "{", currentLine, currentColumn);
                 //Continue lexing
                 continue;
             }
 
             //if the current token is a bracket, add it as an id
             if(currentToken == "}"){
-                addToken("R_Bracket", "}", currentLine, currentColumn);
+                addToken("R_Brace", "}", currentLine, currentColumn);
                 //Continue
                 continue;
             }

@@ -5,7 +5,7 @@ var numParseErrors = 0;
 var programLevel = 0;
 var programCounter = 0;
 var tree = new Tree();
-tree.addNode("Root", "Branch");
+tree.addNode("Root", "branch");
 
 function initializeParser(){
     currentToken;
@@ -14,7 +14,16 @@ function initializeParser(){
     var programLevel = 0;
     var programCounter = 0;
     tree = new Tree();
-    tree.addNode("Root", "Branch");
+    tree.addNode("Root", "branch");
+}
+
+function getNextToken(){
+    currentToken = tokens[0];
+    tokens.shift();
+}
+
+function lookAhead(){
+    return tokens[0];
 }
 
 function parseStart(userInput){
@@ -29,22 +38,31 @@ function parseStart(userInput){
 }
 
 function parseProgram(){
+    if(tokens.length == 0){
+        outputMessage("Parsing over");
+        return;
+    }
+    outputMessage(tokens);
+    getNextToken();
+    outputMessage(tokens);
+    outputMessage("parseProgram()");
     if(programLevel != programCounter){
         outputMessage("Parsing Program " + program);
         programCounter++;
-    }
-    if(currentToken == "L_Brace"){
-        addNode("program", "branch");
-        parseBlock();    
+    }    
+    if(currentToken.kind == "L_Brace"){
+        tree.addNode("Program", "branch");
+        //parseBlock();    
     }else{
         numParseErrors++;
     }
-    matchAndConsume(EOF);
+    tree.endChildren();
+    return;
 }
 
 function parseBlock(){
     outputMessage("parseBlock()");
-    addNode("block", "branch");
+    tree.addNode("block", "branch");
     matchAndConsume("{");
     parseStatementList();
     matchAndConsume("}");
@@ -53,7 +71,7 @@ function parseBlock(){
 
 function parseStatementList(){
     outputMessage("parseStatementList()");
-    addNode("Statement List", "branch");
+    tree.addNode("Statement List", "branch");
     if(currentToken.kind == "R_Brace"){
         tree.endChildren();
         parseBlock();
@@ -75,7 +93,7 @@ function parseStatementList(){
 
 function parseStatement(){
     outputMessage("parseStatement()");
-    addNode("Statement", "branch");
+    tree.addNode("Statement", "branch");
     //Since a statement can be many things in our grammar check what it starts with
     //If it starts with the token PRINT its a print statement
     if(currentToken == "print"){
@@ -107,7 +125,7 @@ function parseStatement(){
 
 function parsePrintStatement(){
     outputMessage("parsePrintStatement()");
-    addNode("Print Statement", "branch");
+    tree.addNode("Print Statement", "branch");
     matchAndConsume("print");
     matchAndConsume("L_Paren");
     parseExpr();
@@ -117,7 +135,7 @@ function parsePrintStatement(){
 
 function parseAssignmentStatement(){
     outputMessage("parseAssignementStatement()");
-    addNode("Assignment Statement", "branch");
+    tree.addNode("Assignment Statement", "branch");
     parseId();
     matchAndConsume("=");
     parseExpr();
@@ -134,7 +152,7 @@ function parseVarDecl(){
 
 function parseWhileStatement(){
     outputMessage("parseWhileStatement()");
-    addNode("While Statement", "branch");
+    tree.addNode("While Statement", "branch");
     matchAndConsume("while");
     parseBooleanExpr();
     parseBlock();
@@ -143,7 +161,7 @@ function parseWhileStatement(){
 
 function parseIfStatement(){
     outputMessage("parseIfStatement");
-    addNode("If Statement", "branch");
+    tree.addNode("If Statement", "branch");
     matchAndConsume("if");
     parseBooleanExpr;
     parseBlock;
@@ -152,7 +170,7 @@ function parseIfStatement(){
 
 function parseExpr(){
     outputMessage("parseExpr")
-    addNode("Expression", "branch");
+    tree.addNode("Expression", "branch");
     if(currentToken == "digit"){
        parseIntExpr();
     }else if(currentToken == '"'){
@@ -169,7 +187,7 @@ function parseExpr(){
 
 function parseIntExpr(){
     outputMessage("parseIntExpr()");
-    addNode("Int expression", "branch");
+    tree.addNode("Int expression", "branch");
     parseDigit();
     parseIntOP();
     parseExpr();
@@ -178,7 +196,7 @@ function parseIntExpr(){
 
 function parseStringExpr(){
     outputMessage("parseStringExpr()");
-    addNode("String expression", "branch");
+    tree.addNode("String expression", "branch");
     matchAndConsume('"');
     parseCharlist();
     matchAndConsume('"');
@@ -187,7 +205,7 @@ function parseStringExpr(){
 
 function parseBooleanExpr(){
     outputMessage("parseBooleanExpr()");
-    addNode("Boolean Expression", "branch");
+    tree.addNode("Boolean Expression", "branch");
     matchAndConsume("L_Paren");
     parseExpr();
     parseBoolOP();
@@ -198,14 +216,14 @@ function parseBooleanExpr(){
 
 function parseId(){
     outputMessage("parseId()");
-    addNode("Id", "branch");
+    tree.addNode("Id", "branch");
     parseChar();
     endChildren();
 }
 
 function parseCharlist(){
     outputMessage("parseCharList()");
-    addNode("Char list", "branch");
+    tree.addNode("Char list", "branch");
     if(parsechar() && parseCharList()){
         return true;
     }else if(parseSpace() && parseCharlist){
@@ -218,7 +236,7 @@ function parseCharlist(){
 
 function parseType(){
     outputMessage("parseType");
-    addNode("Type", "branch");
+    tree.addNode("Type", "branch");
     if(currentToken == "int"){
         matchAndConsume("int");
     }else if(currentToken == "string"){
@@ -230,26 +248,26 @@ function parseType(){
 }
 
 function parseChar(){
-    addNode("Char", "branch");
+    tree.addNode("Char", "branch");
     matchAndConsume();
     endChildren();
 }
 
 function parseSpace(){
-    addNode("Space", "branch");
+    tree.addNode("Space", "branch");
     matchAndConsume(" ");
     endChildren();
 }
 
 function parseDigit(){
-    addNode("Digit", "branch");
+    tree.addNode("Digit", "branch");
     matchAndConsume();
     endChildren();
 }
 
 function parseBoolOP(){
     outputMessage("parseBoolOP()");
-    addNode("Boolean Operation", "branch");
+    tree.addNode("Boolean Operation", "branch");
     if(currentToken == "="){
         matchAndConsume("=");
         matchAndConsume("=");
@@ -262,7 +280,7 @@ function parseBoolOP(){
 
 function parseBoolVal(){
     outputMessage("parseBoolVal()");
-    addNode("Boolean Value", "branch");
+    tree.addNode("Boolean Value", "branch");
     if(currentToken == "false"){
         matchAndConsume("false");
     }else{
@@ -273,7 +291,7 @@ function parseBoolVal(){
 
 function parseIntOP(){
     outputMessage("parseIntOP()");
-    addNode("Int Operation");
+    tree.addNode("Int Operation");
     matchAndConsume("intop");
     endChildren();
 }
