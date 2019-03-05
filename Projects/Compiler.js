@@ -6,7 +6,7 @@ var parserFailed = 0;
 
 function compile(){
     init();
-    var programs = getInput();
+    var programs = compileInput();
     programTokens = [];
     lexerFailed = 0;
     parserFailed =  0;
@@ -31,11 +31,12 @@ function compile(){
         currentProgram++;
     }
 }
-function getInput(){
+
+function compileInput() {
 	//Gets the input
 	var input = getSourceCode();
 	//checks if theres a $ at the end
-	if (input.trim(input).slice(-1) != EOF){
+	if (input.trim().slice(-1) != "$") {
 		//if so
 		var doNotAddToLast = true;
 	}

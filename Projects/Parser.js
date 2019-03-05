@@ -3,16 +3,18 @@ var currentToken;
 var tokens = [];
 var numParseErrors = 0;
 var programLevel = 0;
-var programCounter = 0;
+var programCounter = 1;
+var braceCounter = 0;
 var tree = new Tree();
 tree.addNode("Root", "branch");
 
 function initializeParser(){
-    currentToken;
+    currentToken
     tokens = [];
     numParseErrors = 0;
-    var programLevel = 0;
-    var programCounter = 0;
+    programLevel = 0;
+    programCounter = 1;
+    braceCounter = 0;
     tree = new Tree();
     tree.addNode("Root", "branch");
 }
@@ -42,17 +44,15 @@ function parseProgram(){
         outputMessage("Parsing over");
         return;
     }
-    outputMessage(tokens);
     getNextToken();
-    outputMessage(tokens);
-    outputMessage("parseProgram()");
     if(programLevel != programCounter){
-        outputMessage("Parsing Program " + program);
+        outputMessage("Parsing Program " + programCounter);
         programCounter++;
     }    
+    outputMessage("parseProgram()");
     if(currentToken.kind == "L_Brace"){
         tree.addNode("Program", "branch");
-        //parseBlock();    
+        parseBlock();    
     }else{
         numParseErrors++;
     }
@@ -62,16 +62,33 @@ function parseProgram(){
 
 function parseBlock(){
     outputMessage("parseBlock()");
-    tree.addNode("block", "branch");
-    matchAndConsume("{");
-    parseStatementList();
-    matchAndConsume("}");
-    endChildren();
+    if(currentToken.kind == "L_Brace"){
+        tree.addNode("block", "branch");
+        braceCounter++;        
+        getNextToken();
+        parseStatementList();
+    }else if(currentToken.kind == "R_Brace"){
+        braceCounter--;        
+        getNextToken();
+        tree.endChildren();
+        if(currentToken.kind == "EOF" && braceCounter == 0){
+            programLevel++;
+            tree.endChildren();
+            parseProgram();
+        }else{
+            tree.endChildren();
+            parseStatementList();
+        }
+        return;
+    }else{
+        numParseErrors++;
+    }
+    return;
 }
 
 function parseStatementList(){
-    outputMessage("parseStatementList()");
     tree.addNode("Statement List", "branch");
+    outputMessage("parseStatementList()");
     if(currentToken.kind == "R_Brace"){
         tree.endChildren();
         parseBlock();
@@ -81,7 +98,7 @@ function parseStatementList(){
         || currentToken.kind == "if" || currentToken.kind == "L_Brace"){
         parseStatement();
         while(currentToken.kind != "EOP"){
-            //getToken();
+            getNextToken();
             parseStatementList();
         }
     }else{
@@ -96,150 +113,211 @@ function parseStatement(){
     tree.addNode("Statement", "branch");
     //Since a statement can be many things in our grammar check what it starts with
     //If it starts with the token PRINT its a print statement
-    if(currentToken == "print"){
+    if(currentToken.kind == "print"){
         //Go to print statement
         parsePrintStatement();
     //If its an id it goes to assignment 
-    }else if(currentToken == "id"){
+    }else if(currentToken.kind == "id"){
         //Go to assignment statement
         parseAssignmentStatement();
     //If it starts with int string or boolean it is a variable declaration
-    }else if(currentToken == "int" || currentToken == "string" || currentToken == "boolean"){
+    }else if(currentToken.kind == "int" || currentToken.kind == "string" || currentToken.kind == "boolean"){
         //Go to variable declaration
         parseVarDecl();
     //If it is while it is the start of a while statement
-    }else if(currentToken == "while"){
+    }else if(currentToken.kind == "while"){
         //Go to while statement
         parseWhileStatement();
     //If it is if it is the start of an if statement
-    }else if(currentToken == "if"){
+    }else if(currentToken.kind == "if"){
         //Go to if statement
         parseIfStatement();
     //If anything else, parse as a block statment
-    }else{
+    }else if(currentToken.kind == "L_Brace" && braceCounter != 0 || currentToken.kind == "R_Brace"){
+        tree.endChildren();
         //Go to block statement
         parseBlock();
+    }else if(currentToken.kind == "L_Brace" && braceCounter == 0){
+        numParseErrors++;
+    }else{
+        numParseErrors++;
     }
-    endChildren();
+    tree.endChildren();
+    tree.endChildren();
+    return;
 }
 
 function parsePrintStatement(){
     outputMessage("parsePrintStatement()");
     tree.addNode("Print Statement", "branch");
-    matchAndConsume("print");
-    matchAndConsume("L_Paren");
-    parseExpr();
-    matchAndConsume("R_Paren");
-    endChildren();
+    getNextToken();
+    if(currentToken.kind == "L_Paren"){
+        parseExpr();
+    }else{
+        numParseErrors++;
+    }
+    tree.endChildren();
+    return;
 }
 
 function parseAssignmentStatement(){
     outputMessage("parseAssignementStatement()");
     tree.addNode("Assignment Statement", "branch");
-    parseId();
-    matchAndConsume("=");
-    parseExpr();
-    endChildren();
+    if(currentToken.kind == "id"){
+        parseId();
+        getNextToken();
+        if(currentToken.kind == "OP_Assignment"){
+            getNextToken();
+            parseExpr();
+        }else{
+            numParseErrors++;
+        }
+    }else{
+        numParseErrors++;
+    }
+    tree.endChildren();
+    return;
 }
 
 function parseVarDecl(){
     outputMessage("parseVarDecl()");
-    addToken("Variable Declaration", "branch");
-    parseType();
-    parseId();
-    endChildren();
+    tree.addToken("Variable Declaration", "branch");
+    tree.addNode(currentToken.value, "leaf");
+    getNextToken();
+    if(currentToken.kind == "id"){
+        tree.addNode(currentToken.value, "leaf");
+    }else{
+        numParseErrors++;
+    }
+    tree.endChildren();
+    return;
 }
 
 function parseWhileStatement(){
     outputMessage("parseWhileStatement()");
     tree.addNode("While Statement", "branch");
-    matchAndConsume("while");
-    parseBooleanExpr();
-    parseBlock();
-    endChildren();
+    tree.addNode(currentToken.value, "leaf");
+    getNextToken();
+    if(currentToken.kind == "L_Paren"){
+        parseBooleanExpr();
+        getNextToken();
+        parseBlock();
+    }else{
+        numParseErrors++;
+    }
+    tree.endChildren();
+    return;
 }
 
 function parseIfStatement(){
     outputMessage("parseIfStatement");
     tree.addNode("If Statement", "branch");
-    matchAndConsume("if");
-    parseBooleanExpr;
-    parseBlock;
-    endChildren();
+    tree.addNode(currentToken.value, "leaf");
+    getNextToken();
+    if(currentToken.kind == "L_Paren"){
+        parseBooleanExpr();
+        getNextToken();
+        parseBlock();
+    }else{
+        numParseErrors++;
+    }
+    tree.endChildren();
+    return;
 }
 
 function parseExpr(){
     outputMessage("parseExpr")
     tree.addNode("Expression", "branch");
-    if(currentToken == "digit"){
+    if(currentToken.kind == "digit"){
        parseIntExpr();
-    }else if(currentToken == '"'){
+    }else if(currentToken.kind == '"'){
        parseStringExpr();
-    }else if(currentToken == "R_Paren" || currentToken == "boolean"){
+    }else if(currentToken.kind == "L_Paren" || currentToken.kind == "boolean"){
         parseBooleanExpr();
-    }else if(currentToken == "id"){
+    }else if(currentToken.kind == "id"){
         parseId();
     }else{
         numParseErrors++;
     }
-    endChildren();
+    tree.endChildren();
+    return;
 }
 
 function parseIntExpr(){
     outputMessage("parseIntExpr()");
     tree.addNode("Int expression", "branch");
-    parseDigit();
-    parseIntOP();
-    parseExpr();
-    endChildren();
+    tree.addNode(currentToken.value, "leaf");
+    if(lookAhead().kind == "intop"){
+        getNextToken();
+        tree.addNode(currentToken.value, "leaf");
+        getNextToken();
+        parseExpr();
+        tree.endChildren();
+        return;
+    }else{
+        tree.endChildren();
+        return;
+    }
 }
 
 function parseStringExpr(){
     outputMessage("parseStringExpr()");
     tree.addNode("String expression", "branch");
-    matchAndConsume('"');
+    tree.addNode(currentToken.value, "leaf");
+    getNextToken();
+    tree.addNode("Char List", "branch");
     parseCharlist();
-    matchAndConsume('"');
-    endChildren();
+    if(currentToken.kind == '"'){
+        tree.endChildren();
+        tree.addNode(currentToken.value, "leaf");
+    }else{
+        numParseErrors++;
+    }
+    tree.endChildren();
+    return;
 }
 
 function parseBooleanExpr(){
     outputMessage("parseBooleanExpr()");
     tree.addNode("Boolean Expression", "branch");
-    matchAndConsume("L_Paren");
-    parseExpr();
-    parseBoolOP();
-    parseExpr();
-    matchAndConsume("R_Paren");
-    endChildren();
+    if(currentToken.kind == "L_Paren"){
+        tree.addNode(currentToken.kind, "leaf");
+    }else{
+        tree.addNode(currentToken.kind, "leaf");
+    }
+    tree.endChildren();
+    return;
 }
 
 function parseId(){
     outputMessage("parseId()");
     tree.addNode("Id", "branch");
-    parseChar();
-    endChildren();
+    tree.addNode(currentToken.value, "leaf");
+    tree.endChildren();
+    return;
 }
 
 function parseCharlist(){
     outputMessage("parseCharList()");
     tree.addNode("Char list", "branch");
-    if(parsechar() && parseCharList()){
-        return true;
-    }else if(parseSpace() && parseCharlist){
-        return true;
+    if(currentToken.kind == "char"){
+        tree.addNode(currentToken.value, "leaf");
+        getNextToken();
+        parseCharlist();
+    }else if(currentToken.kind == '"'){
+        return;
     }else{
-        
+        numParseErrors++;
     }
-    endChildren();
+    return;
 }
 
 function parseType(){
     outputMessage("parseType");
     tree.addNode("Type", "branch");
-    if(currentToken == "int"){
+    if(currentToken.kind == "int"){
         matchAndConsume("int");
-    }else if(currentToken == "string"){
+    }else if(currentToken.kind == "string"){
         matchAndConsume("string");
     }else{
         matchAndConsume("boolean");
@@ -268,7 +346,7 @@ function parseDigit(){
 function parseBoolOP(){
     outputMessage("parseBoolOP()");
     tree.addNode("Boolean Operation", "branch");
-    if(currentToken == "="){
+    if(currentToken.kind == "="){
         matchAndConsume("=");
         matchAndConsume("=");
     }else{
@@ -281,7 +359,7 @@ function parseBoolOP(){
 function parseBoolVal(){
     outputMessage("parseBoolVal()");
     tree.addNode("Boolean Value", "branch");
-    if(currentToken == "false"){
+    if(currentToken.kind == "false"){
         matchAndConsume("false");
     }else{
         matchAndConsume("true");
@@ -299,7 +377,7 @@ function parseIntOP(){
     
 function matchAndConsume(expectedToken){
     returnValue = false;
-    if(currentToken == expectedToken){
+    if(currentToken.kind == expectedToken){
         returnValue = true;
     }
     return returnValue;

@@ -10,7 +10,9 @@ function lex(userInput){
     tokens = [];
     numErrors = 0;
     numWarnings = 0;
-    
+    var currentToken;   //Track what token we are currently handling
+    var stillInString;
+    var stillInComment;
     //First we look to see if the user submitted anything into the first textfield
     if(userInput.trim(userInput) == ""){
         //if they did not we output that there isnt any source code
@@ -48,10 +50,6 @@ function lex(userInput){
     //Line variable is a section of numLines if numLines is printintboolean,intbool,print
     //line would be equal to either 'printintboolean' or 'intbool' or 'print depending on iteration
     var line;
-    //Track what token we are currently handling
-    var currentToken;  
-    var stillInString;
-    var stillInComment;
     
     //Search through each line
     for(var currentLine = 0; currentLine < numLines.length; currentLine++){
@@ -86,7 +84,7 @@ function lex(userInput){
             
             
             
-            if(currentToken == "/" && line[currentColumn + 1] == "*"){
+            if(currentToken == "/" && line[currentColumn + 1] == "*" && !stillInString){
                 if(stillInComment){
                     stillInComment = false;
                 }else{
@@ -96,13 +94,17 @@ function lex(userInput){
                 continue;
             }
             
-            if(currentToken == "*" && line[currentColumn + 1] == "/"){
+            if(currentToken == "*" && line[currentColumn + 1] == "/" && !stillInString){
                 if(stillInComment){
                     stillInComment = false;
                 }else{
                     stillInComment = true;
                 }
                 currentColumn++;
+                continue;
+            }
+            
+            if(stillInComment){
                 continue;
             }
 
