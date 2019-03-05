@@ -344,6 +344,7 @@ function lex(userInput){
                     continue;
                 }
             }
+      /*      
             if(currentToken == " "){
                 //If space continue
                 continue;
@@ -364,7 +365,7 @@ function lex(userInput){
                 //Continue lexing
                 continue;
             }
-
+*/
             /*if we see a single equals sign we know
             we are either looking at an equality or an assignment operator
             If another equals sign follows it is for equality
@@ -433,6 +434,9 @@ function lex(userInput){
                 //Add the id to the array
                 addToken("id", currentToken, currentLine, currentColumn);
                 //Continue lexing
+                continue;
+            }
+            if(currentToken.indexOf(" ") >= 0 || currentToken.indexOf("  ") >= 0){
                 continue;
             }
             /*If the character was not found then it was not
