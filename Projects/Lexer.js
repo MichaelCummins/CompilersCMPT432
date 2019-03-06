@@ -14,7 +14,7 @@ function lex(userInput){
     var stillInString;
     var stillInComment;
     //First we look to see if the user submitted anything into the first textfield
-    if(userInput.trim(userInput) == ""){
+    if(trims(userInput) == ""){
         //if they did not we output that there isnt any source code
         outputMessage("Nothing to Lex");
         //Increase the number of errors found
@@ -344,7 +344,7 @@ function lex(userInput){
                     continue;
                 }
             }
-      /*      
+      
             if(currentToken == " "){
                 //If space continue
                 continue;
@@ -355,8 +355,6 @@ function lex(userInput){
                 continue;
             }
             if(currentToken == "\t"){
-                //If tab advance 8 spaces and continue lexing
-                currentColumn+=5;
                 continue;
             }
             if(currentToken == "'"){
@@ -365,7 +363,7 @@ function lex(userInput){
                 //Continue lexing
                 continue;
             }
-*/
+
             /*if we see a single equals sign we know
             we are either looking at an equality or an assignment operator
             If another equals sign follows it is for equality
@@ -434,9 +432,6 @@ function lex(userInput){
                 //Add the id to the array
                 addToken("id", currentToken, currentLine, currentColumn);
                 //Continue lexing
-                continue;
-            }
-            if(currentToken.indexOf(" ") >= 0 || currentToken.indexOf("  ") >= 0){
                 continue;
             }
             /*If the character was not found then it was not
