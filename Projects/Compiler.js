@@ -25,7 +25,11 @@ function compile(){
             outputMessage("Program " + currentProgram + " passed \n");
             //Parse each program if lex was successful
             compilerParser();
-            outputMessage("\nConcrete Syntax Tree for program "+ currentProgram + "\n" + tree);
+            if(numParseErrors == 0){
+               outputMessage("\nConcrete Syntax Tree for program "+ currentProgram + "\n" + tree);   
+            }else{
+                outputMessage("\nConcrete Syntax Tree skipped due to Parser error");
+            }
         }else{
             lexerFailed++;
         }

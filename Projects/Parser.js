@@ -64,14 +64,17 @@ function parseBlock(){
     outputMessage("parseBlock()");
     if(currentToken.kind == "L_Brace"){
         tree.addNode("block", "branch");
-        braceCounter++;        
+        braceCounter++;
+        tree.addNode(currentToken.value, "leaf");
         getNextToken();
         parseStatementList();
     }else if(currentToken.kind == "R_Brace"){
-        braceCounter--;        
+        braceCounter--;
+        tree.addNode(currentToken.value, "leaf");
         getNextToken();
         tree.endChildren();
-        if(currentToken.kind == "EOF" && braceCounter == 0){
+        if(currentToken.value == "$"  && (braceCounter == 0)){
+            tree.addNode(currentToken.value, "leaf");
             programLevel++;
             tree.endChildren();
             parseProgram();
@@ -97,7 +100,7 @@ function parseStatementList(){
         || currentToken.kind == "boolean" || currentToken.kind == "while"
         || currentToken.kind == "if" || currentToken.kind == "L_Brace"){
         parseStatement();
-        while(currentToken.kind != "EOP"){
+        while(currentToken.kind != "EOF"){
             getNextToken();
             parseStatementList();
         }
@@ -142,7 +145,7 @@ function parseStatement(){
     }else{
         numParseErrors++;
     }
-    tree.endChildren();
+    //tree.endChildren();
     tree.endChildren();
     return;
 }
@@ -181,7 +184,7 @@ function parseAssignmentStatement(){
 
 function parseVarDecl(){
     outputMessage("parseVarDecl()");
-    tree.addToken("Variable Declaration", "branch");
+    tree.addNode("Variable_Declaration", "branch");
     tree.addNode(currentToken.value, "leaf");
     getNextToken();
     if(currentToken.kind == "id"){
