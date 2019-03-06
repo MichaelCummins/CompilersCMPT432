@@ -25,6 +25,7 @@ function compile(){
             outputMessage("Program " + currentProgram + " passed \n");
             //Parse each program if lex was successful
             compilerParser();
+            outputMessage("\nConcrete Syntax Tree for program "+ currentProgram + "\n" + tree);
         }else{
             lexerFailed++;
         }
