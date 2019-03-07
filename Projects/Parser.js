@@ -7,6 +7,8 @@ var programCounter = 1;
 var braceCounter = 0;
 var tree = new Tree();
 tree.addNode("Root", "branch");
+var booleanStatement = false;
+var printStatement = false;
 
 function initializeParser(){
     currentToken
@@ -17,6 +19,8 @@ function initializeParser(){
     braceCounter = 0;
     tree = new Tree();
     tree.addNode("Root", "branch");
+    booleanStatement = false;
+    printStatement = false;
 }
 
 function getNextToken(){
@@ -46,7 +50,7 @@ function parseProgram(){
     }
     getNextToken();
     if(programLevel != programCounter){
-        outputMessage("Parsing Program " + programCounter);
+        outputMessage("Parsing Program " + currentProgram);
         programCounter++;
     }    
     outputMessage("parseProgram()");
@@ -95,7 +99,7 @@ function parseStatementList(){
     if(currentToken.kind == "R_Brace"){
         tree.endChildren();
         parseBlock();
-    }else if(currentToken.kind == "print" || currentToken.kind == "Id"
+    }else if(currentToken.kind == "print" || currentToken.kind == "id"
         || currentToken.kind == "int" || currentToken.kind == "string"
         || currentToken.kind == "boolean" || currentToken.kind == "while"
         || currentToken.kind == "if" || currentToken.kind == "L_Brace"){
@@ -164,8 +168,8 @@ function parsePrintStatement(){
 }
 
 function parseAssignmentStatement(){
-    outputMessage("parseAssignementStatement()");
-    tree.addNode("Assignment Statement", "branch");
+    outputMessage("parseAssignmentStatement()");
+    tree.addNode("Assignment_Statement", "branch");
     if(currentToken.kind == "id"){
         parseId();
         getNextToken();
@@ -229,7 +233,7 @@ function parseIfStatement(){
 }
 
 function parseExpr(){
-    outputMessage("parseExpr")
+    outputMessage("parseExpr()");
     tree.addNode("Expression", "branch");
     if(currentToken.kind == "digit"){
        parseIntExpr();
@@ -294,7 +298,7 @@ function parseBooleanExpr(){
 
 function parseId(){
     outputMessage("parseId()");
-    tree.addNode("Id", "branch");
+    tree.addNode("id", "branch");
     tree.addNode(currentToken.value, "leaf");
     tree.endChildren();
     return;
