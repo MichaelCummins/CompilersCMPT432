@@ -13,7 +13,7 @@ function compile(){
     currentProgram = 1;
     
     for (var i = 0; i < programs.length; i++){
-        if(i > 0){
+        if(i => 0){
             outputMessage("\nProgram " + currentProgram);
         }
         var input = programs[i];

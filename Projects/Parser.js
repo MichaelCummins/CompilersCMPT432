@@ -58,6 +58,7 @@ function parseProgram(){
         tree.addNode("Program", "branch");
         parseBlock();    
     }else{
+        parseErrorMessage();
         numParseErrors++;
     }
     tree.endChildren();
@@ -88,6 +89,7 @@ function parseBlock(){
         }
         return;
     }else{
+        parseErrorMessage();
         numParseErrors++;
     }
     return;
@@ -109,6 +111,7 @@ function parseStatementList(){
             parseStatementList();
         }
     }else{
+        parseErrorMessage();
         numParseErrors++;
     }
     tree.endChildren();
@@ -145,8 +148,10 @@ function parseStatement(){
         //Go to block statement
         parseBlock();
     }else if(currentToken.kind == "L_Brace" && braceCounter == 0){
+        parseErrorMessage();
         numParseErrors++;
     }else{
+        parseErrorMessage();
         numParseErrors++;
     }
     //tree.endChildren();
@@ -162,6 +167,7 @@ function parsePrintStatement(){
     if(currentToken.kind == "L_Paren"){
         paren();
     }else{
+        parseErrorMessage();
         numParseErrors++;
     }
     tree.endChildren();
@@ -178,9 +184,11 @@ function parseAssignmentStatement(){
             getNextToken();
             parseExpr();
         }else{
+            parseErrorMessage();
             numParseErrors++;
         }
     }else{
+        parseErrorMessage();
         numParseErrors++;
     }
     tree.endChildren();
@@ -195,6 +203,7 @@ function parseVarDecl(){
     if(currentToken.kind == "id"){
         tree.addNode(currentToken.value, "leaf");
     }else{
+        parseErrorMessage();
         numParseErrors++;
     }
     tree.endChildren();
@@ -211,6 +220,7 @@ function parseWhileStatement(){
         getNextToken();
         parseBlock();
     }else{
+        parseErrorMessage();
         numParseErrors++;
     }
     tree.endChildren();
@@ -227,6 +237,7 @@ function parseIfStatement(){
         getNextToken();
         parseBlock();
     }else{
+        parseErrorMessage();
         numParseErrors++;
     }
     tree.endChildren();
@@ -245,6 +256,7 @@ function parseExpr(){
     }else if(currentToken.kind == "id"){
         parseId();
     }else{
+        parseErrorMessage();
         numParseErrors++;
     }
     tree.endChildren();
@@ -279,6 +291,7 @@ function parseStringExpr(){
         tree.endChildren();
         tree.addNode(currentToken.value, "leaf");
     }else{
+        parseErrorMessage();
         numParseErrors++;
     }
     tree.endChildren();
@@ -315,6 +328,7 @@ function parseCharlist(){
     }else if(currentToken.kind == '"'){
         return;
     }else{
+        parseErrorMessage();
         numParseErrors++;
     }
     return;
@@ -401,6 +415,7 @@ function paren(){
             getNextToken();
             parseExpr();
         }else{
+            parseErrorMessage();
             numParseErrors++;
         }
     }else if(printStatement){
@@ -419,8 +434,13 @@ function paren(){
         }
         return;
     }else{
+        parseErrorMessage();
         numParseErrors++;
-        outputMessage("Do you see me");
     }
     return;
+}
+
+function parseErrorMessage(){
+    outputMessage("ERROR Unexpected Token: " + currentToken.value + " at line " + currentToken.currentLine);
+
 }
