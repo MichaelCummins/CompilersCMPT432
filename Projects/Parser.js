@@ -158,8 +158,9 @@ function parsePrintStatement(){
     outputMessage("parsePrintStatement()");
     tree.addNode("Print Statement", "branch");
     getNextToken();
+    printStatement = true;
     if(currentToken.kind == "L_Paren"){
-        parseExpr();
+        paren();
     }else{
         numParseErrors++;
     }
@@ -288,7 +289,8 @@ function parseBooleanExpr(){
     outputMessage("parseBooleanExpr()");
     tree.addNode("Boolean Expression", "branch");
     if(currentToken.kind == "L_Paren"){
-        tree.addNode(currentToken.kind, "leaf");
+        booleanStatement = true;
+        paren();
     }else{
         tree.addNode(currentToken.kind, "leaf");
     }
@@ -306,7 +308,6 @@ function parseId(){
 
 function parseCharlist(){
     outputMessage("parseCharList()");
-    tree.addNode("Char list", "branch");
     if(currentToken.kind == "char"){
         tree.addNode(currentToken.value, "leaf");
         getNextToken();
@@ -388,4 +389,38 @@ function matchAndConsume(expectedToken){
         returnValue = true;
     }
     return returnValue;
+}
+    
+function paren(){
+    if(booleanStatement){
+        getNextToken();
+        parseExpr();
+        getNextToken();
+        if(currentToken.kind == "OP_Equality" || currentToken.kind == "Not_Equal"){
+            tree.addNode(currentToken.value, "leaf");
+            getNextToken();
+            parseExpr();
+        }else{
+            numParseErrors++;
+        }
+    }else if(printStatement){
+        getNextToken();
+        parseExpr();
+    }
+    if(numParseErrors){
+        return;
+    }
+    getNextToken();
+    if(currentToken.kind == "R_Paren"){
+        if(booleanStatement){
+            booleanStatement = false;
+        }else if(printStatement){
+            printStatement = false;
+        }
+        return;
+    }else{
+        numParseErrors++;
+        outputMessage("Do you see me");
+    }
+    return;
 }

@@ -1,5 +1,5 @@
 //-----------------------------------------
-// treeDemo.js
+// Based on treeDemo.js
 //
 // By Alan G. Labouseur, based on the 2009
 // work by Michael Ardizzone and Tim Smith.
@@ -68,7 +68,9 @@ function Tree() {
             // Space out based on the current depth so
             // this looks at least a little tree-like.
             for (var i = 0; i < depth; i++){
-                traversalResult += "-";
+                if(i != 0){
+                    traversalResult += "-";
+                }
             }
 
             // If there are no children (i.e., leaf nodes)...
@@ -79,7 +81,9 @@ function Tree() {
             }
             else{
                 // There are children, so note these interior/branch nodes and ...
-                traversalResult += "<" + node.name + "> \n";
+                if(node.name != "Root"){
+                    traversalResult += "<" + node.name + "> \n";
+                }
                 // .. recursively expand them.
                 for (var i = 0; i < node.children.length; i++)
                 {
