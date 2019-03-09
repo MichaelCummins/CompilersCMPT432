@@ -58,7 +58,7 @@ function parseProgram(){
         tree.addNode("Program", "branch");
         parseBlock();    
     }else{
-        parseErrorMessage();
+        parseErrorMessage("{");
         numParseErrors++;
     }
     tree.endChildren();
@@ -68,7 +68,7 @@ function parseProgram(){
 function parseBlock(){
     outputMessage("parseBlock()");
     if(currentToken.kind == "L_Brace"){
-        tree.addNode("block", "branch");
+        tree.addNode("Block", "branch");
         braceCounter++;
         tree.addNode(currentToken.value, "leaf");
         getNextToken();
@@ -89,7 +89,7 @@ function parseBlock(){
         }
         return;
     }else{
-        parseErrorMessage();
+        parseErrorMessage("}");
         numParseErrors++;
     }
     return;
@@ -111,7 +111,7 @@ function parseStatementList(){
             parseStatementList();
         }
     }else{
-        parseErrorMessage();
+        parseErrorMessage("}, print, id, int, string, boolean, while, if, or {");
         numParseErrors++;
     }
     tree.endChildren();
@@ -148,10 +148,10 @@ function parseStatement(){
         //Go to block statement
         parseBlock();
     }else if(currentToken.kind == "L_Brace" && braceCounter == 0){
-        parseErrorMessage();
+        parseErrorMessage("{");
         numParseErrors++;
     }else{
-        parseErrorMessage();
+        parseErrorMessage("either print, id, int, string, boolean, while, if");
         numParseErrors++;
     }
     //tree.endChildren();
@@ -162,12 +162,14 @@ function parseStatement(){
 function parsePrintStatement(){
     outputMessage("parsePrintStatement()");
     tree.addNode("Print Statement", "branch");
+    tree.addNode(currentToken.value, "leaf");
     getNextToken();
     printStatement = true;
     if(currentToken.kind == "L_Paren"){
+        tree.addNode(currentToken.value, "leaf");
         paren();
     }else{
-        parseErrorMessage();
+        parseErrorMessage("(");
         numParseErrors++;
     }
     tree.endChildren();
@@ -184,11 +186,11 @@ function parseAssignmentStatement(){
             getNextToken();
             parseExpr();
         }else{
-            parseErrorMessage();
+            parseErrorMessage("OP_Assignment");
             numParseErrors++;
         }
     }else{
-        parseErrorMessage();
+        parseErrorMessage("id");
         numParseErrors++;
     }
     tree.endChildren();
@@ -203,7 +205,7 @@ function parseVarDecl(){
     if(currentToken.kind == "id"){
         tree.addNode(currentToken.value, "leaf");
     }else{
-        parseErrorMessage();
+        parseErrorMessage("id");
         numParseErrors++;
     }
     tree.endChildren();
@@ -220,7 +222,7 @@ function parseWhileStatement(){
         getNextToken();
         parseBlock();
     }else{
-        parseErrorMessage();
+        parseErrorMessage("L_Paren");
         numParseErrors++;
     }
     tree.endChildren();
@@ -237,7 +239,7 @@ function parseIfStatement(){
         getNextToken();
         parseBlock();
     }else{
-        parseErrorMessage();
+        parseErrorMessage("L_Paren");
         numParseErrors++;
     }
     tree.endChildren();
@@ -256,7 +258,7 @@ function parseExpr(){
     }else if(currentToken.kind == "id"){
         parseId();
     }else{
-        parseErrorMessage();
+        parseErrorMessage("either a digit, double quote, Left parenthesis, or an id");
         numParseErrors++;
     }
     tree.endChildren();
@@ -291,7 +293,7 @@ function parseStringExpr(){
         tree.endChildren();
         tree.addNode(currentToken.value, "leaf");
     }else{
-        parseErrorMessage();
+        parseErrorMessage('"');
         numParseErrors++;
     }
     tree.endChildren();
@@ -415,7 +417,7 @@ function paren(){
             getNextToken();
             parseExpr();
         }else{
-            parseErrorMessage();
+            parseErrorMessage("Expected =");
             numParseErrors++;
         }
     }else if(printStatement){
@@ -432,15 +434,17 @@ function paren(){
         }else if(printStatement){
             printStatement = false;
         }
+        tree.addNode(currentToken.value, "leaf");
         return;
     }else{
-        parseErrorMessage();
+        parseErrorMessage("R_Paren");
         numParseErrors++;
     }
     return;
 }
 
-function parseErrorMessage(){
+function parseErrorMessage(convictedToken = ""){
     outputMessage("ERROR Unexpected Token: " + currentToken.value + " at line " + currentToken.currentLine);
+    outputMessage("Expected " + convictedToken);
 
 }
