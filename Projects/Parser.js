@@ -10,6 +10,7 @@ tree.addNode("Root", "branch");
 var booleanStatement = false;
 var printStatement = false;
 
+//Reset variables for each program
 function initializeParser(){
     currentToken
     tokens = [];
@@ -23,15 +24,18 @@ function initializeParser(){
     printStatement = false;
 }
 
+//Get the next token in the array
 function getNextToken(){
     currentToken = tokens[0];
     tokens.shift();
 }
 
+//Look at the next Token
 function lookAhead(){
     return tokens[0];
 }
 
+//Get what to parse from parameter and beging parsing
 function parseStart(userInput){
     initializeParser();
     tokens = userInput;
@@ -43,77 +47,125 @@ function parseStart(userInput){
     return numParseErrors;
 }
 
+//Parse program method
 function parseProgram(){
+    //If no tokens left, were done parsing
     if(tokens.length == 0){
         outputMessage("Parsing over");
         return;
     }
+    //Get the next token
     getNextToken();
+    //If the current program doesnt match the counter, output its a new program
     if(programLevel != programCounter){
         outputMessage("Parsing Program " + currentProgram);
         programCounter++;
-    }    
+    }
+    //Output parser dialogue
     outputMessage("parseProgram()");
+    //If we get what is expected 
     if(currentToken.kind == "L_Brace"){
+        //Add program to the cst tree
         tree.addNode("Program", "branch");
+        //Go to parse block
         parseBlock();    
     }else{
+        //Else we got an error and alert the user
         parseErrorMessage("{");
+        //Increment error count
         numParseErrors++;
     }
+    //Climb back up the tree
     tree.endChildren();
     return;
 }
 
 function parseBlock(){
+    //Output parsing path
     outputMessage("parseBlock()");
+    
+    //If we got a { they did good
     if(currentToken.kind == "L_Brace"){
+        //Add block to the cst 
         tree.addNode("Block", "branch");
+        //Increment brace counter
         braceCounter++;
+        //Add leaf node for the bracket
         tree.addNode(currentToken.value, "leaf");
+        //Get next token
         getNextToken();
+        //Go to StatementList
         parseStatementList();
+        //If we got a } its okay
     }else if(currentToken.kind == "R_Brace"){
+        //Decrement?(sp) brace counter
         braceCounter--;
+        //Add leaf node for }
         tree.addNode(currentToken.value, "leaf");
+        //Get the next token
         getNextToken();
+        //Climb the tree
         tree.endChildren();
+        //If the token is an EOP and the braces are balanced
+        //Its the end of the program
         if(currentToken.value == "$"  && (braceCounter == 0)){
+            //Add leaf node for the EOP
             tree.addNode(currentToken.value, "leaf");
+            //Increment to the next program
             programLevel++;
+            //Climb up the tree
             tree.endChildren();
+            //Go to start parsing the next program
             parseProgram();
         }else{
+            //Climb up the tree
             tree.endChildren();
+            //Go to statement list
             parseStatementList();
         }
         return;
     }else{
+        //We got a uh-oh 
+        //Alert user of error
         parseErrorMessage("}");
+        //Increment error count
         numParseErrors++;
     }
     return;
 }
 
 function parseStatementList(){
+    //Add branch node for statement list to cst
     tree.addNode("Statement List", "branch");
+    //Output parser progress
     outputMessage("parseStatementList()");
+    
+    //Check if were exiting a block or going to a statement
     if(currentToken.kind == "R_Brace"){
+        //Go back up if we got a brace
         tree.endChildren();
+        //Go to block
         parseBlock();
+        
+        //Check if we got a statement starter
+        //If we did, go to parse statement
     }else if(currentToken.kind == "print" || currentToken.kind == "id"
         || currentToken.kind == "int" || currentToken.kind == "string"
         || currentToken.kind == "boolean" || currentToken.kind == "while"
         || currentToken.kind == "if" || currentToken.kind == "L_Brace"){
         parseStatement();
+        //Continue going through the token array
         while(currentToken.kind != "EOF"){
             getNextToken();
             parseStatementList();
         }
     }else{
+        //Alert what we shouldve gotten
+        //Increment number of parse errors
         parseErrorMessage("}, print, id, int, string, boolean, while, if, or {");
         numParseErrors++;
     }
+    //Climb the tree
     tree.endChildren();
     return;
 }
@@ -121,28 +173,28 @@ function parseStatementList(){
 function parseStatement(){
     outputMessage("parseStatement()");
     tree.addNode("Statement", "branch");
-    //Since a statement can be many things in our grammar check what it starts with
-    //If it starts with the token PRINT its a print statement
+        //Since a statement can be many things in our grammar check what it starts with
+        //If it starts with the token PRINT its a print statement
     if(currentToken.kind == "print"){
         //Go to print statement
         parsePrintStatement();
-    //If its an id it goes to assignment 
+        //If its an id it goes to assignment 
     }else if(currentToken.kind == "id"){
         //Go to assignment statement
         parseAssignmentStatement();
-    //If it starts with int string or boolean it is a variable declaration
+        //If it starts with int string or boolean it is a variable declaration
     }else if(currentToken.kind == "int" || currentToken.kind == "string" || currentToken.kind == "boolean"){
         //Go to variable declaration
         parseVarDecl();
-    //If it is while it is the start of a while statement
+        //If it is while it is the start of a while statement
     }else if(currentToken.kind == "while"){
         //Go to while statement
         parseWhileStatement();
-    //If it is if it is the start of an if statement
+        //If it is if it is the start of an if statement
     }else if(currentToken.kind == "if"){
         //Go to if statement
         parseIfStatement();
-    //If anything else, parse as a block statment
+        //If anything else, parse as a block statment
     }else if(currentToken.kind == "L_Brace" && braceCounter != 0 || currentToken.kind == "R_Brace"){
         tree.endChildren();
         //Go to block statement
@@ -336,77 +388,6 @@ function parseCharlist(){
     return;
 }
 
-function parseType(){
-    outputMessage("parseType");
-    tree.addNode("Type", "branch");
-    if(currentToken.kind == "int"){
-        matchAndConsume("int");
-    }else if(currentToken.kind == "string"){
-        matchAndConsume("string");
-    }else{
-        matchAndConsume("boolean");
-    }
-    endChildren();
-}
-
-function parseChar(){
-    tree.addNode("Char", "branch");
-    matchAndConsume();
-    endChildren();
-}
-
-function parseSpace(){
-    tree.addNode("Space", "branch");
-    matchAndConsume(" ");
-    endChildren();
-}
-
-function parseDigit(){
-    tree.addNode("Digit", "branch");
-    matchAndConsume();
-    endChildren();
-}
-
-function parseBoolOP(){
-    outputMessage("parseBoolOP()");
-    tree.addNode("Boolean Operation", "branch");
-    if(currentToken.kind == "="){
-        matchAndConsume("=");
-        matchAndConsume("=");
-    }else{
-        matchAndConsume("!");
-        matchAndConsume("=")
-    }
-    endChildren();
-}
-
-function parseBoolVal(){
-    outputMessage("parseBoolVal()");
-    tree.addNode("Boolean Value", "branch");
-    if(currentToken.kind == "false"){
-        matchAndConsume("false");
-    }else{
-        matchAndConsume("true");
-    }
-    endChildren();
-}
-
-function parseIntOP(){
-    outputMessage("parseIntOP()");
-    tree.addNode("Int Operation");
-    matchAndConsume("intop");
-    endChildren();
-}
-    
-    
-function matchAndConsume(expectedToken){
-    returnValue = false;
-    if(currentToken.kind == expectedToken){
-        returnValue = true;
-    }
-    return returnValue;
-}
-    
 function paren(){
     if(booleanStatement){
         getNextToken();
