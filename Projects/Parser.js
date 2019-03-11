@@ -444,7 +444,7 @@ function parseBooleanExpr(){
         paren();
     }else{
         //Add the token to the tree as a leaf
-        tree.addNode(currentToken.kind, "leaf");
+        tree.addNode(currentToken.value, "leaf");
     }
     //Climb the tree
     tree.endChildren();
@@ -504,7 +504,7 @@ function paren(){
             parseExpr();
         }else{
             //Output error and increment error count
-            parseErrorMessage("Expected =");
+            parseErrorMessage("=");
             numParseErrors++;
         }
     //Check if we are in a print statement

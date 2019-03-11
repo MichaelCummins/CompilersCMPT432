@@ -212,7 +212,7 @@ function lex(userInput){
                 if(line[currentColumn + 1] == "a" && line[currentColumn + 2] == "l" 
                    && line[currentColumn + 3] == "s" && line[currentColumn + 4] == "e"){
                     //Add the 'False' token to the array
-                    addToken("false", "false", currentLine, currentColumn);
+                    addToken("boolean", "false", currentLine, currentColumn);
                     //Advance 4 columns
                     currentColumn += 4;
                     //Continue lexing
@@ -332,7 +332,7 @@ function lex(userInput){
             if(currentToken == "t"){
                 if(line[currentColumn + 1] == "r" && line[currentColumn + 2] == "u" && line[currentColumn + 3] == "e"){
                     //Add "True token to the array
-                    addToken("Boolean", "true", currentLine, currentColumn);
+                    addToken("boolean", "true", currentLine, currentColumn);
                     //Advance 3 columns
                     currentColumn += 3;
                     //Continue lexing

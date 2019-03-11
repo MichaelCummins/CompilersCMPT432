@@ -1,57 +1,61 @@
 //Declare global variables
-var programTokens = [];
 var currentProgram = 1;
 
 
 function compile(){
+    //Initialize variables
     init();
-    var programs = compileInput();
-    programTokens = [];
+    //Get however many programs were compiling
+    var programs = compileUserInput();
+    //Tracks which program is being compiled
     currentProgram = 1;
     
+    //Go through each program
     for (var i = 0; i < programs.length; i++){
+        //Output whenever we start a new program
         if(i => 0){
             outputMessage("\nProgram " + currentProgram);
         }
+        //Get input per each program
         var input = programs[i];
         
+        //Check if the lexer was successful
         if(compilerLexer(input)){
-            for(var j = 0; j < tokens.length; j++){
-                programTokens.push(tokens[j]);
-            }
             outputMessage("Program " + currentProgram + " passed \n");
             //Parse each program if lex was successful
             compilerParser();
+            //Check if we got any errors during parse
             if(numParseErrors == 0){
-               outputMessage("\nConcrete Syntax Tree for program "+ currentProgram + "\n" + tree);   
+                outputMessage("\nConcrete Syntax Tree for program "+ currentProgram + "\n" + tree);   
             }else{
                 outputMessage("\nConcrete Syntax Tree skipped due to Parser error");
             }
         }
+        //Go to the next program
         currentProgram++;
     }
 }
 
-function compileInput(){
+function compileUserInput(){
 	//Gets the input
-	var input = getSourceCode();
-	//checks if theres a $ at the end
-	if (input.trim().slice(-1) != "$") {
-		//if so
-		var doNotAddToLast = true;
+	var userInput = getSourceCode();
+	//check if userInput contains an EOP operator at the end
+	if (userInput.trim().slice(-1) != "$") {
+		//If it does dont add an EOP to it
+		var dontAddEOP = true;
 	}
-	//splits the input up by program
-	var programs = input.split("$");
+	//split input by EOP operator
+	var programs = userInput.split("$");
 
-	//if there was a $ there is now extra space
-	if (!doNotAddToLast) {
+	//Get rid of the extra program that was created
+	if (!dontAddEOP) {
 		//remove it
 		programs.pop();
 	}
 
-	//goes through and adds if its supposed too
+	//Add EOP marker to unmarked programs
 	for (var i = 0; i < programs.length; i++) {
-		if (!((programs.length == (i + 1)) && doNotAddToLast)) {
+		if (!((programs.length == (i + 1)) && dontAddEOP)) {
 			programs[i] += "$";
 		}
 	}
