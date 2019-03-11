@@ -206,182 +206,279 @@ function parseStatement(){
         parseErrorMessage("either print, id, int, string, boolean, while, if");
         numParseErrors++;
     }
-    //tree.endChildren();
+    //Go up 2 branches
+    tree.endChildren();
     tree.endChildren();
     return;
 }
 
 function parsePrintStatement(){
+    //Output parsing path
     outputMessage("parsePrintStatement()");
+    //Add a branch stating that we went to printStatement
     tree.addNode("Print Statement", "branch");
+    //Add a leaf for the value of what to print
     tree.addNode(currentToken.value, "leaf");
+    //Move to the next node
     getNextToken();
+    //Set that we are currently in a print statement
     printStatement = true;
+    //Check if we got a (
     if(currentToken.kind == "L_Paren"){
+        //Add the Left Paren
         tree.addNode(currentToken.value, "leaf");
+        //Parse the Left Paren
         paren();
     }else{
+        //Increment error count and output error
         parseErrorMessage("(");
         numParseErrors++;
     }
+    //Climb the tree
     tree.endChildren();
     return;
 }
 
 function parseAssignmentStatement(){
+    //Output path of parser
     outputMessage("parseAssignmentStatement()");
-    tree.addNode("Assignment_Statement", "branch");
+    //Add Assignment statement node
+    tree.addNode("Assignment Statement", "branch");
+    //Check if we got an id
     if(currentToken.kind == "id"){
+        //Go to ID
         parseId();
+        //Ge the next token
         getNextToken();
+        //Check if we got the right token for assignment
         if(currentToken.kind == "OP_Assignment"){
+            //Get the next token
             getNextToken();
+            //Parse the expression
             parseExpr();
         }else{
+            //Increment error count and output error
             parseErrorMessage("OP_Assignment");
             numParseErrors++;
         }
     }else{
+        //Increment error count and output error
         parseErrorMessage("id");
         numParseErrors++;
     }
+    //Climb a branch
     tree.endChildren();
     return;
 }
 
 function parseVarDecl(){
+    //Output path of the parser
     outputMessage("parseVarDecl()");
-    tree.addNode("Variable_Declaration", "branch");
+    //Add brach node for the variable
+    tree.addNode("Variable Declaration", "branch");
+    //Add value of the VarDecl token
     tree.addNode(currentToken.value, "leaf");
+    //Go to the next token
     getNextToken();
+    //Check if we got an expected id
     if(currentToken.kind == "id"){
+        //Add the id to the tree
         tree.addNode(currentToken.value, "leaf");
     }else{
+        //Increment error count and output error
         parseErrorMessage("id");
         numParseErrors++;
     }
+    //Climb a branch
     tree.endChildren();
     return;
 }
 
 function parseWhileStatement(){
+    //Output path of the parser
     outputMessage("parseWhileStatement()");
+    //Add a branch for the while statement
     tree.addNode("While Statement", "branch");
+    //Add a leaf for the while token
     tree.addNode(currentToken.value, "leaf");
+    //Go to the next token
     getNextToken();
+    //Check if we got the start of a (
     if(currentToken.kind == "L_Paren"){
+        //Parse boolean expr
         parseBooleanExpr();
+        //Get the next token
         getNextToken();
+        //Parse a new block
         parseBlock();
     }else{
+        //Increment error count and output error
         parseErrorMessage("L_Paren");
         numParseErrors++;
     }
+    //Climb a branch
     tree.endChildren();
     return;
 }
 
 function parseIfStatement(){
+    //Output path of the parser
     outputMessage("parseIfStatement");
+    //Add if statement branch
     tree.addNode("If Statement", "branch");
+    //Add the value of the currentnode if statement
     tree.addNode(currentToken.value, "leaf");
+    //Go to the next token
     getNextToken();
+    //Check if we got the start of a (
     if(currentToken.kind == "L_Paren"){
+        //Parse boolean expr
         parseBooleanExpr();
+        //Go to the next token
         getNextToken();
+        //Parse a new block
         parseBlock();
     }else{
+        //Increment error count and output error
         parseErrorMessage("L_Paren");
         numParseErrors++;
     }
+    //Climb a branch
     tree.endChildren();
     return;
 }
 
 function parseExpr(){
+    //Output path of the parser
     outputMessage("parseExpr()");
+    //Add branch node for expression
     tree.addNode("Expression", "branch");
+    //If we got a digit parse as int expression
     if(currentToken.kind == "digit"){
        parseIntExpr();
+    //If we got a double quote parse as string expression
     }else if(currentToken.kind == '"'){
        parseStringExpr();
+    //If we got a left paren or a bool parse as boolean expression
     }else if(currentToken.kind == "L_Paren" || currentToken.kind == "boolean"){
         parseBooleanExpr();
+    //If we got an id parse as an id
     }else if(currentToken.kind == "id"){
         parseId();
     }else{
+    //Increment error count and out a plethora of errors
         parseErrorMessage("either a digit, double quote, Left parenthesis, or an id");
         numParseErrors++;
     }
+    //Climb a branch
     tree.endChildren();
     return;
 }
 
 function parseIntExpr(){
+    //Output path of the parser
     outputMessage("parseIntExpr()");
+    //Add int expression branch node to the cst
     tree.addNode("Int expression", "branch");
+    //Add value of whatevers being parsed as a leaf
     tree.addNode(currentToken.value, "leaf");
+    //Check beforehand if the next token in the array is a '+'
+    //If it is we cna parse it as an increment
     if(lookAhead().kind == "intop"){
+        //Go to the plus
         getNextToken();
+        //Add it as a leaf node
         tree.addNode(currentToken.value, "leaf");
+        //Go to the next token
         getNextToken();
+        //Parse an expresson
         parseExpr();
+        //Kill all those kids
         tree.endChildren();
         return;
     }else{
+        //Climb a branch
         tree.endChildren();
         return;
     }
 }
 
 function parseStringExpr(){
+    //Output path of the parser
     outputMessage("parseStringExpr()");
+    //Add branch node of string expr to cst
     tree.addNode("String expression", "branch");
+    //Add leaf node of the string
     tree.addNode(currentToken.value, "leaf");
+    //Get the next token
     getNextToken();
+    //Output that it is a the beginning of a char list
     tree.addNode("Char List", "branch");
+    //Parse the char list
     parseCharlist();
+    //If the token is a "
     if(currentToken.kind == '"'){
+        //Climb the tree and add it to the cst
         tree.endChildren();
         tree.addNode(currentToken.value, "leaf");
     }else{
+        //Increment error count and output error
         parseErrorMessage('"');
         numParseErrors++;
     }
+    //Climb the tree
     tree.endChildren();
     return;
 }
 
 function parseBooleanExpr(){
+    //Output path of the parser
     outputMessage("parseBooleanExpr()");
+    //Add branch node for bool expression
     tree.addNode("Boolean Expression", "branch");
+    //Check if we got the start of a bool expr
     if(currentToken.kind == "L_Paren"){
+        //If we did set bool to true
         booleanStatement = true;
+        //Parse the paren
         paren();
     }else{
+        //Add the token to the tree as a leaf
         tree.addNode(currentToken.kind, "leaf");
     }
+    //Climb the tree
     tree.endChildren();
     return;
 }
 
 function parseId(){
+    //Output path of the parser
     outputMessage("parseId()");
+    //Add id branch
     tree.addNode("id", "branch");
+    //Add the value of the id to the cst
     tree.addNode(currentToken.value, "leaf");
+    //Climb a branch
     tree.endChildren();
     return;
 }
 
 function parseCharlist(){
+    //Output path of the parser
     outputMessage("parseCharList()");
+    //Check if we got a char
     if(currentToken.kind == "char"){
+        //Add the value of the char to the cst
         tree.addNode(currentToken.value, "leaf");
+        //Go to the next token
         getNextToken();
+        //Continue parsing the char list until we get to the end 
         parseCharlist();
     }else if(currentToken.kind == '"'){
+        //If we got " we are at the end of the char list
         return;
     }else{
+        //Increment error count and output error
         parseErrorMessage();
         numParseErrors++;
     }
@@ -389,35 +486,53 @@ function parseCharlist(){
 }
 
 function paren(){
+    //Check if we are in a boolean
     if(booleanStatement){
+        //If we are get the next token
         getNextToken();
+        //If we are parse an expr
         parseExpr();
+        //Go to the next token
         getNextToken();
+        //Check how its being compared
         if(currentToken.kind == "OP_Equality" || currentToken.kind == "Not_Equal"){
+            //Add the comparison to the cst as a leaf
             tree.addNode(currentToken.value, "leaf");
+            //Go to the next token
             getNextToken();
+            //Parse as an expression
             parseExpr();
         }else{
+            //Output error and increment error count
             parseErrorMessage("Expected =");
             numParseErrors++;
         }
+    //Check if we are in a print statement
     }else if(printStatement){
+        //Go to the next token and parse as an expression
         getNextToken();
         parseExpr();
     }
+    //No errors? Good!
     if(numParseErrors){
         return;
     }
+    //Go to the next token
     getNextToken();
+    //Check if were at the closing of an expression
     if(currentToken.kind == "R_Paren"){
+        //If it was a boolean make it false
+        //If it was a print make it false
         if(booleanStatement){
             booleanStatement = false;
         }else if(printStatement){
             printStatement = false;
         }
+        //Add the paren as a leaf node
         tree.addNode(currentToken.value, "leaf");
         return;
     }else{
+        //Increment error count and output error
         parseErrorMessage("R_Paren");
         numParseErrors++;
     }
@@ -425,6 +540,7 @@ function paren(){
 }
 
 function parseErrorMessage(convictedToken = ""){
+    //Output the errors
     outputMessage("ERROR Unexpected Token: " + currentToken.value + " at line " + currentToken.currentLine);
     outputMessage("Expected " + convictedToken);
 
