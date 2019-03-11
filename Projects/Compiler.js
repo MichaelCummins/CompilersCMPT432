@@ -1,15 +1,12 @@
+//Declare global variables
 var programTokens = [];
 var currentProgram = 1;
-var lexerFailed = 0;
-var parserFailed = 0;
 
 
 function compile(){
     init();
     var programs = compileInput();
     programTokens = [];
-    lexerFailed = 0;
-    parserFailed =  0;
     currentProgram = 1;
     
     for (var i = 0; i < programs.length; i++){
@@ -30,14 +27,12 @@ function compile(){
             }else{
                 outputMessage("\nConcrete Syntax Tree skipped due to Parser error");
             }
-        }else{
-            lexerFailed++;
         }
         currentProgram++;
     }
 }
 
-function compileInput() {
+function compileInput(){
 	//Gets the input
 	var input = getSourceCode();
 	//checks if theres a $ at the end
