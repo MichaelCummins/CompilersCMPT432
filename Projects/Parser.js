@@ -183,7 +183,8 @@ function parseStatement(){
         //Go to assignment statement
         parseAssignmentStatement();
         //If it starts with int string or boolean it is a variable declaration
-    }else if(matchToken(currentToken, "int") || matchToken(currentToken, "string") || matchToken(currentToken, "boolean")){
+    }else if(matchToken(currentToken, "int") || matchToken(currentToken, "string") || 
+             matchToken(currentToken, "boolean")){
         //Go to variable declaration
         parseVarDecl();
         //If it is while it is the start of a while statement
@@ -195,7 +196,8 @@ function parseStatement(){
         //Go to if statement
         parseIfStatement();
         //If anything else, parse as a block statment
-    }else if(matchToken(currentToken, "L_Brace") && braceCounter != 0 || matchToken(currentToken, "R_Brace")){
+    }else if(matchToken(currentToken, "L_Brace") && braceCounter != 0 || 
+             matchToken(currentToken, "R_Brace")){
         tree.endChildren();
         //Go to block statement
         parseBlock();
