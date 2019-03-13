@@ -37,7 +37,7 @@ function compile(){
 }
 
 function compileUserInput(){
-	//Gets the input
+	//Get user's input
 	var userInput = getSourceCode();
 	//check if userInput contains an EOP operator at the end
 	if (userInput.trim().slice(-1) != "$") {
