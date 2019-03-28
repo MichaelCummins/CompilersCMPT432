@@ -5,8 +5,8 @@ var numParseErrors = 0;
 var programLevel = 0;
 var programCounter = 1;
 var braceCounter = 0;
-var tree = new Tree();
-tree.addNode("Root", "branch");
+var cst = new Tree();
+cst.addNode("Root", "branch");
 var booleanStatement = false;
 var printStatement = false;
 
@@ -18,8 +18,8 @@ function initializeParser(){
     programLevel = 0;
     programCounter = 1;
     braceCounter = 0;
-    tree = new Tree();
-    tree.addNode("Root", "branch");
+    cst = new Tree();
+    cst.addNode("Root", "branch");
     booleanStatement = false;
     printStatement = false;
 }
@@ -65,8 +65,8 @@ function parseProgram(){
     outputMessage("parseProgram()");
     //If we get what is expected 
     if(matchToken(currentToken, "L_Brace")){
-        //Add program to the cst tree
-        tree.addNode("Program", "branch");
+        //Add program to the cst
+        cst.addNode("Program", "branch");
         //Go to parse block
         parseBlock();    
     }else{
@@ -75,8 +75,8 @@ function parseProgram(){
         //Increment error count
         numParseErrors++;
     }
-    //Climb back up the tree
-    tree.endChildren();
+    //Climb back up the cst
+    cst.endChildren();
     return;
 }
 
@@ -87,39 +87,39 @@ function parseBlock(){
     //If we got a { they did good
     if(matchToken(currentToken, "L_Brace")){
         //Add block to the cst 
-        tree.addNode("Block", "branch");
+        cst.addNode("Block", "branch");
         //Increment brace counter
         braceCounter++;
         //Add leaf node for the bracket
-        tree.addNode(currentToken.value, "leaf");
+        cst.addNode(currentToken.value, "leaf");
         //Get next token
         getNextToken();
         //Go to StatementList
         parseStatementList();
         //If we got a } its okay
-    }else if(matchToken(currentToken,"R_Brace")){
+    }else if(matchToken(currentToken, "R_Brace")){
         //Decrement?(sp) brace counter
         braceCounter--;
         //Add leaf node for }
-        tree.addNode(currentToken.value, "leaf");
+        cst.addNode(currentToken.value, "leaf");
         //Get the next token
         getNextToken();
-        //Climb the tree
-        tree.endChildren();
+        //Climb the cst
+        cst.endChildren();
         //If the token is an EOP and the braces are balanced
         //Its the end of the program
         if(matchToken(currentToken, "EOF")  && (braceCounter == 0)){
             //Add leaf node for the EOP
-            tree.addNode(currentToken.value, "leaf");
+            cst.addNode(currentToken.value, "leaf");
             //Increment to the next program
             programLevel++;
-            //Climb up the tree
-            tree.endChildren();
+            //Climb up the cst
+            cst.endChildren();
             //Go to start parsing the next program
             parseProgram();
         }else{
-            //Climb up the tree
-            tree.endChildren();
+            //Climb up the cst
+            cst.endChildren();
             //Go to statement list
             parseStatementList();
         }
@@ -136,14 +136,14 @@ function parseBlock(){
 
 function parseStatementList(){
     //Add branch node for statement list to cst
-    tree.addNode("Statement List", "branch");
+    cst.addNode("Statement List", "branch");
     //Output parser progress
     outputMessage("parseStatementList()");
     
     //Check if were exiting a block or going to a statement
     if(matchToken(currentToken, "R_Brace")){
         //Go back up if we got a brace
-        tree.endChildren();
+        cst.endChildren();
         //Go to block
         parseBlock();
         
@@ -165,14 +165,14 @@ function parseStatementList(){
         parseErrorMessage("}, print, id, int, string, boolean, while, if, or {");
         numParseErrors++;
     }
-    //Climb the tree
-    tree.endChildren();
+    //Climb the cst
+    cst.endChildren();
     return;
 }
 
 function parseStatement(){
     outputMessage("parseStatement()");
-    tree.addNode("Statement", "branch");
+    cst.addNode("Statement", "branch");
         //Since a statement can be many things in our grammar check what it starts with
         //If it starts with the token PRINT its a print statement
     if(matchToken(currentToken, "print")){
@@ -198,7 +198,7 @@ function parseStatement(){
         //If anything else, parse as a block statment
     }else if(matchToken(currentToken, "L_Brace") && braceCounter != 0 || 
              matchToken(currentToken, "R_Brace")){
-        tree.endChildren();
+        cst.endChildren();
         //Go to block statement
         parseBlock();
     }else if(matchToken(currentToken, "L_Brace") && braceCounter == 0){
@@ -209,8 +209,8 @@ function parseStatement(){
         numParseErrors++;
     }
     //Go up 2 branches
-    tree.endChildren();
-    tree.endChildren();
+    cst.endChildren();
+    cst.endChildren();
     return;
 }
 
@@ -218,9 +218,9 @@ function parsePrintStatement(){
     //Output parsing path
     outputMessage("parsePrintStatement()");
     //Add a branch stating that we went to printStatement
-    tree.addNode("Print Statement", "branch");
+    cst.addNode("Print Statement", "branch");
     //Add a leaf for the value of what to print
-    tree.addNode(currentToken.value, "leaf");
+    cst.addNode(currentToken.value, "leaf");
     //Move to the next node
     getNextToken();
     //Set that we are currently in a print statement
@@ -228,7 +228,7 @@ function parsePrintStatement(){
     //Check if we got a (
     if(matchToken(currentToken, "L_Paren")){
         //Add the Left Paren
-        tree.addNode(currentToken.value, "leaf");
+        cst.addNode(currentToken.value, "leaf");
         //Parse the Left Paren
         paren();
     }else{
@@ -236,8 +236,8 @@ function parsePrintStatement(){
         parseErrorMessage("(");
         numParseErrors++;
     }
-    //Climb the tree
-    tree.endChildren();
+    //Climb the cst
+    cst.endChildren();
     return;
 }
 
@@ -245,7 +245,7 @@ function parseAssignmentStatement(){
     //Output path of parser
     outputMessage("parseAssignmentStatement()");
     //Add Assignment statement node
-    tree.addNode("Assignment Statement", "branch");
+    cst.addNode("Assignment Statement", "branch");
     //Check if we got an id
     if(matchToken(currentToken, "id")){
         //Go to ID
@@ -269,7 +269,7 @@ function parseAssignmentStatement(){
         numParseErrors++;
     }
     //Climb a branch
-    tree.endChildren();
+    cst.endChildren();
     return;
 }
 
@@ -277,22 +277,22 @@ function parseVarDecl(){
     //Output path of the parser
     outputMessage("parseVarDecl()");
     //Add brach node for the variable
-    tree.addNode("Variable Declaration", "branch");
+    cst.addNode("Variable Declaration", "branch");
     //Add value of the VarDecl token
-    tree.addNode(currentToken.value, "leaf");
+    cst.addNode(currentToken.value, "leaf");
     //Go to the next token
     getNextToken();
     //Check if we got an expected id
     if(matchToken(currentToken, "id")){
-        //Add the id to the tree
-        tree.addNode(currentToken.value, "leaf");
+        //Add the id to the cst
+        cst.addNode(currentToken.value, "leaf");
     }else{
         //Increment error count and output error
         parseErrorMessage("id");
         numParseErrors++;
     }
     //Climb a branch
-    tree.endChildren();
+    cst.endChildren();
     return;
 }
 
@@ -300,9 +300,9 @@ function parseWhileStatement(){
     //Output path of the parser
     outputMessage("parseWhileStatement()");
     //Add a branch for the while statement
-    tree.addNode("While Statement", "branch");
+    cst.addNode("While Statement", "branch");
     //Add a leaf for the while token
-    tree.addNode(currentToken.value, "leaf");
+    cst.addNode(currentToken.value, "leaf");
     //Go to the next token
     getNextToken();
     //Check if we got the start of a (
@@ -319,7 +319,7 @@ function parseWhileStatement(){
         numParseErrors++;
     }
     //Climb a branch
-    tree.endChildren();
+    cst.endChildren();
     return;
 }
 
@@ -327,9 +327,9 @@ function parseIfStatement(){
     //Output path of the parser
     outputMessage("parseIfStatement");
     //Add if statement branch
-    tree.addNode("If Statement", "branch");
+    cst.addNode("If Statement", "branch");
     //Add the value of the currentnode if statement
-    tree.addNode(currentToken.value, "leaf");
+    cst.addNode(currentToken.value, "leaf");
     //Go to the next token
     getNextToken();
     //Check if we got the start of a (
@@ -346,7 +346,7 @@ function parseIfStatement(){
         numParseErrors++;
     }
     //Climb a branch
-    tree.endChildren();
+    cst.endChildren();
     return;
 }
 
@@ -354,7 +354,7 @@ function parseExpr(){
     //Output path of the parser
     outputMessage("parseExpr()");
     //Add branch node for expression
-    tree.addNode("Expression", "branch");
+    cst.addNode("Expression", "branch");
     //If we got a digit parse as int expression
     if(matchToken(currentToken, "digit")){
        parseIntExpr();
@@ -373,7 +373,7 @@ function parseExpr(){
         numParseErrors++;
     }
     //Climb a branch
-    tree.endChildren();
+    cst.endChildren();
     return;
 }
 
@@ -381,26 +381,26 @@ function parseIntExpr(){
     //Output path of the parser
     outputMessage("parseIntExpr()");
     //Add int expression branch node to the cst
-    tree.addNode("Int expression", "branch");
+    cst.addNode("Int expression", "branch");
     //Add value of whatevers being parsed as a leaf
-    tree.addNode(currentToken.value, "leaf");
+    cst.addNode(currentToken.value, "leaf");
     //Check beforehand if the next token in the array is a '+'
     //If it is we cna parse it as an increment
     if(lookAhead().kind == "intop"){
         //Go to the plus
         getNextToken();
         //Add it as a leaf node
-        tree.addNode(currentToken.value, "leaf");
+        cst.addNode(currentToken.value, "leaf");
         //Go to the next token
         getNextToken();
         //Parse an expresson
         parseExpr();
         //Kill all those kids
-        tree.endChildren();
+        cst.endChildren();
         return;
     }else{
         //Climb a branch
-        tree.endChildren();
+        cst.endChildren();
         return;
     }
 }
@@ -409,27 +409,27 @@ function parseStringExpr(){
     //Output path of the parser
     outputMessage("parseStringExpr()");
     //Add branch node of string expr to cst
-    tree.addNode("String expression", "branch");
+    cst.addNode("String expression", "branch");
     //Add leaf node of the string
-    tree.addNode(currentToken.value, "leaf");
+    cst.addNode(currentToken.value, "leaf");
     //Get the next token
     getNextToken();
     //Output that it is a the beginning of a char list
-    tree.addNode("Char List", "branch");
+    cst.addNode("Char List", "branch");
     //Parse the char list
     parseCharlist();
     //If the token is a "
     if(matchToken(currentToken, '"')){
-        //Climb the tree and add it to the cst
-        tree.endChildren();
-        tree.addNode(currentToken.value, "leaf");
+        //Climb the cst and add it to the cst
+        cst.endChildren();
+        cst.addNode(currentToken.value, "leaf");
     }else{
         //Increment error count and output error
         parseErrorMessage('"');
         numParseErrors++;
     }
-    //Climb the tree
-    tree.endChildren();
+    //Climb the cst
+    cst.endChildren();
     return;
 }
 
@@ -437,7 +437,7 @@ function parseBooleanExpr(){
     //Output path of the parser
     outputMessage("parseBooleanExpr()");
     //Add branch node for bool expression
-    tree.addNode("Boolean Expression", "branch");
+    cst.addNode("Boolean Expression", "branch");
     //Check if we got the start of a bool expr
     if(matchToken(currentToken, "L_Paren")){
         //If we did set bool to true
@@ -445,11 +445,11 @@ function parseBooleanExpr(){
         //Parse the paren
         paren();
     }else{
-        //Add the token to the tree as a leaf
-        tree.addNode(currentToken.value, "leaf");
+        //Add the token to the cst as a leaf
+        cst.addNode(currentToken.value, "leaf");
     }
-    //Climb the tree
-    tree.endChildren();
+    //Climb the cst
+    cst.endChildren();
     return;
 }
 
@@ -457,11 +457,11 @@ function parseId(){
     //Output path of the parser
     outputMessage("parseId()");
     //Add id branch
-    tree.addNode("id", "branch");
+    cst.addNode("id", "branch");
     //Add the value of the id to the cst
-    tree.addNode(currentToken.value, "leaf");
+    cst.addNode(currentToken.value, "leaf");
     //Climb a branch
-    tree.endChildren();
+    cst.endChildren();
     return;
 }
 
@@ -471,7 +471,7 @@ function parseCharlist(){
     //Check if we got a char
     if(matchToken(currentToken, "char")){
         //Add the value of the char to the cst
-        tree.addNode(currentToken.value, "leaf");
+        cst.addNode(currentToken.value, "leaf");
         //Go to the next token
         getNextToken();
         //Continue parsing the char list until we get to the end 
@@ -499,7 +499,7 @@ function paren(){
         //Check how its being compared
         if(matchToken(currentToken, "OP_Equality") || matchToken(currentToken, "Not_Equal")){
             //Add the comparison to the cst as a leaf
-            tree.addNode(currentToken.value, "leaf");
+            cst.addNode(currentToken.value, "leaf");
             //Go to the next token
             getNextToken();
             //Parse as an expression
@@ -531,7 +531,7 @@ function paren(){
             printStatement = false;
         }
         //Add the paren as a leaf node
-        tree.addNode(currentToken.value, "leaf");
+        cst.addNode(currentToken.value, "leaf");
         return;
     }else{
         //Increment error count and output error

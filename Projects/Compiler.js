@@ -1,6 +1,6 @@
 //Declare global variables
 var currentProgram = 1;
-
+var analyzerTokens = [];
 
 function compile(){
     //Initialize variables
@@ -21,12 +21,17 @@ function compile(){
         
         //Check if the lexer was successful
         if(compilerLexer(input)){
-            outputMessage("Program " + currentProgram + " passed \n");
+            for(var alan = 0; alan < tokens.length; alan++){
+                analyzerTokens.push(tokens[i]);
+            }
             //Parse each program if lex was successful
             compilerParser();
             //Check if we got any errors during parse
             if(numParseErrors == 0){
-                outputMessage("\nConcrete Syntax Tree for program "+ currentProgram + "\n" + tree);   
+                outputMessage("\nConcrete Syntax Tree for program " + currentProgram + "\n" + cst);
+                if(compilerAnalyze() == 0){
+                    outputMessage("\nAbstract Syntax Tree for program " + currentProgram + "\n" + ast);
+                }
             }else{
                 outputMessage("\nConcrete Syntax Tree skipped due to Parser error");
             }
@@ -65,7 +70,7 @@ function compileUserInput(){
 
 function compilerLexer(userInput){
     if(tokensLexed = lex(userInput)){
-        outputMessage("Lexer passed with 0 errors and " + numWarnings + " warnings");
+        outputMessage("Lexer passed with 0 errors and " + numWarnings + " warnings\n");
     }else{
         outputMessage("Lexer failed with " + numErrors + " errors " + numWarnings + " warnings");
     }
@@ -75,5 +80,11 @@ function compilerLexer(userInput){
 function compilerParser(){
     if(!parseStart(tokens)){
         outputMessage("Parser successful");
+    }
+}
+
+function compilerAnalyze(){
+    if(analyze(analyzerTokens) == 0){
+        outputMessage("Analyzer successful");
     }
 }
