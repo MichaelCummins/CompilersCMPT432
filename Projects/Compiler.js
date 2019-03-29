@@ -84,7 +84,7 @@ function compilerParser(){
 }
 
 function compilerAnalyze(){
-    if(analyze(analyzerTokens) == 0){
+    if(analyzerStart(analyzerTokens) == 0){
         outputMessage("Analyzer successful");
     }
 }
