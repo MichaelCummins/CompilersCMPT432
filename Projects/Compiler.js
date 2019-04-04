@@ -9,6 +9,7 @@ function compile(){
     var programs = compileUserInput();
     //Tracks which program is being compiled
     currentProgram = 1;
+    analyzerTokens = [];
     
     //Go through each program
     for (var i = 0; i < programs.length; i++){
@@ -25,15 +26,8 @@ function compile(){
                 analyzerTokens.push(tokens[i]);
             }
             //Parse each program if lex was successful
-            compilerParser();
-            //Check if we got any errors during parse
-            if(numParseErrors == 0){
-                outputMessage("\nConcrete Syntax Tree for program " + currentProgram + "\n" + cst);
-                if(compilerAnalyze() == 0){
-                    outputMessage("\nAbstract Syntax Tree for program " + currentProgram + "\n" + ast);
-                }
-            }else{
-                outputMessage("\nConcrete Syntax Tree skipped due to Parser error");
+            if(compilerParser() == 0){
+                compilerAnalyze();
             }
         }
         //Go to the next program
@@ -80,11 +74,16 @@ function compilerLexer(userInput){
 function compilerParser(){
     if(!parseStart(tokens)){
         outputMessage("Parser successful");
+        outputMessage("\nCST for program " + currentProgram + "\n" + cst);
+    }else{
+        outputMessage("\nCST skipped due to parser errors");
     }
+    return numParseErrors;
 }
 
 function compilerAnalyze(){
     if(analyzerStart(analyzerTokens) == 0){
         outputMessage("Analyzer successful");
     }
+    return numAnalyzerErrors;
 }

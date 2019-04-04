@@ -1,171 +1,98 @@
-var ast = new Tree();
-ast.addNode("Root", "Branch");
-var symbolTree = new symbolTree();
-var currentScope = 0;
-var currentAnalyzerToken;
 var analyzerTokens = [];
+var analyzerCurrentToken;
 var numAnalyzerErrors = 0;
 var numAnalyzerWarnings = 0;
+var ast = new Tree();
+ast.addNode("root", "branch");
 
-function initializeAnalyzer(){
-    ast = new Tree();
-    ast.addNode("Root", "Branch");
-    symbolTree = new symbolTree();
-    currentScope = 0;
-    currentAnalyzerToken;
+function analyzerInit(){
     analyzerTokens = [];
+    analyzerCurrentToken;
+    numAnalyzerErrors = 0;
+    numAnalyzerWarnings = 0;
+    ast = new Tree();
+    ast.addNode("root", "branch");
 }
 
 function getNextAnalyzerToken(){
-    currentAnalyzerToken = analyzerTokens[0];
-    analyzerTokens.shift():
-}
-
-function checkNextAnalyzerToken(){
-    return analyzerTokens[0];
+    analyzerCurrentToken = analyzerTokens[0];
+    analyzerTokens.shift();
 }
 
 function analyzerStart(userInput){
-    initializeAnalyzer();
+    analyzerInit();
     analyzerTokens = userInput;
     analyzeProgram();
-    
-    if(numAnalyzerErrors){
-        outputMessage("Semantic analysis failed with " + numAnalyzerErrors + " errors and " +
-                      numAnalyzerWarnings + " warnings");
-    }else{
-        outputMessage("Semantic analysis passed");
-    }
-    
-    return numAnalyzerErrors;
 }
 
 function analyzeProgram(){
     ast.addNode("Program", "branch");
-    outputMessage("Analyzing program");
+    outputMessage("Analyze program");
     getNextAnalyzerToken();
     analyzeBlock();
-    if(matchToken(currentAnalyzerToken, "EOF")){
+    if(analyzerCurrentToken.kind == "EOF"){
         getNextAnalyzerToken();
     }
-    
     ast.endChildren();
 }
 
 function analyzeBlock(){
-    currentScope++;
-    outputMessage("Analyzing block");
+    outputMessage("Analyzing Block");
+    ast.addNode("Block", "branch");
+    
+    if(matchToken(analyzerCurrentToken, "L_Brace")){
+        getNextAnalyzerToken();
+    }
     
     analyzeStatementList();
     
-    if(matchToken(currentAnalyzerToken, "R_Brace")){
+    if(matchToken(analyzerCurrentToken, "R_Brace")){
         getNextAnalyzerToken();
     }
-    currentScope--;
+    
     ast.endChildren();
 }
 
 function analyzeStatementList(){
-    outputMessage("Analyzing Statement List");
+    outputMessage("Analyze Statement List");
     
-    if(matchToken(currentAnalyzerToken, "R_Brace")){
-        
-    }else if(matchToken(currentAnalyzerToken, "PRINT") || matchToken(currentAnalyzerToken, "ID")
-        || matchToken(currentAnalyzerToken, "INT")|| matchToken(currentAnalyzerToken, "STRING")
-        || matchToken(currentAnalyzerToken, "Boolean")|| matchToken(currentAnalyzerToken, "WHILE")
-        || matchToken(currentAnalyzerToken, "IF") || matchToken(currentAnalyzerToken, "L_Brace")){
+    if(matchToken(analyzerCurrentToken, "R_Brace")){
+        //Epsilon
+    }else if(matchToken(currentToken, "print") || matchToken(currentToken, "id")
+        || matchToken(currentToken, "int") || matchToken(currentToken, "string")
+        || matchToken(currentToken, "boolean") || matchToken(currentToken, "while")
+        || matchToken(currentToken, "if") || matchToken(currentToken, "L_Brace")){
         analyzeStatement();
         analyzeStatementList();
     }
 }
 
 function analyzeStatement(){
-    if(matchToken(currentAnalyzerToken, "PRINT")){
-        analyzePrintStatement();
-    }else if(matchToken(currentAnalyzerToken, "ID")){
-        analyzeAssignmentStatement();
-    }else if(matchToken(currentAnalyzerToken, "INT") || matchToken(currentAnalyzerToken, "STRING")
-            || matchToken(currentAnalyzerToken, "Boolean")){
-        analyzeVarDecl();
-    }else if(matchToken(currentAnalyzerToken, "WHILE")){
-        analyzeWhileStatement();
-    }else if(matchToken(currentAnalyzerToken, "IF")){
-        analyzeIfStatement();
-    }else if(matchToken(currentAnalyzerToken, "L_Brace")){
-        analyzeBlock();
+    outputMessage("Analyze Statement");
+        //Since a statement can be many things in our grammar check what it starts with
+        //If it starts with the token PRINT its a print statement
+    if(matchToken(currentToken, "print")){
+        //Go to print statement
+    //    parsePrintStatement();
+        //If its an id it goes to assignment 
+    }else if(matchToken(currentToken, "id")){
+        //Go to assignment statement
+   //     parseAssignmentStatement();
+        //If it starts with int string or boolean it is a variable declaration
+    }else if(matchToken(currentToken, "int") || matchToken(currentToken, "string") || 
+             matchToken(currentToken, "boolean")){
+        //Go to variable declaration
+  //      parseVarDecl();
+        //If it is while it is the start of a while statement
+    }else if(matchToken(currentToken, "while")){
+        //Go to while statement
+     //   parseWhileStatement();
+        //If it is if it is the start of an if statement
+    }else if(matchToken(currentToken, "if")){
+        //Go to if statement
+  //      parseIfStatement();
+        //If anything else, parse as a block statment
+    }else if(matchToken(currentToken, "L_Brace")){
+        parseBlock();
     }
 }
-
-function analyzePrintStatement(){
-    outputMessage("Analyzing print statement");
-    getNextAnalyzerToken();
-    
-    if(matchToken(currentAnalyzerToken, "L_Paren")){
-        getNextAnalyzerToken();
-    }
-    analyzeExpr();
-    
-    if(matchToken(currentAnalyzerToken, "R_Paren")){
-        getNextAnalyzerToken();
-    }
-    
-    ast.endChildren();
-}
-
-function analyzeAssignmentStatement(){
-    
-}
-
-function analyzeVarDecl(){
-    
-}
-
-function analyzeWhileStatement(){
-    
-}
-
-function analyzeIfStatement(){
-    outputMessage("Analyzing if statement");
-    getNextAnalyzerToken();
-    if(matchToken(currentAnalyzerToken, "L_Paren") || matchToken(currentAnalyzerToken, "Boolean")){
-        analyzeBooleanExpr();
-        getNextAnalyzerToken();
-        analyzeBlock();
-    }
-    ast.endChildren();
-}
-
-function analyzeExpr(){
-    outputMessage("Analyzing expression");
-    
-    if(matchToken(currentAnalyzerToken, "DIGIT")){
-        analyzeIntExpr();
-    }else if(matchToken(currentAnalyzerToken, "Quote")){
-        analyzeStringExpr();
-    }else if(matchToken(currentAnalyzerToken, "L_Paren") || matchToken(currentAnalyzerToken, "Boolean")){
-        analyzeBooleanExpr();
-    }else if(matchToken(currentAnalyzerToken, "ID")){
-        
-    }
-}
-
-function analyzeIntExpr(){
-    
-}
-
-function analyzeStringExpr(){
-    
-}
-
-function analyzeBooleanExpr(){
-    
-}
-
-function analyzeId(){
-    
-}
-
-function analyzeCharList(){
-    
-}
-
