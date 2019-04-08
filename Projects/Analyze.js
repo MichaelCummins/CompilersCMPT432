@@ -37,7 +37,7 @@ function analyzeProgram(){
 }
 
 function analyzeBlock(){
-    outputMessage("Analyzing Block");
+    outputMessage("Analyze Block");
     ast.addNode("Block", "branch");
     
     if(matchToken(analyzerCurrentToken, "L_Brace")){
@@ -73,26 +73,55 @@ function analyzeStatement(){
         //If it starts with the token PRINT its a print statement
     if(matchToken(currentToken, "print")){
         //Go to print statement
-    //    parsePrintStatement();
+    //    analyzePrintStatement();
         //If its an id it goes to assignment 
     }else if(matchToken(currentToken, "id")){
         //Go to assignment statement
-   //     parseAssignmentStatement();
+   //     analyzeAssignmentStatement();
         //If it starts with int string or boolean it is a variable declaration
     }else if(matchToken(currentToken, "int") || matchToken(currentToken, "string") || 
              matchToken(currentToken, "boolean")){
         //Go to variable declaration
-  //      parseVarDecl();
+  //      analyzeVarDecl();
         //If it is while it is the start of a while statement
     }else if(matchToken(currentToken, "while")){
         //Go to while statement
-     //   parseWhileStatement();
+     //   analyzeWhileStatement();
         //If it is if it is the start of an if statement
     }else if(matchToken(currentToken, "if")){
         //Go to if statement
-  //      parseIfStatement();
+  //      analyzeIfStatement();
         //If anything else, parse as a block statment
     }else if(matchToken(currentToken, "L_Brace")){
-        parseBlock();
+        analyzeBlock();
     }
+}
+
+function analyzePrintStatement(){
+    outputMessage("Analyzing print statement");
+    getNextAnalyzerToken();
+    
+    if(matchToken(analyzerCurrentToken, "L_Paren")){
+        getNextAnalyzerToken();
+    }
+    
+    analyzeExpr();
+    
+    if(matchToken(analyzerCurrentToken, "R_Paren")){
+        getNextAnalyzerToken();
+    }
+
+    ast.endChildren();
+}
+
+function analyzeAssignmentStatement(){
+    outputMessage("Analyzing Assignment Statement");
+    if(matchToken(analyzerCurrentToken, "id")){
+        
+    }
+}
+
+function analyzeVarDecl(){
+    outputMessage("Analyzing Var decl");
+    
 }
