@@ -84,6 +84,9 @@ function compilerParser(){
 function compilerAnalyze(){
     if(analyzerStart(analyzerTokens) == 0){
         outputMessage("Analyzer successful");
+        outputMessage("\nAST for program " + currentProgram + "\n" + ast);
+    }else{
+        outputMessage("\nAST skipped due to analyzer errors");
     }
     return numAnalyzerErrors;
 }

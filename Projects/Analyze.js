@@ -23,6 +23,11 @@ function analyzerStart(userInput){
     analyzerInit();
     analyzerTokens = userInput;
     analyzeProgram();
+    
+    if(numAnalyzerErrors != 0){
+        outputMessage("Analyzer failed with " + numAnalyzerErrors + "errors");
+    }
+    return numAnalyzerErrors;
 }
 
 function analyzeProgram(){
@@ -99,6 +104,7 @@ function analyzeStatement(){
 
 function analyzePrintStatement(){
     outputMessage("Analyzing print statement");
+    ast.addNode("Print", "Branch");
     getNextAnalyzerToken();
     
     if(matchToken(analyzerCurrentToken, "L_Paren")){
@@ -116,6 +122,7 @@ function analyzePrintStatement(){
 
 function analyzeAssignmentStatement(){
     outputMessage("Analyzing Assignment Statement");
+    ast.addNode("Assignment Statement", "branch");
     if(matchToken(analyzerCurrentToken, "id")){
         
     }
@@ -123,6 +130,7 @@ function analyzeAssignmentStatement(){
 
 function analyzeVarDecl(){
     outputMessage("Analyzing Var decl");
+    ast.addNode("Var Decl", "branch");
     getNextAnalyzerToken();
     
     ast.endChildren();
@@ -130,6 +138,8 @@ function analyzeVarDecl(){
 
 function analyzeWhileStatement(){
     outputMessage("Analyzing While Statement");
+    ast.addNode("While Statement", "branch");
+    
     getNextAnalyzerToken();
     
     if(matchToken(analyzerCurrentToken, "L_Paren") || matchToken(analyzerCurrentToken, "boolean")){
@@ -142,6 +152,7 @@ function analyzeWhileStatement(){
 
 function analyzeIfStatement(){
     outputMessage("Analyzing If Statement");
+    ast.addNode("If Statement", "branch");
     getNextAnalyzerToken();
     
     if(matchToken(analyzerCurrentToken, "L_Paren") || matchToken(analyzerCurrentToken, "boolean")){
@@ -154,7 +165,6 @@ function analyzeIfStatement(){
 
 function analyzeExpr(){
     outputMessage("Analyzing Expr");
-    
     if(matchToken(analyzerCurrentToken, "digit")){
         analyzeIntExpr();
     }else if(matchToken(analyzerCurrentToken, '"')){
@@ -171,7 +181,7 @@ function analyzeIntExpr(){
     outputMessage("Analyzing Int Expr");
     
     if(matchToken(LookAheadAnalyzerTokens, "+")){
-        //Add branch for addition
+        ast.addNode("Addition", "branch");
     }
     analyzeId();
     
@@ -187,6 +197,8 @@ function analyzeStringExpr(){
     if(matchToken(analyzerCurrentToken, '"')){
         getNextAnalyzerToken();
     }
+    
+    ast.addNode(charList, "leaf");
 }
 
 function analyzeId(){
@@ -195,6 +207,7 @@ function analyzeId(){
         // error++
     }
     
+    ast.addNode(analyzerCurrentToken.value, "leaf");
     getNextAnalyzerToken();
 }
 
