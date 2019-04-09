@@ -123,5 +123,102 @@ function analyzeAssignmentStatement(){
 
 function analyzeVarDecl(){
     outputMessage("Analyzing Var decl");
+    getNextAnalyzerToken();
     
+    ast.endChildren();
+}
+
+function analyzeWhileStatement(){
+    outputMessage("Analyzing While Statement");
+    getNextAnalyzerToken();
+    
+    if(matchToken(analyzerCurrentToken, "L_Paren") || matchToken(analyzerCurrentToken, "boolean")){
+        analyzeBooleanExpr();
+        getNextAnalyzerToken();
+        analyzeBlock();
+    }
+    ast.endChildren();
+}
+
+function analyzeIfStatement(){
+    outputMessage("Analyzing If Statement");
+    getNextAnalyzerToken();
+    
+    if(matchToken(analyzerCurrentToken, "L_Paren") || matchToken(analyzerCurrentToken, "boolean")){
+        analyzeBooleanExpr();
+        getNextAnalyzerToken();
+        analyzeBlock();
+    }
+    ast.endChildren();
+}
+
+function analyzeExpr(){
+    outputMessage("Analyzing Expr");
+    
+    if(matchToken(analyzerCurrentToken, "digit")){
+        analyzeIntExpr();
+    }else if(matchToken(analyzerCurrentToken, '"')){
+        analyzeStringExpr();
+    }else if(matchToken(analyzerCurrentToken, "L_Paren") || 
+             matchToken(analyzerCurrentToken, "boolean")){
+        analyzeBooleanExpr();
+    }else if(matchToken(analyzerCurrentToken, "id")){
+        analyzeId();
+    }
+}
+
+function analyzeIntExpr(){
+    outputMessage("Analyzing Int Expr");
+    
+    if(matchToken(LookAheadAnalyzerTokens, "+")){
+        //Add branch for addition
+    }
+    analyzeId();
+    
+    if(matchToken(analyzerCurrentToken, "+")){
+        getNextAnalyzerToken();
+        analyzeExpr();
+        ast.endChildren();
+    }
+}
+
+function analyzeStringExpr(){
+    outputMessage("Analyzing String Expr");
+    if(matchToken(analyzerCurrentToken, '"')){
+        getNextAnalyzerToken();
+    }
+}
+
+function analyzeId(){
+    if(matchToken(analyzerCurrentToken, "id")){
+        //if (checkIfDefined)
+        // error++
+    }
+    
+    getNextAnalyzerToken();
+}
+
+function analyzeCharList(){
+    outputMessage("Analyzing Char List");
+    if(matchToken(analyzerCurrentToken, '"')){
+        return "";
+    }
+    
+    var charList = analyzerCurrentToken.value;
+    
+    getNextAnalyzerToken();
+    
+    if(matchToken(analyzerCurrentTokenm, "char")){
+        return (charList + analyzeCharList());
+    }else {
+        return charList;
+    }
+}
+
+function analyzeBooleanExpr(){
+    outputMessage("Analyzing Boolean Expr");
+    
+    if(matchToken(analyzerCurrentToken, "boolean")){
+        analyzeId();
+    }
 }
