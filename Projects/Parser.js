@@ -12,7 +12,7 @@ var printStatement = false;
 
 //Reset variables for each program
 function initializeParser(){
-    currentToken
+    currentToken;
     tokens = [];
     numParseErrors = 0;
     programLevel = 0;

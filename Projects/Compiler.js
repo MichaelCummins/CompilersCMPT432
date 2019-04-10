@@ -1,6 +1,6 @@
 //Declare global variables
 var currentProgram = 1;
-var analyzerTokens = [];
+var aTokens = [];
 
 function compile(){
     //Initialize variables
@@ -9,7 +9,7 @@ function compile(){
     var programs = compileUserInput();
     //Tracks which program is being compiled
     currentProgram = 1;
-    analyzerTokens = [];
+    aTokens = [];
     
     //Go through each program
     for (var i = 0; i < programs.length; i++){
@@ -23,7 +23,7 @@ function compile(){
         //Check if the lexer was successful
         if(compilerLexer(input)){
             for(var alan = 0; alan < tokens.length; alan++){
-                analyzerTokens.push(tokens[i]);
+                aTokens.push(tokens[alan]);
             }
             //Parse each program if lex was successful
             if(compilerParser() == 0){
@@ -82,7 +82,7 @@ function compilerParser(){
 }
 
 function compilerAnalyze(){
-    if(analyzerStart(analyzerTokens) == 0){
+    if(analyzerStart(aTokens) == 0){
         outputMessage("Analyzer successful");
         outputMessage("\nAST for program " + currentProgram + "\n" + ast);
     }else{

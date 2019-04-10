@@ -22,11 +22,13 @@ function getNextAnalyzerToken(){
 function analyzerStart(userInput){
     analyzerInit();
     analyzerTokens = userInput;
+    
     analyzeProgram();
     
     if(numAnalyzerErrors != 0){
-        outputMessage("Analyzer failed with " + numAnalyzerErrors + "errors");
+        outputMessage("Analyzer failed with " + numAnalyzerErrors + " errors");
     }
+    
     return numAnalyzerErrors;
 }
 
@@ -48,9 +50,7 @@ function analyzeBlock(){
     if(matchToken(analyzerCurrentToken, "L_Brace")){
         getNextAnalyzerToken();
     }
-    
     analyzeStatementList();
-    
     if(matchToken(analyzerCurrentToken, "R_Brace")){
         getNextAnalyzerToken();
     }
@@ -63,10 +63,10 @@ function analyzeStatementList(){
     
     if(matchToken(analyzerCurrentToken, "R_Brace")){
         //Epsilon
-    }else if(matchToken(currentToken, "print") || matchToken(currentToken, "id")
-        || matchToken(currentToken, "int") || matchToken(currentToken, "string")
-        || matchToken(currentToken, "boolean") || matchToken(currentToken, "while")
-        || matchToken(currentToken, "if") || matchToken(currentToken, "L_Brace")){
+    }else if(matchToken(analyzerCurrentToken, "print") || matchToken(analyzerCurrentToken, "id")
+        || matchToken(analyzerCurrentToken, "int") || matchToken(analyzerCurrentToken, "string")
+        || matchToken(analyzerCurrentToken, "boolean") || matchToken(analyzerCurrentToken, "while")
+        || matchToken(analyzerCurrentToken, "if") || matchToken(currentToken, "L_Brace")){
         analyzeStatement();
         analyzeStatementList();
     }
@@ -76,28 +76,28 @@ function analyzeStatement(){
     outputMessage("Analyze Statement");
         //Since a statement can be many things in our grammar check what it starts with
         //If it starts with the token PRINT its a print statement
-    if(matchToken(currentToken, "print")){
+    if(matchToken(analyzerCurrentToken, "Print")){
         //Go to print statement
-    //    analyzePrintStatement();
+        analyzePrintStatement();
         //If its an id it goes to assignment 
-    }else if(matchToken(currentToken, "id")){
+    }else if(matchToken(analyzerCurrentToken, "id")){
         //Go to assignment statement
-   //     analyzeAssignmentStatement();
+        analyzeAssignmentStatement();
         //If it starts with int string or boolean it is a variable declaration
-    }else if(matchToken(currentToken, "int") || matchToken(currentToken, "string") || 
-             matchToken(currentToken, "boolean")){
+    }else if(matchToken(analyzerCurrentToken, "int") || matchToken(analyzerCurrentToken, "string") || 
+             matchToken(analyzerCurrentToken, "boolean")){
         //Go to variable declaration
-  //      analyzeVarDecl();
+        analyzeVarDecl();
         //If it is while it is the start of a while statement
-    }else if(matchToken(currentToken, "while")){
+    }else if(matchToken(analyzerCurrentToken, "while")){
         //Go to while statement
-     //   analyzeWhileStatement();
+        analyzeWhileStatement();
         //If it is if it is the start of an if statement
-    }else if(matchToken(currentToken, "if")){
+    }else if(matchToken(analyzerCurrentToken, "if")){
         //Go to if statement
-  //      analyzeIfStatement();
+        analyzeIfStatement();
         //If anything else, parse as a block statment
-    }else if(matchToken(currentToken, "L_Brace")){
+    }else if(matchToken(analyzerCurrentToken, "L_Brace")){
         analyzeBlock();
     }
 }
