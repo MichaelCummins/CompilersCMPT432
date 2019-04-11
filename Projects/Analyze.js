@@ -127,7 +127,6 @@ function analyzePrintStatement(){
 function analyzeAssignmentStatement(){
     outputMessage("Analyzing Assignment Statement");
     ast.addNode("Assignment Statement", "branch");
-    getNextAnalyzerToken();
     if(matchToken(analyzerCurrentToken, "id")){
         analyzeId();
     }
@@ -212,7 +211,13 @@ function analyzeStringExpr(){
         getNextAnalyzerToken();
     }
     
+    var charList = analyzeCharList();
+    
     ast.addNode(charList, "leaf");
+    
+    if(matchToken(analyzerCurrentToken, '"')){
+        getNextAnalyzerToken();
+    }
 }
 
 function analyzeId(){
@@ -226,14 +231,14 @@ function analyzeCharList(){
         return "";
     }
     
-    var charList = analyzerCurrentToken.value;
+    var chars = analyzerCurrentToken.value;
     
     getNextAnalyzerToken();
     
-    if(matchToken(analyzerCurrentTokenm, "char")){
-        return (charList + analyzeCharList());
+    if(matchToken(analyzerCurrentToken, "char")){
+        return (chars + analyzeCharList());
     }else {
-        return charList;
+        return chars;
     }
 }
 
