@@ -19,6 +19,10 @@ function getNextAnalyzerToken(){
     analyzerTokens.shift();
 }
 
+function analyzerLookAhead(){
+    return analyzerTokens[0];
+}
+
 function analyzerStart(userInput){
     analyzerInit();
     analyzerTokens = userInput;
@@ -66,7 +70,7 @@ function analyzeStatementList(){
     }else if(matchToken(analyzerCurrentToken, "print") || matchToken(analyzerCurrentToken, "id")
         || matchToken(analyzerCurrentToken, "int") || matchToken(analyzerCurrentToken, "string")
         || matchToken(analyzerCurrentToken, "boolean") || matchToken(analyzerCurrentToken, "while")
-        || matchToken(analyzerCurrentToken, "if") || matchToken(currentToken, "L_Brace")){
+        || matchToken(analyzerCurrentToken, "if") || matchToken(analyzerCurrentToken, "L_Brace")){
         analyzeStatement();
         analyzeStatementList();
     }
@@ -76,7 +80,7 @@ function analyzeStatement(){
     outputMessage("Analyze Statement");
         //Since a statement can be many things in our grammar check what it starts with
         //If it starts with the token PRINT its a print statement
-    if(matchToken(analyzerCurrentToken, "Print")){
+    if(matchToken(analyzerCurrentToken, "print")){
         //Go to print statement
         analyzePrintStatement();
         //If its an id it goes to assignment 
@@ -123,9 +127,16 @@ function analyzePrintStatement(){
 function analyzeAssignmentStatement(){
     outputMessage("Analyzing Assignment Statement");
     ast.addNode("Assignment Statement", "branch");
+    getNextAnalyzerToken();
     if(matchToken(analyzerCurrentToken, "id")){
-        
+        analyzeId();
     }
+    
+    if(matchToken(analyzerCurrentToken, "OP_Assignment")){
+        getNextAnalyzerToken();
+        analyzeExpr();
+    }
+    ast.endChildren();
 }
 
 function analyzeVarDecl(){
@@ -133,6 +144,9 @@ function analyzeVarDecl(){
     ast.addNode("Var Decl", "branch");
     getNextAnalyzerToken();
     
+    if(matchToken(analyzerCurrentToken, "id")){
+        analyzeId();
+    }
     ast.endChildren();
 }
 
@@ -180,7 +194,7 @@ function analyzeExpr(){
 function analyzeIntExpr(){
     outputMessage("Analyzing Int Expr");
     
-    if(matchToken(LookAheadAnalyzerTokens, "+")){
+    if(matchToken(analyzerLookAhead, "+")){
         ast.addNode("Addition", "branch");
     }
     analyzeId();
@@ -202,11 +216,6 @@ function analyzeStringExpr(){
 }
 
 function analyzeId(){
-    if(matchToken(analyzerCurrentToken, "id")){
-        //if (checkIfDefined)
-        // error++
-    }
-    
     ast.addNode(analyzerCurrentToken.value, "leaf");
     getNextAnalyzerToken();
 }
