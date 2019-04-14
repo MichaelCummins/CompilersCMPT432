@@ -2,6 +2,7 @@ var analyzerTokens = [];
 var analyzerCurrentToken;
 var numAnalyzerErrors = 0;
 var numAnalyzerWarnings = 0;
+var currentScope = 0;
 var ast = new Tree();
 ast.addNode("root", "branch");
 
@@ -12,6 +13,7 @@ function analyzerInit(){
     analyzerCurrentToken;
     numAnalyzerErrors = 0;
     numAnalyzerWarnings = 0;
+    currentScope = 0;
     ast = new Tree();
     ast.addNode("root", "branch");
     sT = new symbolTree();
@@ -53,6 +55,7 @@ function analyzeProgram(){
 function analyzeBlock(){
     outputMessage("Analyze Block");
     ast.addNode("Block", "branch");
+    sT.addNode("Scope: " + currentScope, "branch" + currentScope);
     
     if(matchToken(analyzerCurrentToken, "L_Brace")){
         getNextAnalyzerToken();
