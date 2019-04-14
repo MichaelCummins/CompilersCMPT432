@@ -24,7 +24,7 @@ function symbolTree() {
         var node = { name: name,
                      children: [],
                      parent: {},
-                    scope: scope,
+                     scope: []
                    };
 
         // Check to see if it needs to be the root node.

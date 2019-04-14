@@ -5,6 +5,8 @@ var numAnalyzerWarnings = 0;
 var ast = new Tree();
 ast.addNode("root", "branch");
 
+var sT = new symbolTree();
+
 function analyzerInit(){
     analyzerTokens = [];
     analyzerCurrentToken;
@@ -12,6 +14,7 @@ function analyzerInit(){
     numAnalyzerWarnings = 0;
     ast = new Tree();
     ast.addNode("root", "branch");
+    sT = new symbolTree();
 }
 
 function getNextAnalyzerToken(){
