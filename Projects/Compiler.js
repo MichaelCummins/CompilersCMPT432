@@ -85,6 +85,7 @@ function compilerAnalyze(){
     if(analyzerStart(aTokens) == 0){
         outputMessage("Analyzer successful");
         outputMessage("\nAST for program " + currentProgram + "\n" + ast);
+    //    outputMessage("\nSymbol Table for program " + currentProgram + "\n" + sT);
     }else{
         outputMessage("\nAST skipped due to analyzer errors");
     }

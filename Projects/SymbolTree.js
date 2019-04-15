@@ -24,7 +24,8 @@ function symbolTree() {
         var node = { name: name,
                      children: [],
                      parent: {},
-                     scope: []
+                     scope: scope,
+                     symbol: []
                    };
 
         // Check to see if it needs to be the root node.
@@ -78,12 +79,21 @@ function symbolTree() {
             if (!node.children || node.children.length === 0){
                 // ... note the leaf node.
                 traversalResult += "[" + node.name + "]";
-                traversalResult += "\n";
+                traversalResult += ":";
+                node.symbol.forEach(function (symbol){
+                    traversalResult +=  " " + symbol.type + " " + symbol.kind + " |";                    
+                });
+                traversalResult += "\n"
             }
             else{
                 // There are children, so note these interior/branch nodes and ...
                 if(node.name != "Root"){
-                    traversalResult += "<" + node.name + "> \n";
+                    traversalResult += "[" + node.name + "]";
+                    traversalResult += ":";
+                    node.symbol.forEach(function (symbol){
+                        traversalResult += " " + symbol.type + " " + symbol.kind + " |";
+                    });
+                    traversalResult += "\n";
                 }
                 // .. recursively expand them.
                 for (var i = 0; i < node.children.length; i++)
