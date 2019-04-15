@@ -2,15 +2,14 @@ var analyzerTokens = [];
 var analyzerCurrentToken;
 var numAnalyzerErrors = 0;
 var numAnalyzerWarnings = 0;
-var currentScope = 0;
-var scopeLevel = 0;
+var currentScope = -1;
+var scopeLevel = -1;
 var addition = false;
 var temporaryId = null;
 var temporaryValue = null;
 var temporaryType = null;
 var ast = new Tree();
 ast.addNode("root", "branch");
-
 var sT = new symbolTree();
 
 function analyzerInit(){
@@ -18,8 +17,8 @@ function analyzerInit(){
     analyzerCurrentToken;
     numAnalyzerErrors = 0;
     numAnalyzerWarnings = 0;
-    currentScope = 0;
-    scopeLevel = 0;
+    currentScope = -1;
+    scopeLevel = -1;
     addition = false;
     temporaryId = null;
     temporaryValue = null;
@@ -78,8 +77,7 @@ function analyzeBlock(){
     }
     
     scopeLevel--;
-    currentScope--;
-    sT.endChildren();
+ //   sT.endChildren();
     ast.endChildren();
 }
 
@@ -128,7 +126,7 @@ function analyzeStatement(){
 }
 
 function analyzePrintStatement(){
-    outputMessage("Analyzing print statement");
+    outputMessage("Analyze print statement");
     ast.addNode("Print", "Branch");
     getNextAnalyzerToken();
     
@@ -149,105 +147,11 @@ function analyzeAssignmentStatement(){
     outputMessage("Analyzing Assignment Statement");
     ast.addNode("Assignment Statement", "branch");
     if(matchToken(analyzerCurrentToken, "id")){
-        var id = analyzerCurrentToken.value;
-        var kind = getVariableDetails(id, sT.cur);
-        if(kind == undefined){
-            numAnalyzerErrors++;
-            outputMessage("ERROR ID " + id + " was not declared in this scope " + currentScope);
-        }
-        
-        if(!addition){
-            temporaryId = id;
-            try {
-                temporaryType = type.toUpperCase();
-            }catch(e){
-                e.printstack
-                temporaryType = null;
-            }
-            
-            addition = true;
-            
-            if(temporaryValue == null || temporaryValue == undefined){
-                temporaryValue = getVariableDetails(id, sT.cur);
-            }else{
-                temporaryValue = Number(temporaryValue) + Number(getVariableDetails(id, sT.cur));
-            }
-        }
         analyzeId();
     }
     
     if(matchToken(analyzerCurrentToken, "OP_Assignment")){
         getNextAnalyzerToken();
-        if(addition){
-            if(matchToken(analyzerCurrentToken, "digit")){
-                if(temporaryType == "int"){
-                    if(analyzerLookAhead != "plus"){
-                        if(temporaryValue == 0){
-                            temporaryValue = Number(analyzerCurrentToken.value);
-                        }else{
-                            temporaryValue = Number(temporaryValue) + Number(analyzerCurrentToken.value);
-                        }
-                        setValue;
-                        addition = false;
-                        temporaryId = null;
-                        temporaryType = null;
-                        temporaryValue = null;
-                    }else{
-                        addition = false;
-                        temporaryId = null;
-                        temporaryType = null;
-                        temporaryValue = null; 
-                    }
-                }else if(temporaryType == "boolean"){
-                    if(Number(analyzerCurrentToken.value) > 0){
-                        var boolean = true;
-                    }else{
-                        boolean = false;
-                    }
-                    setValue;
-                    temporaryId = null;
-                    temporaryType = null;
-                    temporaryValue = null;
-                }else{
-                    numAnalyzerErrors++;
-                    outputMessage("ERROR " + temporaryId + " was expecting type " + temporaryType + " and was given int");
-                }
-            }else if(matchToken(analyzerCurrentToken, "id")){
-                var currentTokenType = getVariableDetails(analyzerCurrentToken.value, sT.cur);
-                if(temporaryType.toLowerCase() != currentTokenType){
-                    numAnalyzerErrors++;
-                    outputMessage("ERROR type mismatch, id on line " + analyzerCurrentToken.currentLine + 
-                                 " is defined as " + temporaryType + " and was assigned as " + currentTokenType);
-                }
-                if(temporaryValue == 0){
-                    temporaryValue = getVariableDetails(analyzerCurrentToken.value, sT.cur);
-                }else{
-                    temporaryValue = Number(temporaryValue) + 
-                        Number(getVariableDetails(analyzerCurrentToken, sT.cur));
-                }
-                setValue;
-                temporaryId = null;
-                temporaryType = null;
-                temporaryValue = null;
-            }else if(matchToken(analyzerCurrentToken, "boolean")){
-                if(temporaryType == boolean){
-                    var value;
-                    if(matchToken(analyzerCurrentToken, "true")){
-                        value = true;
-                    }else if(matchToken(analyzerCurrentToken, "false")){
-                        value = false;
-                    }
-                    setValue;
-                    temporaryId = null;
-                    temporaryType = null;
-                    temporaryValue = null;
-                }else{
-                    numAnalyzerErrors++;
-                    outputMessage("ERROR id " + temporaryId + " was expecting type " + 
-                                  temporaryType + " but was given boolean");
-                }
-            }
-        }
         analyzeExpr();
     }
     ast.endChildren();
@@ -256,6 +160,7 @@ function analyzeAssignmentStatement(){
 function analyzeVarDecl(){
     outputMessage("Analyzing Var decl");
     ast.addNode("Var Decl", "branch");
+    var currentNodeType = analyzerCurrentToken.kind.toLowerCase();
     getNextAnalyzerToken();
     
     if(matchToken(analyzerCurrentToken, "id")){
@@ -374,48 +279,5 @@ function analyzeBooleanExpr(){
             getNextAnalyzerToken();
             analyzeExpr();
         }
-    }
-}
-
-function checkIfVariableExists(amIAlive){
-    for(var michael = 0; michael < st.cur.symbol.length; michael++){
-        if(amIAlive == st.cur.symbol[michael].getKind()){
-            return st.cur.symbol[michael].getLine();
-        }
-    }
-}
-
-function createSymbolTable(table = "", scopeLevel){
-    if(scopeLevel.symbol.length > 0){
-        for(var currentSymbol = 0; scopeLevel.symbol.length; currentSymbol++){
-            table += scopeLevel.symbol[currentSymbol].getKind()  +
-                     scopeLevel.symbol[currentSymbol].getType()  +
-                     scopeLevel.symbol[currentSymbol].getScope() + 
-                     scopeLevel.symbol[currentSymbol].getLine();
-        }
-    }
-    return table;
-}
-
-function setUsed(declaredId, scopeLevel){
-    if((scopeLevel.parent != undefined || scopeLevel.parent != null) && scopeLevel.symbol.length > 0){
-       for(var i = 0; i < scopeLevel.symbol.length; i++){
-            if(declaredId == scopeLevel.symbol[i].getKind()){
-                scopeLevel.symbol[i].used = true;
-            }
-        }
-    }
-}
-
-function getVariableDetails(declaredId, scopeLevel){
-    if((scopeLevel.symbol != undefined || scopeLevel.symbol != null) && scopeLevel.symbol.length > 0){
-        for(var i = 0; i < scopeLevel.symbol.length; i++){
-            if(declaredId == scopeLevel.symbol[i].getKind()){
-                return scopeLevel.symbol[i].type;
-            }
-        }
-    }
-    if(scopeLevel.parent != undefined || scopeLevel.parent != null){
-        return getVariableDetails(declaredId, scopeLevel.parent);
     }
 }
