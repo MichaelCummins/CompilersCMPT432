@@ -5,8 +5,8 @@
 // work by Christopher Siena
 //-----------------------------------------
 // Creates Symbol class for Symbol Table
-class Symbol {
-	constructor(kind, type, line, scope, scopeLevel, programNumber, initialized, utilized, value, stringHex, tempStore) {
+class Symbol{
+	constructor(kind, type, line, scope, scopeLevel, programNumber, initialized, utilized, value, stringHex, tempStore){
 		this.kind = kind;
 		this.type = type;
 		this.line = line;
@@ -20,23 +20,23 @@ class Symbol {
 		this.tempStore = tempStore;
 	}
 
-	getKind() {
+	getKind(){
 		return this.kind;
 	}
 
-	getType() {
+	getType(){
 		return this.type;
 	}
 
-	getLine() {
+	getLine(){
 		return this.line;
 	}
 
-	getScope() {
+	getScope(){
 		return this.scope;
 	}
 
-	getDetails() {
+	getDetails(){
 		var details = {
 			type: this.type,
 			line: this.line,

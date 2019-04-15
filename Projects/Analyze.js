@@ -2,30 +2,34 @@ var analyzerTokens = [];
 var analyzerCurrentToken;
 var numAnalyzerErrors = 0;
 var numAnalyzerWarnings = 0;
-var currentScope = -1;
+var scope = -1;
 var scopeLevel = -1;
+var analyzerScopeArray = [];
+var scopeCounter = 0;
 var addition = false;
 var temporaryId = null;
 var temporaryValue = null;
 var temporaryType = null;
 var ast = new Tree();
 ast.addNode("root", "branch");
-var sT = new symbolTree();
+var symbolTree = new symbolTree();
 
 function analyzerInit(){
     analyzerTokens = [];
     analyzerCurrentToken;
     numAnalyzerErrors = 0;
     numAnalyzerWarnings = 0;
-    currentScope = -1;
+    scope = -1;
     scopeLevel = -1;
+    analyzerScopeArray = [];
+    scopeCounter = 0;
     addition = false;
     temporaryId = null;
     temporaryValue = null;
     temporaryType = null;
     ast = new Tree();
     ast.addNode("root", "branch");
-    sT = new symbolTree();
+   // symbolTree = new symbolTree();
 }
 
 function getNextAnalyzerToken(){
@@ -35,6 +39,58 @@ function getNextAnalyzerToken(){
 
 function analyzerLookAhead(){
     return analyzerTokens[0];
+}
+
+function checkIfExists(id){
+    for(var i = 0; i < symbolTree.cur.symbols.length; i++){
+        if(id == symbolTree.cur.symbols[i].getKind()){
+            return symbolTree.cur.symbols[i].getLine();
+        }
+    }
+}
+
+function getVarValue(id, level){
+    if((level.parent != undefined || level.parent != null) && level.symbols.length > 0){
+        for(var i = 0; i < level.symbols.length; i++){
+            if(id == level.symbols[i].getKind() && currentProgram == level.symbols[i].programNumber){
+                return level.symbols[i].value;
+            }
+        }
+    }
+}
+
+function setVarValue(id, value, level){
+    if((level.parent!= undefined || level.parent != null) && level.symbols.length > 0){
+        for(var i = 0; i < level.symbols.length; i++){
+            if(id == level.symbols[i].getKind()){
+                level.symbols[i].initialized = true;
+                level.symbols[i].value = value;
+                var localScope = level.symbols[i].scope;
+            }
+        }
+    }
+    if(level.parent != undefined || level.parent != null){
+        setVarValue(id, value, level.parent);
+    }
+    for(var i = 0; i < allSymbols.length; i++){
+        if((id == allSymbols[i].getKind()) && (localscope == allSymbols[i].scope)){
+            allSymbols[i].initialized = true;
+            allSymbols[i].value = value;
+        }
+    }
+}
+
+function setUsed(id, level){
+    if((level.parent != undefined || level.parent != null) && level.symbols.length > 0){
+        for(var i = 0; i < level.symbols.length; i++){
+            if(id == level.symbols[i].getKind()){
+                level.symbols[i].utilized = true;
+            }
+        }
+    }
+    if(level.parent != undefined || level.parent != null){
+        setUsed(id, level.parent);
+    }
 }
 
 function analyzerStart(userInput){
@@ -64,10 +120,12 @@ function analyzeProgram(){
 function analyzeBlock(){
     outputMessage("Analyze Block");
     scopeLevel++;
-    currentScope++;
-    ast.addNode("Block", "branch");
-    sT.addNode("Scope: " + currentScope, "branch" + currentScope);
+    scopeCounter++;
+    analyzerScopeArray.push(scope);
+    scope = scopeCounter;
     
+    ast.addNode("Block", "branch");
+    symbolTree.addNode("Scope: " + scope, "branch", scope);
     if(matchToken(analyzerCurrentToken, "L_Brace")){
         getNextAnalyzerToken();
     }
@@ -77,7 +135,8 @@ function analyzeBlock(){
     }
     
     scopeLevel--;
- //   sT.endChildren();
+    scope = analyzerScopeArray.pop();
+    symbolTree.endChildren();
     ast.endChildren();
 }
 
@@ -160,10 +219,18 @@ function analyzeAssignmentStatement(){
 function analyzeVarDecl(){
     outputMessage("Analyzing Var decl");
     ast.addNode("Var Decl", "branch");
-    var currentNodeType = analyzerCurrentToken.kind.toLowerCase();
+    var type = analyzerCurrentToken.kind.toLowerCase();
     getNextAnalyzerToken();
-    
     if(matchToken(analyzerCurrentToken, "id")){
+        if(line = checkIfExists(analyzerCurrentToken.value)){
+            numAnalyzerErrors++;
+            outputMessage("Bad");
+        }else{
+            var symbol = new Symbol(analyzerCurrentToken.value, type, analyzerCurrentToken.currentLine, 
+                                    scope, scopeLevel, currentProgram, 
+                                    false, false, false);
+            symbolTree.cur.symbols.push(symbol);
+        }
         analyzeId();
     }
     ast.endChildren();
@@ -206,6 +273,20 @@ function analyzeExpr(){
              matchToken(analyzerCurrentToken, "boolean")){
         analyzeBooleanExpr();
     }else if(matchToken(analyzerCurrentToken, "id")){
+        if(addition){
+            if(temporaryValue == 0){
+                temporaryValue = Number(getVarValue(analyzerCurrentToken.value, symbolTree.cur));
+            }else{
+                temporaryValue = Number(temporaryValue) + Number(getVarValue(analyzerCurrentToken.value, symbolTree.cur));
+            }
+            setVarValue(temporaryId, temporaryValue, symbolTree.cur);
+            addition = false;
+            temporaryId = null;
+            temporaryType = null;
+            temporaryValue = null;
+        }else{
+            setUsed(analyzerCurrentToken.value, symbolTree.cur);
+        }
         analyzeId();
     }
 }

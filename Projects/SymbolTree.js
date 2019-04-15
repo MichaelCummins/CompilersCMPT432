@@ -25,7 +25,7 @@ function symbolTree() {
                      children: [],
                      parent: {},
                      symbols: [],
-                     scope: scope,
+                     scope: scope
                    };
 
         // Check to see if it needs to be the root node.
@@ -70,9 +70,7 @@ function symbolTree() {
             // Space out based on the current depth so
             // this looks at least a little tree-like.
             for (var i = 0; i < depth; i++){
-                if(i != 0){
                     traversalResult += "-";
-                }
             }
 
             // If there are no children (i.e., leaf nodes)...
@@ -81,23 +79,20 @@ function symbolTree() {
                 traversalResult += "[" + node.name + "]";
                 traversalResult += ":";
                 node.symbols.forEach(function (symbol){
-                    traversalResult +=  " " + symbol.type + " " + symbol.kind + " |";                    
+                    traversalResult +=  " " + symbol.type + " " + symbol.kind + " |";
                 });
-                traversalResult += "\n"
+                traversalResult += "\n";
             }
             else{
                 // There are children, so note these interior/branch nodes and ...
-                if(node.name != "Root"){
                     traversalResult += "[" + node.name + "]";
                     traversalResult += ":";
                     node.symbols.forEach(function (symbol){
                         traversalResult += " " + symbol.type + " " + symbol.kind + " |";
                     });
                     traversalResult += "\n";
-                }
                 // .. recursively expand them.
-                for (var i = 0; i < node.children.length; i++)
-                {
+                for(var i = 0; i < node.children.length; i++){
                     expand(node.children[i], depth + 1);
                 }
             }
