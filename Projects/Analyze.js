@@ -72,12 +72,12 @@ function setVarValue(id, value, level){
     if(level.parent != undefined || level.parent != null){
         setVarValue(id, value, level.parent);
     }
-    for(var i = 0; i < allSymbols.length; i++){
-        if((id == allSymbols[i].getKind()) && (localscope == allSymbols[i].scope)){
-            allSymbols[i].initialized = true;
-            allSymbols[i].value = value;
-        }
-    }
+//    for(var i = 0; i < allSymbols.length; i++){
+//        if((id == allSymbols[i].getKind()) && (localscope == allSymbols[i].scope)){
+ //           allSymbols[i].initialized = true;
+  //          allSymbols[i].value = value;
+  //      }
+  //  }
 }
 
 function setUsed(id, level){
@@ -90,6 +90,16 @@ function setUsed(id, level){
     }
     if(level.parent != undefined || level.parent != null){
         setUsed(id, level.parent);
+    }
+}
+
+function getVarType(id, level){
+    if((level.symbols != undefined || level.symbols != null) && level.symbols.length > 0){
+        for(var i = 0; i < level.symbols.length; i++){
+            if(id == level.symbols[i].getKind()){
+                return level.symbols[i].type;
+            }
+        }
     }
 }
 
@@ -206,25 +216,118 @@ function analyzeAssignmentStatement(){
     outputMessage("Analyzing Assignment Statement");
     ast.addNode("Assignment Statement", "branch");
     if(matchToken(analyzerCurrentToken, "id")){
+        var id = analyzerCurrentToken.value;
+        var type = getVarType(id, symbolTree.cur);
+        outputMessage(id);
+        outputMessage(type);
+        if(type == undefined){
+            numAnalyzerErrors++;
+            outputMessage("Bad");
+        }
+        if(!addition){
+            temporaryId = id;
+            try{
+                temporaryType = type.toUpperCase();
+            }catch(e){
+                e.printstack;
+                temporaryType = null;
+            }
+            addition = true;
+            if(temporaryType == null || temporaryValue == undefined){
+                temporaryValue = getVarValue(id, symbolTree.cur);
+            }else{
+                temporaryValue = Number(temporaryValue) + Number(getVarValue(id, symbolTree.cur));
+            }
+        }
         analyzeId();
     }
-    
     if(matchToken(analyzerCurrentToken, "OP_Assignment")){
         getNextAnalyzerToken();
+        if(addition){
+            if(matchToken(analyzerCurrentToken, "digit")){
+                if(temporaryType == "INT"){
+                    if(analyzerLookAhead().kind != "intop"){
+                        if(temporaryValue == 0){
+                            temporaryValue = Number(analyzerCurrentToken.value);
+                        }else{
+                            temporaryValue = Number(temporaryValue) + Number(analyzerCurrentToken.value);
+                        }
+                        setVarValue(temporaryId, temporaryValue, symbolTree.cur);
+                        addition = false;
+                        temporaryId = null;
+                        temporaryType = null;
+                        temporaryValue = null;
+                    }else{
+                        addition = false;
+                        temporaryId = null;
+                        temporaryType = null;
+                        temporaryValue = null;
+                    }
+                }else if(temporaryType == "boolean"){
+                    if(Number(analyzerCurrentToken.value) > 0){
+                        var t = true;
+                    }else{
+                        var t = false;
+                    }
+                    setVarValue(temporaryId, t, symbolTree.cur);
+                    addition = false;
+                    temporaryId = null;
+                    temporaryType = null;
+                    temporaryValue = null;
+                }else{
+                    numAnalyzerErrors++;
+                    outputMessage("Bad error");
+                }
+            }else if(matchToken(analyzerCurrentToken, "id")){
+                var cvType = getVarType(analyzerCurrentToken.value, symbolTree.cur);
+                if(temporaryType.toLowerCase() != cvType){
+                    numAnalyzerErrors++;
+                    outputMessage("Back to square one?");
+                }
+                
+                if(temporaryValue == 0){
+                    temporaryValue = getVarValue(analyzerCurrentToken.value, symbolTree.cur);
+                }else{
+                    temporaryValue = Number(temporaryValue) + Number(getVarValue(analyzerCurrentToken.value, symbolTree.cur));
+                }
+                setVarValue(temporaryId, temporaryValue, symbolTree.cur);
+                addition = false;
+                temporaryId = null;
+                temporaryType = null;
+                temporaryValue = null;
+            }else if(matchToken(analyzerCurrentToken, "boolean")){
+                if(temporaryType == "BOOLEAN"){
+                    var val;
+                    if(analyzerCurrentToken.value == "true"){
+                        val = true;
+                    }else if(analyzerCurrentToken.value == "false"){
+                        val = false;
+                    }
+                    setVarValue(temporaryId, val, symbolTree.cur);
+                    addition = false;
+                    temporaryId = null;
+                    temporaryType = null;
+                    temporaryValue = null;
+                }else{
+                    numAnalyzerErrors++;
+                    outputMessage("badIm over here");
+                }
+            }
+        }
         analyzeExpr();
     }
     ast.endChildren();
 }
 
 function analyzeVarDecl(){
-    outputMessage("Analyzing Var decl");
+    outputMessage("Analyze Var decl");
     ast.addNode("Var Decl", "branch");
     var type = analyzerCurrentToken.kind.toLowerCase();
     getNextAnalyzerToken();
     if(matchToken(analyzerCurrentToken, "id")){
         if(line = checkIfExists(analyzerCurrentToken.value)){
             numAnalyzerErrors++;
-            outputMessage("Bad");
+            outputMessage("Bad???");
         }else{
             var symbol = new Symbol(analyzerCurrentToken.value, type, analyzerCurrentToken.currentLine, 
                                     scope, scopeLevel, currentProgram, 
