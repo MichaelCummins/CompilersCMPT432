@@ -133,6 +133,13 @@ function checkFor(str, num){
         return checkFor(str, (num+1));
     }
 }
+
+function resetTemporaryVariables(){
+    addition = false;
+    temporaryId = null;
+    temporaryType = null;
+    temporaryValue = null;
+}
 function analyzerStart(userInput){
     analyzerInit();
     analyzerTokens = userInput;
@@ -248,11 +255,9 @@ function analyzeAssignmentStatement(){
     if(matchToken(analyzerCurrentToken, "id")){
         var id = analyzerCurrentToken.value;
         var type = getVarType(id, symbolTree.cur);
-        outputMessage(id);
-        outputMessage(type);
         if(type == undefined){
             numAnalyzerErrors++;
-            outputMessage("Bad");
+            outputMessage("Error, id " + id + " was not declared in scope " + scope);
         }
         if(!addition){
             temporaryId = id;
@@ -283,15 +288,9 @@ function analyzeAssignmentStatement(){
                             temporaryValue = Number(temporaryValue) + Number(analyzerCurrentToken.value);
                         }
                         setVarValue(temporaryId, temporaryValue, symbolTree.cur);
-                        addition = false;
-                        temporaryId = null;
-                        temporaryType = null;
-                        temporaryValue = null;
+                        resetTemporaryVariables()
                     }else{
-                        addition = false;
-                        temporaryId = null;
-                        temporaryType = null;
-                        temporaryValue = null;
+                        resetTemporaryVariables()
                     }
                 }else if(temporaryType == "BOOLEAN"){
                     if(Number(analyzerCurrentToken.value) > 0){
@@ -300,19 +299,16 @@ function analyzeAssignmentStatement(){
                         var t = false;
                     }
                     setVarValue(temporaryId, t, symbolTree.cur);
-                    addition = false;
-                    temporaryId = null;
-                    temporaryType = null;
-                    temporaryValue = null;
+                    resetTemporaryVariables()
                 }else{
                     numAnalyzerErrors++;
-                    outputMessage("Bad error");
+                    outputMessage("ERROR id " + temporaryId + " was given " + temporaryType + " but got int");
                 }
             }else if(matchToken(analyzerCurrentToken, "id")){
                 var cvType = getVarType(analyzerCurrentToken.value, symbolTree.cur);
                 if(temporaryType.toLowerCase() != cvType){
                     numAnalyzerErrors++;
-                    outputMessage("Back to square one?");
+                    outputMessage("ERROR mismatched types " + id + " is defined as " + temporaryType + " was given  " + cvType);
                 }
                 
                 if(temporaryValue == 0){
@@ -321,10 +317,7 @@ function analyzeAssignmentStatement(){
                     temporaryValue = Number(temporaryValue) + Number(getVarValue(analyzerCurrentToken.value, symbolTree.cur));
                 }
                 setVarValue(temporaryId, temporaryValue, symbolTree.cur);
-                addition = false;
-                temporaryId = null;
-                temporaryType = null;
-                temporaryValue = null;
+                resetTemporaryVariables()
             }else if(matchToken(analyzerCurrentToken, "boolean")){
                 if(temporaryType == "BOOLEAN"){
                     var val;
@@ -334,13 +327,10 @@ function analyzeAssignmentStatement(){
                         val = false;
                     }
                     setVarValue(temporaryId, val, symbolTree.cur);
-                    addition = false;
-                    temporaryId = null;
-                    temporaryType = null;
-                    temporaryValue = null;
+                    resetTemporaryVariables()
                 }else{
                     numAnalyzerErrors++;
-                    outputMessage("badIm over here");
+                    outputMessage("ERROR id " + temporaryId + " was expting type " + temporaryType + " but was given boolean");
                 }
             }
         }
@@ -357,7 +347,7 @@ function analyzeVarDecl(){
     if(matchToken(analyzerCurrentToken, "id")){
         if(line = checkIfExists(analyzerCurrentToken.value)){
             numAnalyzerErrors++;
-            outputMessage("Bad???");
+            outputMessage("ERROR id " + analyzerCurrentToken.value + " was previously declared" );
         }else{
             var symbol = new Symbol(analyzerCurrentToken.value, type, analyzerCurrentToken.currentLine, 
                                     scope, scopeLevel, currentProgram, 
@@ -414,10 +404,7 @@ function analyzeExpr(){
                 temporaryValue = Number(temporaryValue) + Number(getVarValue(analyzerCurrentToken.value, symbolTree.cur));
             }
             setVarValue(temporaryId, temporaryValue, symbolTree.cur);
-            addition = false;
-            temporaryId = null;
-            temporaryType = null;
-            temporaryValue = null;
+            resetTemporaryVariables()
         }else{
             setUsed(analyzerCurrentToken.value, symbolTree.cur);
         }
@@ -454,10 +441,7 @@ function analyzeStringExpr(){
         if(addition){
             if(temporaryType == "STRING"){
                 setVarValue(temporaryId, charList, symbolTree.cur);
-                addition = false;
-                temporaryId = null;
-                temporaryType = null;
-                temporaryValue = null;
+                resetTemporaryVariables()
             }else if(temporaryType == "BOOLEAN"){
                 if(charList.length > 0){
                     var t = true;
@@ -466,13 +450,10 @@ function analyzeStringExpr(){
                 }
                 
                 setVarValue(temporaryId, t, symbolTree.cur);
-                addition = false;
-                temporaryId = null;
-                temporaryType = null;
-                temporaryValue = null;
+                resetTemporaryVariables()
             }else{
                 numAnalyzerErrors++;
-                outputMessage("Bad string expr");
+                outputMessage("ERROR id " + temporaryId + " was expecting " + temporaryType + " but was given String");
             }
         }
         getNextAnalyzerToken();
@@ -483,7 +464,7 @@ function analyzeId(){
     if(matchToken(analyzerCurrentToken, "id")){
         if(!isThere(analyzerCurrentToken, symbolTree.cur)){
             numAnalyzerErrors++;
-            outputMessage("Bad ID");
+            outputMessage("ERROR id " + analyzerCurrentToken.value + " was used before it was declared");
         }
     }
     ast.addNode(analyzerCurrentToken.value, "leaf", analyzerCurrentToken.currentLine, scope, analyzerCurrentToken.kind);
@@ -562,13 +543,13 @@ function analyzeBooleanExpr(){
                 if(ast.cur.children[i].type == "id" && ast.cur.children[i + 1].type == "id"){
                     if(getVarType(ast.cur.children[i].name, symbolTree.cur) != getVarType(ast.cur.children[i+1].name, symbolTree.cur)){
                         numAnalyzerErrors++;
-                        outputMessage("ERROR types do not match");
+                        outputMessage("ERROR, can not compare id " + ast.cur.children[i].name + " to type " + getVarType(ast.cur.children[i+1].name));
                     }
                 }
                 if(ast.cur.children[i+1].type != "OP_Equality" && ast.cur.children[i+1] != "Not_Equal"){
                     if(typeOne != typeTwo){
                         numAnalyzerErrors++;
-                        outputMessage("ERROR can not compare");
+                        outputMessage("ERROR, id " + ast.cur.children[i].name + " can not be compared with " + typeTwo);
                     }
                 }
             }
