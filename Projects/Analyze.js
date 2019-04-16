@@ -1,19 +1,30 @@
+//Array for tokens
 var analyzerTokens = [];
+//Keep track of which token
 var analyzerCurrentToken;
+//Number of errors
 var numAnalyzerErrors = 0;
+//Number of warnigns
 var numAnalyzerWarnings = 0;
+//Which scope an ID is in
 var scope = -1;
+//Which level were in
 var scopeLevel = -1;
 var analyzerScopeArray = [];
+//How deep the max is
 var scopeCounter = 0;
+//Whether were adding to something or not
 var addition = false;
+//All temporary values for adding
 var temporaryId = null;
 var temporaryValue = null;
 var temporaryType = null;
+//Declare Abstract Syntax Tree and Symbol Tree
 var ast = new Tree();
 ast.addNode("root", "branch");
 var symbolTree = new symbolTree();
 
+//Reset global variables at start of analyzing
 function analyzerInit(){
     analyzerTokens = [];
     analyzerCurrentToken;
@@ -31,15 +42,18 @@ function analyzerInit(){
     ast.addNode("root", "branch");
 }
 
+//Same as parsing, just get next token
 function getNextAnalyzerToken(){
     analyzerCurrentToken = analyzerTokens[0];
     analyzerTokens.shift();
 }
 
+//Same as parsing, look ahead for addition
 function analyzerLookAhead(){
     return analyzerTokens[0];
 }
 
+//See if an id exists within the symbol Tree already
 function checkIfExists(id){
     for(var i = 0; i < symbolTree.cur.symbols.length; i++){
         if(id == symbolTree.cur.symbols[i].getKind()){
@@ -48,6 +62,7 @@ function checkIfExists(id){
     }
 }
 
+//Get the value of an id from the symbol tree
 function getVarValue(id, level){
     if((level.parent != undefined || level.parent != null) && level.symbols.length > 0){
         for(var i = 0; i < level.symbols.length; i++){
@@ -58,6 +73,7 @@ function getVarValue(id, level){
     }
 }
 
+//Set the value of an id when adding
 function setVarValue(id, value, level){
     if((level.parent!= undefined || level.parent != null) && level.symbols.length > 0){
         for(var i = 0; i < level.symbols.length; i++){
@@ -79,6 +95,7 @@ function setVarValue(id, value, level){
     }
 }
 
+//Set that an id was used 
 function setUsed(id, level){
     if((level.parent != undefined || level.parent != null) && level.symbols.length > 0){
         for(var i = 0; i < level.symbols.length; i++){
@@ -92,6 +109,7 @@ function setUsed(id, level){
     }
 }
 
+//Get the type of an id
 function getVarType(id, level){
     if((level.symbols != undefined || level.symbols != null) && level.symbols.length > 0){
         for(var i = 0; i < level.symbols.length; i++){
@@ -107,6 +125,7 @@ function getVarType(id, level){
 }
 
 
+//Check if an id is in the tree
 function isThere(id, level){
     if((level.parent != undefined || level.parent != null) && level.symbols.length > 0){
         for(var i = 0; i < level.symbols.length; i++){
@@ -134,74 +153,99 @@ function checkFor(str, num){
     }
 }
 
+//Reset all null values
 function resetTemporaryVariables(){
     addition = false;
     temporaryId = null;
     temporaryType = null;
     temporaryValue = null;
 }
+
+//Start analying
 function analyzerStart(userInput){
     analyzerInit();
     analyzerTokens = userInput;
     
+    //Start at program
     analyzeProgram();
     
+    //If any errors notify user
     if(numAnalyzerErrors != 0){
         outputMessage("Analyzer failed with " + numAnalyzerErrors + " errors");
     }
     
+    //Return errors
     return numAnalyzerErrors;
 }
 
+
 function analyzeProgram(){
+    //Add program to ast
     ast.addNode("Program", "branch");
     outputMessage("Analyze program");
+    //Get next token
     getNextAnalyzerToken();
+    //Can only go to block
     analyzeBlock();
+    
+    //If we get to a $ just go to the next
     if(analyzerCurrentToken.kind == "EOF"){
         getNextAnalyzerToken();
     }
+    //Climb the tree
     ast.endChildren();
 }
 
 function analyzeBlock(){
+    //Output where we are in the tree
     outputMessage("Analyze Block");
+    //Increment scope
     scopeLevel++;
     scopeCounter++;
     analyzerScopeArray.push(scope);
     scope = scopeCounter;
     
+    //Add block to the ast and symbolTree
     ast.addNode("Block", "branch");
     symbolTree.addNode("Scope: " + scope, "branch", scope);
+    //Check if we got {
     if(matchToken(analyzerCurrentToken, "L_Brace")){
         getNextAnalyzerToken();
     }
+    //Go to statement List
     analyzeStatementList();
+    //Check if were at end of block
     if(matchToken(analyzerCurrentToken, "R_Brace")){
         getNextAnalyzerToken();
     }
     
+    //Reduce current scope
     scopeLevel--;
     scope = analyzerScopeArray.pop();
+    //Climb both trees
     symbolTree.endChildren();
     ast.endChildren();
 }
 
 function analyzeStatementList(){
+    //Out where we are
     outputMessage("Analyze Statement List");
     
+    //Epsilon product we are done
     if(matchToken(analyzerCurrentToken, "R_Brace")){
         //Epsilon
     }else if(matchToken(analyzerCurrentToken, "print") || matchToken(analyzerCurrentToken, "id")
         || matchToken(analyzerCurrentToken, "int") || matchToken(analyzerCurrentToken, "string")
         || matchToken(analyzerCurrentToken, "boolean") || matchToken(analyzerCurrentToken, "while")
         || matchToken(analyzerCurrentToken, "if") || matchToken(analyzerCurrentToken, "L_Brace")){
+        //If anything else user did good
         analyzeStatement();
         analyzeStatementList();
     }
 }
 
 function analyzeStatement(){
+    //Output where we are
     outputMessage("Analyze Statement");
         //Since a statement can be many things in our grammar check what it starts with
         //If it starts with the token PRINT its a print statement
@@ -232,20 +276,26 @@ function analyzeStatement(){
 }
 
 function analyzePrintStatement(){
+    //Output where we are and add print to ast
     outputMessage("Analyze print statement");
     ast.addNode("Print", "Branch");
+    //Get next token
     getNextAnalyzerToken();
     
+    //Check if we got what we ned
     if(matchToken(analyzerCurrentToken, "L_Paren")){
         getNextAnalyzerToken();
     }
     
+    //Go to expr
     analyzeExpr();
     
+    //Check if at end of statement
     if(matchToken(analyzerCurrentToken, "R_Paren")){
         getNextAnalyzerToken();
     }
-
+    
+    //Climb tree
     ast.endChildren();
 }
 
@@ -340,45 +390,61 @@ function analyzeAssignmentStatement(){
 }
 
 function analyzeVarDecl(){
+    //Output where we are and add vardecl to ast
     outputMessage("Analyze Var decl");
     ast.addNode("Var Decl", "branch");
+    //Create variable to get what class a var is 
     var type = analyzerCurrentToken.kind.toLowerCase();
+    //Grab next token
     getNextAnalyzerToken();
+    //Did we get an id?
     if(matchToken(analyzerCurrentToken, "id")){
+        //See if a variable of the same name is already in the symbol tree
         if(line = checkIfExists(analyzerCurrentToken.value)){
+            //Increment error count and output error
             numAnalyzerErrors++;
             outputMessage("ERROR id " + analyzerCurrentToken.value + " was previously declared" );
         }else{
+            //Create new symbol and push 
             var symbol = new Symbol(analyzerCurrentToken.value, type, analyzerCurrentToken.currentLine, 
                                     scope, scopeLevel, currentProgram, 
                                     false, false, false);
             symbolTree.cur.symbols.push(symbol);
             allSymbols.push(symbol);
         }
+        //Go to ID
         analyzeId();
     }
+    //Climb the tree
     ast.endChildren();
 }
 
 function analyzeWhileStatement(){
+    //Output where we are and add to ast
     outputMessage("Analyze While Statement");
     ast.addNode("While Statement", "branch");
     
+    //Grab next token
     getNextAnalyzerToken();
     
+    //Same as Parser zzz
     if(matchToken(analyzerCurrentToken, "L_Paren") || matchToken(analyzerCurrentToken, "boolean")){
         analyzeBooleanExpr();
         getNextAnalyzerToken();
         analyzeBlock();
     }
+    //Climb the tree
     ast.endChildren();
 }
 
 function analyzeIfStatement(){
+    //Out where we are and at to ast
     outputMessage("Analyze If Statement");
     ast.addNode("If Statement", "branch");
+    //Grab next token
     getNextAnalyzerToken();
     
+    //
     if(matchToken(analyzerCurrentToken, "L_Paren") || matchToken(analyzerCurrentToken, "boolean")){
         analyzeBooleanExpr();
         getNextAnalyzerToken();
