@@ -79,7 +79,8 @@ function symbolTree() {
                 traversalResult += "[" + node.name + "]";
                 traversalResult += ":";
                 node.symbols.forEach(function (symbol){
-                    traversalResult +=  " " + symbol.type + " " + symbol.kind + " |";
+                    traversalResult +=  " " + symbol.type + " " + symbol.kind + " " 
+                                        + symbol.value +  " " +  symbol.line+ " |" ;
                 });
                 traversalResult += "\n";
             }
@@ -88,7 +89,8 @@ function symbolTree() {
                     traversalResult += "[" + node.name + "]";
                     traversalResult += ":";
                     node.symbols.forEach(function (symbol){
-                        traversalResult += " " + symbol.type + " " + symbol.kind + " |";
+                    traversalResult +=  " " + symbol.type + " " + symbol.kind + " " 
+                                        + symbol.value +  " " +  symbol.line+ " |" ;
                     });
                     traversalResult += "\n";
                 // .. recursively expand them.

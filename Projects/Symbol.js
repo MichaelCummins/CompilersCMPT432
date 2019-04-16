@@ -6,7 +6,7 @@
 //-----------------------------------------
 // Creates Symbol class for Symbol Table
 class Symbol{
-	constructor(kind, type, line, scope, scopeLevel, programNumber, initialized, utilized, value, stringHex, tempStore){
+	constructor(kind, type, line, scope, scopeLevel, programNumber, initialized, utilized, value){
 		this.kind = kind;
 		this.type = type;
 		this.line = line;
@@ -16,8 +16,6 @@ class Symbol{
 		this.initialized = initialized;
 		this.utilized = utilized;
 		this.value = value;
-		this.stringHex = stringHex;
-		this.tempStore = tempStore;
 	}
 
 	getKind(){

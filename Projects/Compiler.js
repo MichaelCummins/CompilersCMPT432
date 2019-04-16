@@ -1,10 +1,12 @@
 //Declare global variables
 var currentProgram = 1;
 var aTokens = [];
+var allSymbols = [];
 
 function compile(){
     //Initialize variables
     init();
+    allSymbols = [];
     //Get however many programs were compiling
     var programs = compileUserInput();
     //Tracks which program is being compiled

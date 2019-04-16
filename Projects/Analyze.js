@@ -29,7 +29,6 @@ function analyzerInit(){
     temporaryType = null;
     ast = new Tree();
     ast.addNode("root", "branch");
-   // symbolTree = new symbolTree();
 }
 
 function getNextAnalyzerToken(){
@@ -72,12 +71,12 @@ function setVarValue(id, value, level){
     if(level.parent != undefined || level.parent != null){
         setVarValue(id, value, level.parent);
     }
-//    for(var i = 0; i < allSymbols.length; i++){
-//        if((id == allSymbols[i].getKind()) && (localscope == allSymbols[i].scope)){
- //           allSymbols[i].initialized = true;
-  //          allSymbols[i].value = value;
-  //      }
-  //  }
+    for(var i = 0; i < allSymbols.length; i++){
+        if((id == allSymbols[i].getKind()) && (localScope == allSymbols[i].scope)){
+            allSymbols[i].initialized = true;
+            allSymbols[i].value = value;
+        }
+    }
 }
 
 function setUsed(id, level){
@@ -101,8 +100,39 @@ function getVarType(id, level){
             }
         }
     }
+    
+    if(level.parent != undefined || level.parent != null){
+        return getVarType(id, level.parent);
+    }
 }
 
+
+function isThere(id, level){
+    if((level.parent != undefined || level.parent != null) && level.symbols.length > 0){
+        for(var i = 0; i < level.symbols.length; i++){
+            if(id == level.symbols[i].getKind()){
+                return true;
+            }
+        }
+    }
+    
+    if(level.parent != undefined || level.parent != null){
+        return isThere(id, level.parent);
+    }
+    return false;
+}
+
+function checkFor(str, num){
+    if(analyzerTokens[num].kind == str){
+        return true;
+    }else if(analyzerTokens[num].kind == "R_Paren"){
+        return false;
+    }else if(analyzerTokens[num].kind == "L_Paren"){
+        return false;
+    }else{
+        return checkFor(str, (num+1));
+    }
+}
 function analyzerStart(userInput){
     analyzerInit();
     analyzerTokens = userInput;
@@ -263,7 +293,7 @@ function analyzeAssignmentStatement(){
                         temporaryType = null;
                         temporaryValue = null;
                     }
-                }else if(temporaryType == "boolean"){
+                }else if(temporaryType == "BOOLEAN"){
                     if(Number(analyzerCurrentToken.value) > 0){
                         var t = true;
                     }else{
@@ -333,6 +363,7 @@ function analyzeVarDecl(){
                                     scope, scopeLevel, currentProgram, 
                                     false, false, false);
             symbolTree.cur.symbols.push(symbol);
+            allSymbols.push(symbol);
         }
         analyzeId();
     }
@@ -340,7 +371,7 @@ function analyzeVarDecl(){
 }
 
 function analyzeWhileStatement(){
-    outputMessage("Analyzing While Statement");
+    outputMessage("Analyze While Statement");
     ast.addNode("While Statement", "branch");
     
     getNextAnalyzerToken();
@@ -354,7 +385,7 @@ function analyzeWhileStatement(){
 }
 
 function analyzeIfStatement(){
-    outputMessage("Analyzing If Statement");
+    outputMessage("Analyze If Statement");
     ast.addNode("If Statement", "branch");
     getNextAnalyzerToken();
     
@@ -367,7 +398,7 @@ function analyzeIfStatement(){
 }
 
 function analyzeExpr(){
-    outputMessage("Analyzing Expr");
+    outputMessage("Analyze Expr");
     if(matchToken(analyzerCurrentToken, "digit")){
         analyzeIntExpr();
     }else if(matchToken(analyzerCurrentToken, '"')){
@@ -395,7 +426,7 @@ function analyzeExpr(){
 }
 
 function analyzeIntExpr(){
-    outputMessage("Analyzing Int Expr");
+    outputMessage("Analyze Int Expr");
     
     if(matchToken(analyzerLookAhead, "+")){
         ast.addNode("Addition", "branch");
@@ -410,7 +441,7 @@ function analyzeIntExpr(){
 }
 
 function analyzeStringExpr(){
-    outputMessage("Analyzing String Expr");
+    outputMessage("Analyze String Expr");
     if(matchToken(analyzerCurrentToken, '"')){
         getNextAnalyzerToken();
     }
@@ -420,17 +451,47 @@ function analyzeStringExpr(){
     ast.addNode(charList, "leaf");
     
     if(matchToken(analyzerCurrentToken, '"')){
+        if(addition){
+            if(temporaryType == "STRING"){
+                setVarValue(temporaryId, charList, symbolTree.cur);
+                addition = false;
+                temporaryId = null;
+                temporaryType = null;
+                temporaryValue = null;
+            }else if(temporaryType == "BOOLEAN"){
+                if(charList.length > 0){
+                    var t = true;
+                }else{
+                    var t = false;
+                }
+                
+                setVarValue(temporaryId, t, symbolTree.cur);
+                addition = false;
+                temporaryId = null;
+                temporaryType = null;
+                temporaryValue = null;
+            }else{
+                numAnalyzerErrors++;
+                outputMessage("Bad string expr");
+            }
+        }
         getNextAnalyzerToken();
     }
 }
 
 function analyzeId(){
-    ast.addNode(analyzerCurrentToken.value, "leaf");
+    if(matchToken(analyzerCurrentToken, "id")){
+        if(!isThere(analyzerCurrentToken, symbolTree.cur)){
+            numAnalyzerErrors++;
+            outputMessage("Bad ID");
+        }
+    }
+    ast.addNode(analyzerCurrentToken.value, "leaf", analyzerCurrentToken.currentLine, scope, analyzerCurrentToken.kind);
     getNextAnalyzerToken();
 }
 
 function analyzeCharList(){
-    outputMessage("Analyzing Char List");
+    outputMessage("Analyze Char List");
     if(matchToken(analyzerCurrentToken, '"')){
         return "";
     }
@@ -447,7 +508,7 @@ function analyzeCharList(){
 }
 
 function analyzeBooleanExpr(){
-    outputMessage("Analyzing Boolean Expr");
+    outputMessage("Analyze Boolean Expr");
     
     if(matchToken(analyzerCurrentToken, "boolean")){
         analyzeId();
@@ -455,13 +516,69 @@ function analyzeBooleanExpr(){
     
     if(matchToken(analyzerCurrentToken, "L_Paren")){
         getNextAnalyzerToken();
-        
+        var closeOut = false;
+        if(checkFor("OP_Equality", 0)){
+            ast.addNode("Equality", "branch");
+            closeOut = true;
+        }else if(checkFor("Not_Equal", 0)){
+            ast.addNode("Not_Equal", "branch");
+            closeOut = true;
+        }
         analyzeExpr();
         
         if(matchToken(analyzerCurrentToken, "OP_Equality") || 
            matchToken(analyzerCurrentToken, "Not_Equal")){
             getNextAnalyzerToken();
             analyzeExpr();
+        }
+        
+        if(ast.cur.children.length >= 2){
+            for(var i = 0; i <(ast.cur.children.length - 1); i++){
+                if(ast.cur.children[i].kind == "id"){
+                    var typeOne = getVarType(ast.cur.children[i].name, symbolTree.cur);
+                    if(typeOne == "boolean"){
+                        typeOne = "BOOL";
+                    }else if(typeOne == "int"){
+                        typeOne = "DIGIT";
+                    }else if(typeOne == "string"){
+                        typeOne = "CHARLIST";
+                    }
+                }else{
+                    var typeOne = ast.cur.children[i].type;
+                }
+                
+                if(ast.cur.children[i + 1].kind == "id"){
+                    var typeTwo = getVarType(ast.cur.children[i + 1].name, symbolTree.cur);
+                    if(typeTwo == "boolean"){
+                        typeTwo = "BOOLEAN";
+                    }else if(typeTwo == "int"){
+                        typeTwo = "DIGIT";
+                    }else if(typeTwo == "string"){
+                        typeTwo = "CHARLIST";
+                    }
+                }else{
+                    var typeTwo = ast.cur.children[i+1].type;
+                }
+                if(ast.cur.children[i].type == "id" && ast.cur.children[i + 1].type == "id"){
+                    if(getVarType(ast.cur.children[i].name, symbolTree.cur) != getVarType(ast.cur.children[i+1].name, symbolTree.cur)){
+                        numAnalyzerErrors++;
+                        outputMessage("ERROR types do not match");
+                    }
+                }
+                if(ast.cur.children[i+1].type != "OP_Equality" && ast.cur.children[i+1] != "Not_Equal"){
+                    if(typeOne != typeTwo){
+                        numAnalyzerErrors++;
+                        outputMessage("ERROR can not compare");
+                    }
+                }
+            }
+        }
+        if(matchToken(analyzerCurrentToken, "R_Paren")){
+            getNextAnalyzerToken();
+        }
+        
+        if(closeOut){
+            ast.endChildren();
         }
     }
 }
