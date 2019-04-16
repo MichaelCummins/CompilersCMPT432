@@ -444,46 +444,62 @@ function analyzeIfStatement(){
     //Grab next token
     getNextAnalyzerToken();
     
-    //
+    //Check if we got what we expected, same as parser
     if(matchToken(analyzerCurrentToken, "L_Paren") || matchToken(analyzerCurrentToken, "boolean")){
         analyzeBooleanExpr();
         getNextAnalyzerToken();
         analyzeBlock();
     }
+    //Climb the tree
     ast.endChildren();
 }
 
 function analyzeExpr(){
+    //Output where we are 
     outputMessage("Analyze Expr");
     if(matchToken(analyzerCurrentToken, "digit")){
+        //If int then go to int expr
         analyzeIntExpr();
     }else if(matchToken(analyzerCurrentToken, '"')){
+        //If quote then go to string expr
         analyzeStringExpr();
     }else if(matchToken(analyzerCurrentToken, "L_Paren") || 
              matchToken(analyzerCurrentToken, "boolean")){
+        //If boolean go to boolean expr
         analyzeBooleanExpr();
     }else if(matchToken(analyzerCurrentToken, "id")){
+        //If its an id it requires work
         if(addition){
+            //If were adding to symbol do this
             if(temporaryValue == 0){
+                //Set temp variable to the value of the current token
                 temporaryValue = Number(getVarValue(analyzerCurrentToken.value, symbolTree.cur));
             }else{
+                //Set temp variable to value of the variable and the current token
                 temporaryValue = Number(temporaryValue) + Number(getVarValue(analyzerCurrentToken.value, symbolTree.cur));
             }
+            //Set value of the sum and reset temps
             setVarValue(temporaryId, temporaryValue, symbolTree.cur);
             resetTemporaryVariables()
         }else{
+            //Set the current token as used
             setUsed(analyzerCurrentToken.value, symbolTree.cur);
         }
+        //Go back to id
         analyzeId();
     }
 }
 
 function analyzeIntExpr(){
+    //Output where we are 
     outputMessage("Analyze Int Expr");
     
+    //If we see a plus then were adding something
     if(matchToken(analyzerLookAhead, "+")){
+        //Add the plus to the ast
         ast.addNode("Addition", "branch");
     }
+    //Go to ID
     analyzeId();
     
     if(matchToken(analyzerCurrentToken, "+")){
@@ -494,76 +510,106 @@ function analyzeIntExpr(){
 }
 
 function analyzeStringExpr(){
+    //Output where we are
     outputMessage("Analyze String Expr");
+    //Check if we got what we need
     if(matchToken(analyzerCurrentToken, '"')){
         getNextAnalyzerToken();
     }
     
+    //Create variable to store the string
     var charList = analyzeCharList();
     
+    //Add the variable to the ast
     ast.addNode(charList, "leaf");
     
+    //If at the start of a string
     if(matchToken(analyzerCurrentToken, '"')){
+        //Are we adding to 
         if(addition){
+            //If were in a string
             if(temporaryType == "STRING"){
+                //Set new value of the id and reset temps 
                 setVarValue(temporaryId, charList, symbolTree.cur);
                 resetTemporaryVariables()
             }else if(temporaryType == "BOOLEAN"){
+                //Create boolean variable 
                 if(charList.length > 0){
                     var t = true;
                 }else{
-                    var t = false;
+                    t = false;
                 }
-                
+                //Set new value of the id and reset temps
                 setVarValue(temporaryId, t, symbolTree.cur);
                 resetTemporaryVariables()
             }else{
+                //Increment error count
                 numAnalyzerErrors++;
+                //Output error
                 outputMessage("ERROR id " + temporaryId + " was expecting " + temporaryType + " but was given String");
             }
         }
+        //Get next token
         getNextAnalyzerToken();
     }
 }
 
 function analyzeId(){
+    //Check if we got an id
     if(matchToken(analyzerCurrentToken, "id")){
+        //Check if id was declared
         if(!isThere(analyzerCurrentToken, symbolTree.cur)){
+            //Increment error count and output error
             numAnalyzerErrors++;
             outputMessage("ERROR id " + analyzerCurrentToken.value + " was used before it was declared");
         }
     }
+    //Add the id to the ast
     ast.addNode(analyzerCurrentToken.value, "leaf", analyzerCurrentToken.currentLine, scope, analyzerCurrentToken.kind);
+    //Get next token
     getNextAnalyzerToken();
 }
 
 function analyzeCharList(){
+    //Output where we are 
     outputMessage("Analyze Char List");
+    //If we got a quote its a new string
     if(matchToken(analyzerCurrentToken, '"')){
         return "";
     }
     
+    //Make new variable to store chars
     var chars = analyzerCurrentToken.value;
     
+    //Get next token
     getNextAnalyzerToken();
     
+    //Recursively go through charlist until we dont see a char
     if(matchToken(analyzerCurrentToken, "char")){
         return (chars + analyzeCharList());
     }else {
+        //Return the list of chars
         return chars;
     }
 }
 
 function analyzeBooleanExpr(){
+    //Output where we are
     outputMessage("Analyze Boolean Expr");
     
+    //Check if we got a boolean
     if(matchToken(analyzerCurrentToken, "boolean")){
+        //Go to parse an id
         analyzeId();
     }
     
+    //Check if were at the start of a boolean expr
     if(matchToken(analyzerCurrentToken, "L_Paren")){
+        //Grab next token
         getNextAnalyzerToken();
+        //Create variable to track when were done with this part
         var closeOut = false;
+        //
         if(checkFor("OP_Equality", 0)){
             ast.addNode("Equality", "branch");
             closeOut = true;
