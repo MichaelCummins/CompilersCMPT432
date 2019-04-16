@@ -609,25 +609,34 @@ function analyzeBooleanExpr(){
         getNextAnalyzerToken();
         //Create variable to track when were done with this part
         var closeOut = false;
-        //
+        //Check if == or !=
         if(checkFor("OP_Equality", 0)){
+            //Add to ast
             ast.addNode("Equality", "branch");
+            //Were done here
             closeOut = true;
         }else if(checkFor("Not_Equal", 0)){
+            //Add to ast
             ast.addNode("Not_Equal", "branch");
+            //Were done here
             closeOut = true;
         }
+        //Go to expr
         analyzeExpr();
         
+        //If == or != go to expr
         if(matchToken(analyzerCurrentToken, "OP_Equality") || 
            matchToken(analyzerCurrentToken, "Not_Equal")){
             getNextAnalyzerToken();
             analyzeExpr();
         }
         
+        //Check if we have two kids
         if(ast.cur.children.length >= 2){
+            //Check em 
             for(var i = 0; i <(ast.cur.children.length - 1); i++){
                 if(ast.cur.children[i].kind == "id"){
+                    //Get the type of the first kid
                     var typeOne = getVarType(ast.cur.children[i].name, symbolTree.cur);
                     if(typeOne == "boolean"){
                         typeOne = "BOOL";
@@ -640,6 +649,7 @@ function analyzeBooleanExpr(){
                     var typeOne = ast.cur.children[i].type;
                 }
                 
+                //Get the type of the second kid
                 if(ast.cur.children[i + 1].kind == "id"){
                     var typeTwo = getVarType(ast.cur.children[i + 1].name, symbolTree.cur);
                     if(typeTwo == "boolean"){
@@ -652,6 +662,8 @@ function analyzeBooleanExpr(){
                 }else{
                     var typeTwo = ast.cur.children[i+1].type;
                 }
+                
+                //Compare them
                 if(ast.cur.children[i].type == "id" && ast.cur.children[i + 1].type == "id"){
                     if(getVarType(ast.cur.children[i].name, symbolTree.cur) != getVarType(ast.cur.children[i+1].name, symbolTree.cur)){
                         numAnalyzerErrors++;
@@ -666,10 +678,12 @@ function analyzeBooleanExpr(){
                 }
             }
         }
+        //If at ) then were done
         if(matchToken(analyzerCurrentToken, "R_Paren")){
             getNextAnalyzerToken();
         }
         
+        //Check if weve closed the boolean
         if(closeOut){
             ast.endChildren();
         }
