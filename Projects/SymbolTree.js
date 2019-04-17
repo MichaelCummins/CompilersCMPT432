@@ -9,7 +9,7 @@ function symbolTree() {
     // ----------
     // Attributes
     // ----------
-    
+    this.constructor = {};
     this.root = null;  // Note the NULL root node of this tree.
     this.cur = {};     // Note the EMPTY current node of the tree we're building.
 

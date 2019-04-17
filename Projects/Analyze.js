@@ -22,7 +22,7 @@ var temporaryType = null;
 //Declare Abstract Syntax Tree and Symbol Tree
 var ast = new Tree();
 ast.addNode("root", "branch");
-var symbolTree = new symbolTree();
+var st = new symbolTree();
 
 //Reset global variables at start of analyzing
 function analyzerInit(){
@@ -40,6 +40,7 @@ function analyzerInit(){
     temporaryType = null;
     ast = new Tree();
     ast.addNode("root", "branch");
+    st = new symbolTree();
 }
 
 //Same as parsing, just get next token
@@ -55,9 +56,9 @@ function analyzerLookAhead(){
 
 //See if an id exists within the symbol Tree already
 function doesVariableExistAlready(id){
-    for(var i = 0; i < symbolTree.cur.symbols.length; i++){
-        if(id == symbolTree.cur.symbols[i].getKind()){
-            return symbolTree.cur.symbols[i].getLine();
+    for(var i = 0; i < st.cur.symbols.length; i++){
+        if(id == st.cur.symbols[i].getKind()){
+            return st.cur.symbols[i].getLine();
         }
     }
 }
@@ -212,9 +213,9 @@ function analyzeBlock(){
     analyzerScopeArray.push(scope);
     scope = scopeCounter;
     
-    //Add block to the ast and symbolTree
+    //Add block to the ast and st
     ast.addNode("Block", "branch");
-    symbolTree.addNode("Scope: " + scope, "branch", scope);
+    st.addNode("Scope: " + scope, "branch", scope);
     //Check if we got {
     if(matchToken(analyzerCurrentToken, "L_Brace")){
         getNextAnalyzerToken();
@@ -230,7 +231,7 @@ function analyzeBlock(){
     scopeLevel--;
     scope = analyzerScopeArray.pop();
     //Climb both trees
-    symbolTree.endChildren();
+    st.endChildren();
     ast.endChildren();
 }
 
@@ -311,7 +312,7 @@ function analyzeAssignmentStatement(){
     ast.addNode("Assignment Statement", "branch");
     if(matchToken(analyzerCurrentToken, "id")){
         var id = analyzerCurrentToken.value;
-        var type = FindType(id, symbolTree.cur);
+        var type = FindType(id, st.cur);
         if(type == undefined){
             numAnalyzerErrors++;
             outputMessage("Error, id " + id + " was not declared in scope " + scope);
@@ -326,9 +327,9 @@ function analyzeAssignmentStatement(){
             }
             addition = true;
             if(temporaryType == null || temporaryValue == undefined){
-                temporaryValue = FindValue(id, symbolTree.cur);
+                temporaryValue = FindValue(id, st.cur);
             }else{
-                temporaryValue = Number(temporaryValue) + Number(FindValue(id, symbolTree.cur));
+                temporaryValue = Number(temporaryValue) + Number(FindValue(id, st.cur));
             }
         }
         analyzeId();
@@ -344,7 +345,7 @@ function analyzeAssignmentStatement(){
                         }else{
                             temporaryValue = Number(temporaryValue) + Number(analyzerCurrentToken.value);
                         }
-                        setValue(temporaryId, temporaryValue, symbolTree.cur);
+                        setValue(temporaryId, temporaryValue, st.cur);
                         resetTemporaryVariables()
                     }else{
                         resetTemporaryVariables()
@@ -355,25 +356,25 @@ function analyzeAssignmentStatement(){
                     }else{
                         var t = false;
                     }
-                    setValue(temporaryId, t, symbolTree.cur);
+                    setValue(temporaryId, t, st.cur);
                     resetTemporaryVariables()
                 }else{
                     numAnalyzerErrors++;
                     outputMessage("ERROR id " + temporaryId + " was given " + temporaryType + " but got int");
                 }
             }else if(matchToken(analyzerCurrentToken, "id")){
-                var cvType = FindType(analyzerCurrentToken.value, symbolTree.cur);
+                var cvType = FindType(analyzerCurrentToken.value, st.cur);
                 if(temporaryType.toLowerCase() != cvType){
                     numAnalyzerErrors++;
                     outputMessage("ERROR mismatched types " + id + " is defined as " + temporaryType + " was given  " + cvType);
                 }
                 
                 if(temporaryValue == 0){
-                    temporaryValue = FindValue(analyzerCurrentToken.value, symbolTree.cur);
+                    temporaryValue = FindValue(analyzerCurrentToken.value, st.cur);
                 }else{
-                    temporaryValue = Number(temporaryValue) + Number(FindValue(analyzerCurrentToken.value, symbolTree.cur));
+                    temporaryValue = Number(temporaryValue) + Number(FindValue(analyzerCurrentToken.value, st.cur));
                 }
-                setValue(temporaryId, temporaryValue, symbolTree.cur);
+                setValue(temporaryId, temporaryValue, st.cur);
                 resetTemporaryVariables()
             }else if(matchToken(analyzerCurrentToken, "boolean")){
                 if(temporaryType == "BOOLEAN"){
@@ -383,7 +384,7 @@ function analyzeAssignmentStatement(){
                     }else if(analyzerCurrentToken.value == "false"){
                         val = false;
                     }
-                    setValue(temporaryId, val, symbolTree.cur);
+                    setValue(temporaryId, val, st.cur);
                     resetTemporaryVariables()
                 }else{
                     numAnalyzerErrors++;
@@ -416,7 +417,7 @@ function analyzeVarDecl(){
             var symbol = new Symbol(analyzerCurrentToken.value, type, analyzerCurrentToken.currentLine, 
                                     scope, scopeLevel, currentProgram, 
                                     false, false, false);
-            symbolTree.cur.symbols.push(symbol);
+            st.cur.symbols.push(symbol);
             allSymbols.push(symbol);
         }
         //Go to ID
@@ -480,17 +481,17 @@ function analyzeExpr(){
             //If were adding to symbol do this
             if(temporaryValue == 0){
                 //Set temp variable to the value of the current token
-                temporaryValue = Number(FindValue(analyzerCurrentToken.value, symbolTree.cur));
+                temporaryValue = Number(FindValue(analyzerCurrentToken.value, st.cur));
             }else{
                 //Set temp variable to value of the variable and the current token
-                temporaryValue = Number(temporaryValue) + Number(FindValue(analyzerCurrentToken.value, symbolTree.cur));
+                temporaryValue = Number(temporaryValue) + Number(FindValue(analyzerCurrentToken.value, st.cur));
             }
             //Set value of the sum and reset temps
-            setValue(temporaryId, temporaryValue, symbolTree.cur);
+            setValue(temporaryId, temporaryValue, st.cur);
             resetTemporaryVariables()
         }else{
             //Set the current token as used
-            setUsed(analyzerCurrentToken.value, symbolTree.cur);
+            setUsed(analyzerCurrentToken.value, st.cur);
         }
         //Go back to id
         analyzeId();
@@ -537,7 +538,7 @@ function analyzeStringExpr(){
             //If were in a string
             if(temporaryType == "STRING"){
                 //Set new value of the id and reset temps 
-                setValue(temporaryId, charList, symbolTree.cur);
+                setValue(temporaryId, charList, st.cur);
                 resetTemporaryVariables()
             }else if(temporaryType == "BOOLEAN"){
                 //Create boolean variable 
@@ -547,7 +548,7 @@ function analyzeStringExpr(){
                     t = false;
                 }
                 //Set new value of the id and reset temps
-                setValue(temporaryId, t, symbolTree.cur);
+                setValue(temporaryId, t, st.cur);
                 resetTemporaryVariables()
             }else{
                 //Increment error count
@@ -565,7 +566,7 @@ function analyzeId(){
     //Check if we got an id
     if(matchToken(analyzerCurrentToken, "id")){
         //Check if id was declared
-        if(!alreadyHere(analyzerCurrentToken, symbolTree.cur)){
+        if(!alreadyHere(analyzerCurrentToken, st.cur)){
             //Increment error count and output error
             numAnalyzerErrors++;
             outputMessage("ERROR id " + analyzerCurrentToken.value + " was used before it was declared");
@@ -644,7 +645,7 @@ function analyzeBooleanExpr(){
             for(var i = 0; i <(ast.cur.children.length - 1); i++){
                 if(ast.cur.children[i].kind == "id"){
                     //Get the type of the first kid
-                    var typeOne = FindType(ast.cur.children[i].name, symbolTree.cur);
+                    var typeOne = FindType(ast.cur.children[i].name, st.cur);
                     if(typeOne == "boolean"){
                         typeOne = "BOOL";
                     }else if(typeOne == "int"){
@@ -658,7 +659,7 @@ function analyzeBooleanExpr(){
                 
                 //Get the type of the second kid
                 if(ast.cur.children[i + 1].kind == "id"){
-                    var typeTwo = FindType(ast.cur.children[i + 1].name, symbolTree.cur);
+                    var typeTwo = FindType(ast.cur.children[i + 1].name, st.cur);
                     if(typeTwo == "boolean"){
                         typeTwo = "BOOLEAN";
                     }else if(typeTwo == "int"){
@@ -672,7 +673,7 @@ function analyzeBooleanExpr(){
                 
                 //Compare them
                 if(ast.cur.children[i].type == "id" && ast.cur.children[i + 1].type == "id"){
-                    if(FindType(ast.cur.children[i].name, symbolTree.cur) != FindType(ast.cur.children[i+1].name, symbolTree.cur)){
+                    if(FindType(ast.cur.children[i].name, st.cur) != FindType(ast.cur.children[i+1].name, st.cur)){
                         numAnalyzerErrors++;
                         outputMessage("ERROR, can not compare id " + ast.cur.children[i].name + " to type " + FindType(ast.cur.children[i+1].name));
                     }
