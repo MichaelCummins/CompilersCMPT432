@@ -566,7 +566,7 @@ function analyzeId(){
     //Check if we got an id
     if(matchToken(analyzerCurrentToken, "id")){
         //Check if id was declared
-        if(!alreadyHere(analyzerCurrentToken, st.cur)){
+        if(!alreadyHere(analyzerCurrentToken.value, st.cur)){
             //Increment error count and output error
             numAnalyzerErrors++;
             outputMessage("ERROR id " + analyzerCurrentToken.value + " was used before it was declared");
