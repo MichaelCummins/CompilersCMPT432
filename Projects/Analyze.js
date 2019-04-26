@@ -501,19 +501,30 @@ function analyzeExpr(){
 function analyzeIntExpr(){
     //Output where we are 
     outputMessage("Analyze Int Expr");
-    
     //If we see a plus then were adding something
-    if(matchToken(analyzerLookAhead, "+")){
+    if(analyzerLookAhead().kind == "intop"){
         //Add the plus to the ast
         ast.addNode("Addition", "branch");
+    }
+    
+    if(addition){
+        if(temporaryValue == null){
+            temporaryValue = Number(analyzerCurrentToken.value);
+        }else{
+            temporaryValue = Number(temporaryValue) + Number(analyzerCurrentToken.value);
+        }
     }
     //Go to ID
     analyzeId();
     
-    if(matchToken(analyzerCurrentToken, "+")){
+    if(matchToken(analyzerCurrentToken, "intop")){
         getNextAnalyzerToken();
         analyzeExpr();
         ast.endChildren();
+    }
+    
+    if(addition){
+        temporaryValue == Number(temporaryValue) + Number(analyzerCurrentToken.value);
     }
 }
 
