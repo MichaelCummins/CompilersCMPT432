@@ -11,7 +11,7 @@ body {
 	float: left;
 }
 
-Textarea {
+.inputAndOutput {
 	resize: none;
 	margin-left: 50px;
 	margin-right: 50px;
@@ -39,6 +39,21 @@ Textarea {
 	padding-top: 50px;
 }
 
+.ast{
+    text-align: center;
+    background-color: pink;
+    border: solid;
+    font-size: 18px;
+    border-color: black;
+    overflow-y: scroll;
+	margin-left: 50px;
+	margin-right: 50px;
+    margin-bottom: 50px;
+}
+
+.trees{
+    padding-top: 50px;
+}
 h1 {
 	text-align: center;
 }

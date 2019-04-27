@@ -17,9 +17,13 @@
   <BODY onload = "init();">
     <h1>Cummins Compiler</h1>
     <DIV class="center">
-    <TEXTAREA id="SourceCodeInput" rows="30" cols="50"></TEXTAREA>
-    <TEXTAREA id="CompiledCodeOutput" rows="30" cols="50" readonly></TEXTAREA></br>
-	<INPUT class = "button" type="button" id="CompileThis" value="Compile Code" onclick = "compile()"/>
+        <TEXTAREA id="SourceCodeInput" class = "inputAndOutput" rows="30" cols="50"></TEXTAREA>
+        <TEXTAREA id="CompiledCodeOutput" class = "inputAndOutput" rows="30" cols="50" readonly></TEXTAREA></br>
+        <INPUT class = "button" type="button" id="CompileThis" value="Compile Code" onclick = "compile()"/>
+        <DIV class = "trees">
+            <TEXTAREA class = "ast" rows = "10" cols = "20"></TEXTAREA>
+            <TEXTAREA class = "ast" rows = "10" cols = "20"></TEXTAREA>
+        </DIV>
 	</DIV>
   </BODY>
 </HTML>
