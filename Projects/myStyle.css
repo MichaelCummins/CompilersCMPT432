@@ -16,6 +16,10 @@ body {
     overflow-y: scroll;
 }
 
+::placeholder{
+    color: grey;
+}
+
 .button {
 	text-align: center;
 	padding: 15px 32px;
