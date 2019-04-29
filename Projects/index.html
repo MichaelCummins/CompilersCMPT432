@@ -15,14 +15,14 @@
     <script type = "text/javascript" src = "Analyze.js"></script>
   </HEAD>
   <BODY onload = "init();">
+    <DIV class = "center">  
     <h1>Cummins Compiler</h1>
-    <DIV class="center">
-        <TEXTAREA id="SourceCodeInput" class = "inputAndOutput" rows="30" cols="50"></TEXTAREA>
-        <TEXTAREA id="CompiledCodeOutput" class = "inputAndOutput" rows="30" cols="50" readonly></TEXTAREA></br>
-        <INPUT class = "button" type="button" id="CompileThis" value="Compile Code" onclick = "compile()"/>
+        <TEXTAREA id="SourceCodeInput" class = "inputAndOutput" rows = "30" cols = "50" placeholder = '1. Enter input here 2. hit the button'></TEXTAREA>
+        <TEXTAREA id="CompiledCodeOutput" class = "inputAndOutput" rows = "30" cols = "50" readonly placeholder = 'Output will appear here'></TEXTAREA></br>
+        <INPUT class = "button" type = "button" id = "CompileThis" value = "Compile Code" onclick = "compile()"/>
         <DIV class = "trees">
-            <TEXTAREA class = "ast" rows = "10" cols = "20"></TEXTAREA>
-            <TEXTAREA class = "ast" rows = "10" cols = "20"></TEXTAREA>
+            <TEXTAREA id = "AbstractSyntaxTree" class = "ast" rows = "20" cols = "30"></TEXTAREA>
+            <TEXTAREA id = "ConcreteSyntaxTree" class = "ast" rows = "20" cols = "30"></TEXTAREA>
         </DIV>
 	</DIV>
   </BODY>
