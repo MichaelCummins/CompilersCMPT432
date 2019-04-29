@@ -1,6 +1,8 @@
 function init(){
     //clear all values
     document.getElementById("CompiledCodeOutput").value = "";
+    document.getElementById("AbstractSyntaxTree").value = "";
+    document.getElementById("ConcreteSyntaxTree").value = "";
     tokens = [];
     numErrors = 0;
     EOF = "$";

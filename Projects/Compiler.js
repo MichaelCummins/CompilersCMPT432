@@ -75,10 +75,10 @@ function compilerLexer(userInput){
 
 function compilerParser(){
     if(!parseStart(tokens)){
-        outputMessage("Parser successful");
-        outputMessage("\nCST for program " + currentProgram + "\n" + cst);
+        outputMessage("Parser successful" + "\n");
+        document.getElementById("ConcreteSyntaxTree").value += "CST for program " + currentProgram + "\n" + cst + "\n";
     }else{
-        outputMessage("\nCST skipped due to parser errors");
+        document.getElementById("ConcreteSyntaxTree").value += "CST skipped due to parser errors" + "\n";
     }
     return numParseErrors;
 }
@@ -86,10 +86,10 @@ function compilerParser(){
 function compilerAnalyze(){
     if(analyzerStart(aTokens) == 0){
         outputMessage("Analyzer successful");
-        outputMessage("\nAST for program " + currentProgram + "\n" + ast);
+        document.getElementById("AbstractSyntaxTree").value += "AST for program " + currentProgram + "\n" + ast + "\n";
         outputMessage("\nSymbol Table for program " + currentProgram + "\n" + st);
     }else{
-        outputMessage("\nAST skipped due to analyzer errors");
+        document.getElementById("AbstractSyntaxTree").value += "\nAST skipped due to analyzer errors" + "\n";
     }
     return numAnalyzerErrors;
 }
