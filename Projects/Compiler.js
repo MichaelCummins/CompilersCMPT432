@@ -29,7 +29,9 @@ function compile(){
             }
             //Parse each program if lex was successful
             if(compilerParser() == 0){
-                compilerAnalyze();
+                if(compilerAnalyze() == 0){
+                    //compilerCodeGen();
+                }
             }
         }
         //Go to the next program
@@ -92,4 +94,14 @@ function compilerAnalyze(){
         document.getElementById("AbstractSyntaxTree").value += "\nAST skipped due to analyzer errors" + "\n";
     }
     return numAnalyzerErrors;
+}
+
+function compilerCodeGen(){
+    generatedCode = generate(ast);
+    if(!numCodeGenErrors){
+        outputMessage("Code Gen Passed");
+    }else{
+        outputMessage("Code Gen failed")
+    }
+    return numCodeGenErrors;
 }
