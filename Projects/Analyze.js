@@ -169,6 +169,20 @@ function resetTemporaryVariables(){
     temporaryValue = null;
 }
 
+function isUtilized(level){
+    if((level.parent != undefined || level.parent != null) && level.symbols.length > 0){
+        for(var i = 0; i < level.symbols.length; i++){
+            if(level.symbols[i].utilized == false){
+                numAnalyzerWarnings++;
+                outputMessage("Warning id " + level.symbols[i].getKind() + " was never utilized");
+            }
+        }
+    }
+    if(level.parent != undefined || level.parent != null){
+        isUtilized(level.parent);
+    }
+}
+
 //Start analying
 function analyzerStart(userInput){
     analyzerInit();
@@ -178,8 +192,10 @@ function analyzerStart(userInput){
     analyzeProgram();
     
     //If any errors notify user
+    //Check for warnings
+    isUtilized(st.cur);
     if(numAnalyzerErrors != 0){
-        outputMessage("Analyzer failed with " + numAnalyzerErrors + " errors");
+        outputMessage("Analyzer failed with " + numAnalyzerErrors + " errors and " + numAnalyzerWarnings + " warnings");
     }
     
     //Return errors

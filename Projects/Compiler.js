@@ -87,7 +87,7 @@ function compilerParser(){
 
 function compilerAnalyze(){
     if(analyzerStart(aTokens) == 0){
-        outputMessage("Analyzer successful");
+        outputMessage("Analyzer successful with no errors and " + numAnalyzerWarnings + " warnings");
         document.getElementById("AbstractSyntaxTree").value += "AST for program " + currentProgram + "\n" + ast + "\n";
         outputMessage("\nSymbol Table for program " + currentProgram + "\n" + st);
     }else{
