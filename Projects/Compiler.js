@@ -30,7 +30,7 @@ function compile(){
             //Parse each program if lex was successful
             if(compilerParser() == 0){
                 if(compilerAnalyze() == 0){
-                    //compilerCodeGen();
+                    compilerCodeGen();
                 }
             }
         }
