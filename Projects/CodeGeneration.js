@@ -57,12 +57,16 @@ function traverseTree(position, depth){
     }
 }
 
-function codeGenRoot(){
-    
+function codeGenRoot(position, depth){
+    for(var i = 0; i < position.length; i++){
+        traverseTree(position[i], depth);
+    }
 }
 
-function codeGenProgram(){
-    
+function codeGenProgram(position, depth){
+    for(var i = 0; i < position.length; i++){
+        traverseTree(position[i], depth);
+    }
 }
 
 function codeGenBlock(position, depth){
