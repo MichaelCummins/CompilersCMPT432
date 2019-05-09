@@ -78,11 +78,21 @@ function codeGenAddition(position, depth){
 }
 
 function codeGenVarDecl(position, depth){
+    addHex(loadTheAccumulatorWithConstant);
+    addHex("00");
+    var temporaryAddress = (position.children[0], position.scope);
     
+    addHex(storeTheAccumulatorInMemory);
+    addHex(temporaryAddress);
+    addHex("XX");
 }
 
 function codeGenAssignment(position, depth){
-    
+    traverseTree(position.children[i], depth);
+    var temporaryAddress = (position.children[0], position.scope);
+    addHex(storeTheAccumulatorInMemory);
+    addHex(temporaryAddress);
+    addHex("XX");
 }
 
 function codeGenPrint(position, depth){
@@ -106,11 +116,14 @@ function codeGenIsEquals(position, depth){
 }
 
 function codeGenId(position, depth){
-    
+    var temporaryAddress = (position, position.scope);
+    addHex(loadTheAccumlatorFromMemory);
+    addHex(temporaryAddress);
+    addHex("XX");
 }
 
 function codeGenDigit(position, depth){
-    
+    addHex(loadTheAccumulatorWithConstant);
 }
 
 function codeGenBoolean(position, depth){
@@ -118,5 +131,11 @@ function codeGenBoolean(position, depth){
 }
 
 function codeGenString(position, depth){
-    
+    var temporaryValue = ??;
+    addHex(loadTheAccumulatorWithConstant);
+    addHex(temporaryValue);
+}
+
+function addHex(val){
+    code.push(val);
 }
