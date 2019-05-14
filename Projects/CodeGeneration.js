@@ -3,12 +3,13 @@ var numCodeGenErrors;
 var tree;
 var temporaryAddressOne = "T1";
 var temporaryAddressOne = "T2";
+var staticData = new StaticData();
 
 function generate(theTree){
     generatedCode = [];
     numCodeGenErrors = 0;
     tree = theTree;
-    
+    staticData = new StaticData();
     codeGenStart();
     
 }
@@ -17,7 +18,6 @@ function generate(theTree){
 function codeGenStart(){
     outputMessage("Code Gen Program " + currentProgram);
     traverseTree(ast.root, 0);
-    
     document.getElementById("CodeGenOutput").value += generatedCode + "\n";
 }
 
@@ -30,7 +30,7 @@ function traverseTree(position, depth){
         codeGenBlock(position, depth);
     }else if(position.name == "Var Decl"){
         codeGenVarDecl(position, depth);
-    }else if(position.name == "Assignment Statment"){
+    }else if(position.name == "Assignment Statement"){
         codeGenAssignment(position, depth);
     }else if(position.name == "Print Statement"){
         codeGenPrint(position, depth);
@@ -78,24 +78,31 @@ function codeGenBlock(position, depth){
 }
 
 function codeGenAddition(position, depth){
+    traverseTree(position.children, depth);
+    addHex(storeTheAccumulatorInMemory);
+    addHex(temporaryAddressOne);
+    addHex("XX");
+    addHex(loadTheAccumulatorWithConstant);
     
+    addHex(addWithCarry);
+    addHex(temporaryAddressOne);
+    addHex("XX");
 }
 
 function codeGenVarDecl(position, depth){
     addHex(loadTheAccumulatorWithConstant);
     addHex("00");
-  //  var address = StaticData.add(position.children[0], position.scope);
-    
+    var temporaryAddress = staticData.add(position.children[0], position.scope);
     addHex(storeTheAccumulatorInMemory);
-//    addHex(address);
+    addHex(temporaryAddress);
     addHex("XX");
 }
 
 function codeGenAssignment(position, depth){
-    traverseTree(position.children[i], depth);
-   // var temporaryAddress = staticData.get(position.children[0], position.scope);
+    traverseTree(position.children[1], depth);
+    var temporaryAddress = staticData.get(position.children[0], position.scope);
     addHex(storeTheAccumulatorInMemory);
-  //  addHex(temporaryAddress);
+    addHex(temporaryAddress);
     addHex("XX");
 }
 
@@ -120,9 +127,9 @@ function codeGenIsEquals(position, depth){
 }
 
 function codeGenId(position, depth){
-   // var temporaryAddress = staticData.get(position, position.scope);
+    var temporaryAddress = staticData.get(position, position.scope);
     addHex(loadTheAccumlatorFromMemory);
-  //  addHex(temporaryAddress);
+    addHex(temporaryAddress);
     addHex("XX");
 }
 
