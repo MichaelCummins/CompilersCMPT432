@@ -302,7 +302,7 @@ function analyzeStatement(){
 function analyzePrintStatement(){
     //Output where we are and add print to ast
     outputMessage("Analyze print statement");
-    ast.addNode("Print", "Branch");
+    ast.addNode("Print Statement", "Branch");
     //Get next token
     getNextAnalyzerToken();
     
