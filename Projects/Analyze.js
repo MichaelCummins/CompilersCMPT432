@@ -302,7 +302,7 @@ function analyzeStatement(){
 function analyzePrintStatement(){
     //Output where we are and add print to ast
     outputMessage("Analyze print statement");
-    ast.addNode("Print Statement", "Branch", "Print Statement");
+    ast.addNode("Print Statement", "branch", "Print Statement");
     //Get next token
     getNextAnalyzerToken();
     
@@ -324,7 +324,7 @@ function analyzePrintStatement(){
 }
 
 function analyzeAssignmentStatement(){
-    outputMessage("Analyzing Assignment Statement");
+    outputMessage("Analyze Assignment Statement");
     ast.addNode("Assignment Statement", "branch", "Assignment Statement");
     if(matchToken(analyzerCurrentToken, "id")){
         var id = analyzerCurrentToken.value;

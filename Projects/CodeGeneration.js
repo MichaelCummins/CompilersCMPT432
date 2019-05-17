@@ -20,6 +20,7 @@ function generate(theTree){
     jumpTable = new jump();
     strings = new stringTable();
     heapAddress = 256;
+    heap = [];
     codeGenStart();
     
     generatedCodeString = generatedCode.join(' ');
@@ -140,7 +141,6 @@ function traverseTree(position, depth){
     }else if(position.name == "true" || position.name == "false"){
         codeGenBoolean(position, depth);
     }else if(position.type == "Charlist"){
-        outputMessage('test');
         codeGenString(position, depth);
     }else if("abcdefghijklmnopqrstuvwxyz".includes(position.name)){
         codeGenId(position, depth);
@@ -195,6 +195,7 @@ function codeGenVarDecl(position, depth){
 }
 
 function codeGenAssignment(position, depth){
+    outputMessage(position.children[0].type)
     traverseTree(position.children[1], depth);
     var temporaryAddress = staticData.get(position.children[0], position.scope);
     addHex(storeTheAccumulatorInMemory);
@@ -241,7 +242,7 @@ function getTypeFromST(id, scope, start = getTypeFromSThelper(id, scope)) {
 
 function codeGenPrint(position, depth) {
     //id values
-    outputMessage(position.children[0]);
+    outputMessage(position.type);
     if (position.children[0].type == "id") {
         //gets the temp address
         var address = staticData.get(position.children[0], depth);
@@ -498,7 +499,6 @@ function codeGenBoolean(position, depth){
 }
 
 function codeGenString(position, depth){
-    outputMessage("test");
     var temporaryValue = addToHeap(position.name, position.line);
     addHex(loadTheAccumulatorWithConstant);
     addHex(temporaryValue);
