@@ -205,7 +205,7 @@ function analyzerStart(userInput){
 
 function analyzeProgram(){
     //Add program to ast
-    ast.addNode("Program", "branch", "Program");
+    ast.addNode("Program", "branch", "Program", scope);
     outputMessage("Analyze program");
     //Get next token
     getNextAnalyzerToken();
@@ -230,7 +230,7 @@ function analyzeBlock(){
     scope = scopeCounter;
     
     //Add block to the ast and st
-    ast.addNode("Block", "branch", "Block");
+    ast.addNode("Block", "branch", "Block", scope);
     st.addNode("Scope: " + scope, "branch", scope);
     //Check if we got {
     if(matchToken(analyzerCurrentToken, "L_Brace")){
@@ -302,7 +302,7 @@ function analyzeStatement(){
 function analyzePrintStatement(){
     //Output where we are and add print to ast
     outputMessage("Analyze print statement");
-    ast.addNode("Print Statement", "branch", "Print Statement");
+    ast.addNode("Print Statement", "branch", "Print Statement", scope);
     //Get next token
     getNextAnalyzerToken();
     
@@ -325,7 +325,7 @@ function analyzePrintStatement(){
 
 function analyzeAssignmentStatement(){
     outputMessage("Analyze Assignment Statement");
-    ast.addNode("Assignment Statement", "branch", "Assignment Statement");
+    ast.addNode("Assignment Statement", "branch", "Assignment Statement", scope);
     if(matchToken(analyzerCurrentToken, "id")){
         var id = analyzerCurrentToken.value;
         var type = FindType(id, st.cur);
@@ -416,7 +416,7 @@ function analyzeAssignmentStatement(){
 function analyzeVarDecl(){
     //Output where we are and add vardecl to ast
     outputMessage("Analyze Var decl");
-    ast.addNode("Var Decl", "branch", "Var Decl");
+    ast.addNode("Var Decl", "branch", "Var Decl", scope);
     //Create variable to get what class a var is 
     var type = analyzerCurrentToken.kind.toLowerCase();
     //Grab next token
@@ -446,7 +446,7 @@ function analyzeVarDecl(){
 function analyzeWhileStatement(){
     //Output where we are and add to ast
     outputMessage("Analyze While Statement");
-    ast.addNode("While Statement", "branch", "While Statement");
+    ast.addNode("While Statement", "branch", "While Statement", scope);
     
     //Grab next token
     getNextAnalyzerToken();
@@ -464,7 +464,7 @@ function analyzeWhileStatement(){
 function analyzeIfStatement(){
     //Out where we are and at to ast
     outputMessage("Analyze If Statement");
-    ast.addNode("If Statement", "branch", "If Statement");
+    ast.addNode("If Statement", "branch", "If Statement", scope);
     //Grab next token
     getNextAnalyzerToken();
     
@@ -520,7 +520,7 @@ function analyzeIntExpr(){
     //If we see a plus then were adding something
     if(analyzerLookAhead().kind == "intop"){
         //Add the plus to the ast
-        ast.addNode("Addition", "branch", "Addition");
+        ast.addNode("Addition", "branch", "Addition", scope);
     }
     
     if(addition){
@@ -556,7 +556,7 @@ function analyzeStringExpr(){
     var charList = analyzeCharList();
     
     //Add the variable to the ast
-    ast.addNode(charList, "leaf", "Charlist");
+    ast.addNode(charList, "leaf", "Charlist", scope);
     
     //If at the start of a string
     if(matchToken(analyzerCurrentToken, '"')){
@@ -600,7 +600,7 @@ function analyzeId(){
         }
     }
     //Add the id to the ast
-    ast.addNode(analyzerCurrentToken.value, "leaf", "id");
+    ast.addNode(analyzerCurrentToken.value, "leaf", "id", scope);
     //Get next token
     getNextAnalyzerToken();
 }
@@ -647,12 +647,12 @@ function analyzeBooleanExpr(){
         //Check if == or !=
         if(checkFor("OP_Equality", 0)){
             //Add to ast
-            ast.addNode("Equality", "branch", "Equality");
+            ast.addNode("Equality", "branch", "Equality", scope);
             //Were done here
             closeOut = true;
         }else if(checkFor("Not_Equal", 0)){
             //Add to ast
-            ast.addNode("Not_Equal", "branch", "Not_Equal");
+            ast.addNode("Not_Equal", "branch", "Not_Equal", scope);
             //Were done here
             closeOut = true;
         }
