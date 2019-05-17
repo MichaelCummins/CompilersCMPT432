@@ -43,6 +43,10 @@ function pad(word, size, padder){
     return paddedWord;
 }
 
+function charsToHex(value){
+    return pad(toHexidecimal(value.charCodeAt(0)), 2, "0").toUpperCase();
+}
+
 function codeGenStart(){
     outputMessage("Code Gen Program " + currentProgram);
     truePlaceholder = addToHeap('true');
@@ -195,7 +199,6 @@ function codeGenVarDecl(position, depth){
 }
 
 function codeGenAssignment(position, depth){
-    outputMessage(position.children[0].type)
     traverseTree(position.children[1], depth);
     var temporaryAddress = staticData.get(position.children[0], position.scope);
     addHex(storeTheAccumulatorInMemory);
@@ -242,7 +245,6 @@ function getTypeFromST(id, scope, start = getTypeFromSThelper(id, scope)) {
 
 function codeGenPrint(position, depth) {
     //id values
-    outputMessage(position.type);
     if (position.children[0].type == "id") {
         //gets the temp address
         var address = staticData.get(position.children[0], depth);
@@ -521,7 +523,7 @@ function addToHeap(string, line = 0){
     heapAddress--;
     
     for(var i = string.length - 1; i >= 0; i--){
-        heap.unshift(toHexidecimal(string.charAt(i)));
+        heap.unshift(charsToHex(string.charAt(i)));
         heapAddress--;
     }
     strings.add(numToHex(heapAddress), string);
