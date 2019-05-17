@@ -99,9 +99,11 @@ function compilerAnalyze(){
 function compilerCodeGen(){
     generatedCode = generate(ast);
     if(!numCodeGenErrors){
-        outputMessage("Code Gen Passed");
+        outputMessage("Code gen passed for " + currentProgram + "\n");
+        outputMessage("Generated code is located at bottom of page");
+        document.getElementById("CodeGenOutput").value += generatedCodeString + "\n";
     }else{
-        outputMessage("Code Gen failed")
+        outputMessage("Code Gen failed with " + numCodeGenErrors + " errors");
     }
     return numCodeGenErrors;
 }
