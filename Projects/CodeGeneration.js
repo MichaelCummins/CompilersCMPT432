@@ -1,18 +1,29 @@
+//Store code as an array
 var generatedCode = [];
+//Track errors
 var numCodeGenErrors;
 var tree;
+//Temporary addresses
 var temporaryAddressOne = "X1";
 var temporaryAddressTwo = "X2";
+//Store heap as an array
 var heap = [];
+//Placeholder for booleans
 var truePlaceholder;
 var falsePlaceholder;
+//define static data
 var staticData = new StaticData();
+//Define jumps for ifs and whiles
 var jumpTable = new jump();
+//Convert array to string
 var generatedCodeString = "";
+//Define string table
 var strings = new stringTable();
+//Start of heap
 var heapAddress = 256;
 
 function generate(theTree){
+    //Reset values
     generatedCode = [];
     numCodeGenErrors = 0;
     tree = theTree;
@@ -23,19 +34,23 @@ function generate(theTree){
     heap = [];
     codeGenStart();
     
+    //Convert from array to string 
     generatedCodeString = generatedCode.join(' ');
     return generatedCodeString;
 }
 
 function numToHex(value){
+    //Convert a number into a hexidecimal value
     return pad(toHexidecimal(parseInt(value)), 2, '0').toUpperCase();
 }
 
 function toHexidecimal(string){
+    //Convert a string to a hexidecimal value
     return string.toString(16);
 }
 
 function pad(word, size, padder){
+    //Pad values
     var paddedWord = "" + word;
     while(paddedWord.length < size){
         paddedWord = padder + paddedWord;
@@ -43,20 +58,27 @@ function pad(word, size, padder){
     return paddedWord;
 }
 
+//Convert chars to hexidecimal values
 function charsToHex(value){
     return pad(toHexidecimal(value.charCodeAt(0)), 2, "0").toUpperCase();
 }
 
+
+//Start generating code
 function codeGenStart(){
+    //Output where we are and add placeholders
     outputMessage("Code Gen Program " + currentProgram);
     truePlaceholder = addToHeap('true');
     falsePlaceholder = addToHeap('false');
+    //Traverse the Tree!!!!
     traverseTree(ast.root, 0);
     
-    
+    //Starting replacing crap
     outputMessage("Backtracking");
+    //Get new address
     var newAddressOne = numToHex(generatedCode.length + staticData.length() + 1);
     outputMessage("Replacing " + temporaryAddressOne + " with " + newAddressOne);
+    //If we see a Temp address, replace it with a perma one
     if(generatedCode.includes(temporaryAddressOne)){
         for(var i = 0; i < generatedCode.length; i++){
             if(generatedCode[i] == temporaryAddressOne){
@@ -64,9 +86,10 @@ function codeGenStart(){
             }
         }
     }
-    
+    //Get new address
     var newAddressTwo = numToHex(generatedCode.length + staticData.length() + 2);
     outputMessage("Replacing " + temporaryAddressTwo + " with " + newAddressTwo);
+    //Same thing as previous statement
     if(generatedCode.includes(temporaryAddressTwo)){
         for(var i = 0; i < generatedCode.length; i++){
             if(generatedCode[i] == temporaryAddressTwo){
@@ -75,24 +98,31 @@ function codeGenStart(){
         }
     }
     
+    //Go through staticData and add new locations
     for(var key in staticData.variables){
+        //Get new address
         var newAddress = numToHex(generatedCode.length + staticData.variables[key].offset);
+        //Get current address
         var temporaryAddress = staticData.variables[key].address;
         outputMessage("Replacing " + temporaryAddress + " with " + newAddress);
+        //Loop through
         for(var i = 0; i < generatedCode.length; i++){
             if(generatedCode[i] == temporaryAddress){
                 generatedCode[i] = newAddress;
             }
         }
     }
-    
+    //Go through jumpTable and add new locations
     for(var key in jumpTable.variables){
+        //Where the block starts
         var start = jumpTable.variables[key].initialAddress;
+        //Where the block ends
         var end = jumpTable.variables[key].endingAddress;
-        
+        //Where to go
         var move = numToHex(end - start - 2);
         outputMessage("Replacing " + key + " with " + move);
         for(var i = 0; i < generatedCode.length; i++){
+            //If found temp jump key replace it
             if(generatedCode[i] == key){
                 generatedCode[i] = move;
             }
@@ -100,6 +130,7 @@ function codeGenStart(){
     }
 
     outputMessage("Replacing XX with 00");
+    //Replace XX for new address
     if(generatedCode.includes("XX")){
         for(var i = 0; i < generatedCode.length; i++){
             if(generatedCode[i] == "XX"){
@@ -108,22 +139,23 @@ function codeGenStart(){
         }
     }
     
-    
+    //Cover the heap in Zeroes
     for(var i = generatedCode.length; i < 256 - heap.length; i++){
         generatedCode.push("00");
     }
-    
+    //Push heap onto the code
     for(var i = 0; i < heap.length; i++){
         generatedCode.push(heap[i]);
     }
     
-    
+    //Check memory
     if(generatedCode.length > 256){
         numCodeGenErrors++;
         outputMessage("ERROR memory exceeded " + generatedCode.length + " 256");
     }
 }
 
+//When you find your name go to your specified function
 function traverseTree(position, depth){
     if(position.name == "root"){
         codeGenRoot(position.children, depth);
@@ -162,18 +194,21 @@ function traverseTree(position, depth){
     }
 }
 
+//Go through this level
 function codeGenRoot(position, depth){
     for(var i = 0; i < position.length; i++){
         traverseTree(position[i], depth);
     }
 }
 
+//Go through this level
 function codeGenProgram(position, depth){
     for(var i = 0; i < position.length; i++){
         traverseTree(position[i], depth);
     }
 }
 
+//Go through this lvel
 function codeGenBlock(position, depth){
     for(var i = 0; i < position.children.length; i++){
         traverseTree(position.children[i], depth + 1);
@@ -182,12 +217,15 @@ function codeGenBlock(position, depth){
 
 function codeGenAddition(position, depth){
     outputMessage("Starting Addition");
-    traverseTree(position.children, depth);
+    traverseTree(position.children[1], depth);
+    //Store temp address
     addHex(storeTheAccumulatorInMemory);
     addHex(temporaryAddressOne);
     addHex("XX");
+    //Load with constant
     addHex(loadTheAccumulatorWithConstant);
-    
+    addHex(numToHex(position.children[0].name));
+    //Add with new address
     addHex(addWithCarry);
     addHex(temporaryAddressOne);
     addHex("XX");
@@ -195,9 +233,12 @@ function codeGenAddition(position, depth){
 
 function codeGenVarDecl(position, depth){
     outputMessage("Variable Declaration");
+    //Load with constant
     addHex(loadTheAccumulatorWithConstant);
     addHex("00");
+    //Get temp address
     var temporaryAddress = staticData.add(position.children[0], position.scope);
+    //Store temp address in Memory
     addHex(storeTheAccumulatorInMemory);
     addHex(temporaryAddress);
     addHex("XX");
