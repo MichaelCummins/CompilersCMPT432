@@ -615,22 +615,31 @@ function addHex(val){
 }
 
 function addToHeap(string, line = 0){
+    //Check if already seen
     if(returningHeap = strings.get(string)){
         return returningHeap;
     }
     
+    //Check if empty
     if(string.length == 0){
         return 'FF';
     }
     
+    //Add value to heap
     heap.unshift("00");
+    //Subract from heap address
     heapAddress--;
     
+    //Loop through the string
     for(var i = string.length - 1; i >= 0; i--){
+        //Add the value to the heap
         heap.unshift(charsToHex(string.charAt(i)));
+        //Remove one from heap address
         heapAddress--;
     }
+    //Add to the table
     strings.add(numToHex(heapAddress), string);
     
+    //Return new heap address
     return numToHex(heapAddress);
 }
