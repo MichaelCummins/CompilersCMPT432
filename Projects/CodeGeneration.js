@@ -236,7 +236,7 @@ function codeGenVarDecl(position, depth){
     //Load with constant
     addHex(loadTheAccumulatorWithConstant);
     addHex("00");
-    //Get temp address
+    //Add temp address
     var temporaryAddress = staticData.add(position.children[0], position.scope);
     //Store temp address in Memory
     addHex(storeTheAccumulatorInMemory);
@@ -247,8 +247,11 @@ function codeGenVarDecl(position, depth){
 
 function codeGenAssignment(position, depth){
     outputMessage("Assignment Statement")
+    //Traverse the child
     traverseTree(position.children[1], depth);
+    //Get the temporary address 
     var temporaryAddress = staticData.get(position.children[0], position.scope);
+    //Store in memory
     addHex(storeTheAccumulatorInMemory);
     addHex(temporaryAddress);
     addHex("XX");
@@ -419,37 +422,52 @@ function codeGenPrint(position, depth) {
 
 function codeGenWhile(position, depth){
     outputMessage("Starting While");
+    //Get address
     var init = generatedCode.length;
+    //Traverse child
     traverseTree(position.children[0], depth);
+    //Get temp address
     var temporaryAddress = jumpTable.add(generatedCode.length);
+    //Add where to jump
     addHex(branchNBytesIfZFlagIsZero);
     addHex(temporaryAddress);
+    //Traverse other child
     traverseTree(position.children[1], depth);
+    //Load Acummulator
     addHex(loadTheAccumulatorWithConstant);
     addHex("00");
+    //Store and place tempAddressOne
     addHex(storeTheAccumulatorInMemory);
     addHex(temporaryAddressOne);
     addHex("XX");
+    //LoadX with 1
     addHex(loadTheXRegisterWithConstant);
     addHex("01");
+    //Compare the two
     addHex(compareByteInMemoryToXRegister);
     addHex(temporaryAddressOne);
     addHex("XX");
+    //How far do we jump
     var jump = numToHex(256 - generatedCode.length + init - 2);
     addHex(branchNBytesIfZFlagIsZero);
     addHex(jump);
-    
+    //Add to jump Table
     jumpTable.get(temporaryAddress).endingAddress = generatedCode.length;
     outputMessage("Ending While");
 }
 
 function codeGenIf(position, depth){
     outputMessage("Starting If");
+    //Traverse the tree
     traverseTree(position.children[0], depth);
+    //Get the temp address
     var temporaryAddress = jumpTable.add(generatedCode.length);
+    //Branch on the address
     addHex(branchNBytesIfZFlagIsZero);
     addHex(temporaryAddress);
+    //Traverse other child
     traverseTree(position.children[1], depth);
+    //Add to jumpTable
     jumpTable.get(temporaryAddress).endingAddress = generatedCode.length;
     outputMessage("Ending If");
 }
@@ -458,17 +476,23 @@ function codeGenNotEquals(position, depth){
     outputMessage("Starting NotEquals");
     position.type = "Equality";
     codeGenIsEquals(position, depth);
+    //Load 0
     addHex(loadTheAccumulatorWithConstant);
     addHex("00");
+    //Add branch
     addHex(branchNBytesIfZFlagIsZero);
     addHex("02");
+    //Load 1
     addHex(loadTheAccumulatorWithConstant);
     addHex("01");
-    addHex(loadTheAccumulatorWithConstant);
+    //Load X
+    addHex(loadTheXRegisterWithConstant);
     addHex("00");
+    //Store it
     addHex(storeTheAccumulatorInMemory);
     addHex(temporaryAddressOne);
     addHex("XX");
+    //Compare
     addHex(compareByteInMemoryToXRegister);
     addHex(temporaryAddressOne);
     addHex("XX");
@@ -532,7 +556,9 @@ function codeGenIsEquals(position, depth){
 
 function codeGenId(position, depth){
     outputMessage("Starting Id");
+    //Get temp address
     var temporaryAddress = staticData.get(position, position.scope);
+    //Load it in accumulator
     addHex(loadTheAccumlatorFromMemory);
     addHex(temporaryAddress);
     addHex("XX");
@@ -540,13 +566,17 @@ function codeGenId(position, depth){
 
 function codeGenDigit(position, depth){
     outputMessage("Starting Digit");
+    //Load accumulator
     addHex(loadTheAccumulatorWithConstant);
+    //Change to hex value
     addHex(numToHex(position.name));
     outputMessage("Ending Id");
 }
 
 function codeGenBoolean(position, depth){
     outputMessage("Starting Boolean");
+    //If true load with 1
+    //If false load with 0
     if(position.name == "true"){
         addHex(loadTheAccumulatorWithConstant);
         addHex("1");
@@ -554,11 +584,14 @@ function codeGenBoolean(position, depth){
         addHex(loadTheAccumulatorWithConstant);
         addHex("0");
     }
+    //Store address in memory
     addHex(storeTheAccumulatorInMemory);
     addHex(temporaryAddressOne);
     addHex("XX");
+    //Load X reg
     addHex(loadTheXRegisterWithConstant);
     addHex(printIntegerInYRegister);
+    //Compare
     addHex(compareByteInMemoryToXRegister);
     addHex(temporaryAddressOne);
     addHex("XX");
@@ -567,13 +600,16 @@ function codeGenBoolean(position, depth){
 
 function codeGenString(position, depth){
     outputMessage("Starting String");
+    //Add the value to the heap
     var temporaryValue = addToHeap(position.name, position.line);
+    //Load accumulator with the value
     addHex(loadTheAccumulatorWithConstant);
     addHex(temporaryValue);
     outputMessage("Ending String");
 }
 
 function addHex(val){
+    //Add hex code to the code array
     outputMessage("Pushing " + val);
     generatedCode.push(val);
 }
