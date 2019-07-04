@@ -3,7 +3,7 @@
   <HEAD>
     <TITLE>Michael Cummins Compiler Project</TITLE>
     <LINK rel="stylesheet" type="text/css" href="myStyle.css"/>
-	<script type="text/javascript" src="jquery-3.3.1.min.js"></script>
+    <script type = "text/javascript" src = "TestCases.js"></script>
     <script type = "text/javascript" src = "Tree.js"></script>
     <script type = "text/javascript" src = "staticData.js"></script>
     <script type = "text/javascript" src = "Jump.js"></script>
@@ -22,6 +22,32 @@
   <BODY onload = "init();">
     <DIV class = "center">  
     <h1>Cummins Compiler</h1>
+        <DIV>
+            <select onchange = "fillTextArea(value)">
+                <option class = "MainCatagory" value = "Select Test Case">--Select Test Case--</option>
+
+                <option class = "MainCatagory" value = "--Lex Errors--">--Lex Errors--</option>
+                <option class = "SubCatagory" value = "InvalidCharacters">Invalid Characters</option>
+                <option class = "SubCatagory" value = "NeverEndingString">Invalid String syntax</option>
+                <option class = "SubCatagory" value = "AllInvalidCharacters">All invalid characters</option>
+                
+                <option class = "MainCatagory" value = "--Parse Errors--">--Parse Errors--</option>
+                <option class = "SubCatagory" value = ""></option>
+                <option class = "SubCatagory" value = ""></option>
+                <option class = "SubCatagory" value = ""></option>
+
+                <option class = "MainCatagory" value = "--Analyzer Errors--">--Analyzer Errors--</option>
+                <option class = "SubCatagory" value = ""></option>
+                <option class = "SubCatagory" value = ""></option>
+                <option class = "SubCatagory" value = ""></option>
+
+                <option class = "MainCatagory" value = "--Code Gen Errors--">--Code Gen Errors--</option>
+                <option class = "SubCatagory" value = ""></option>
+                <option class = "SubCatagory" value = ""></option>
+                <option class = "SubCatagory" value = ""></option>
+
+            </select>
+        </DIV>
         <TEXTAREA id="SourceCodeInput" class = "inputAndOutput" rows = "30" cols = "50" placeholder = '1. Enter input here 2. hit the button'></TEXTAREA>
         <TEXTAREA id="CompiledCodeOutput" class = "inputAndOutput" rows = "30" cols = "50" readonly placeholder = 'Output will appear here'></TEXTAREA></br>
         <INPUT class = "button" type = "button" id = "CompileThis" value = "Compile Code" onclick = "compile()"/>
@@ -32,6 +58,6 @@
         <DIV>
             <TEXTAREA id = "CodeGenOutput" class = "CodeGen" rows = "8" cols = "16" readonly></TEXTAREA>
         </DIV>
-	</DIV>
+    </DIV>
   </BODY>
 </HTML>
