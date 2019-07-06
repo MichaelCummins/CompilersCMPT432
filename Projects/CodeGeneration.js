@@ -340,13 +340,13 @@ function codeGenPrint(position, depth) {
             addHex("XX");
             //loads y with false
             addHex(loadTheYRegisterWithConstant);
-            addHex(falseAddress);
+            addHex(falsePlaceholder);
             //jump 2
             addHex(branchNBytesIfZFlagIsZero);
             addHex("02");
             //load y with true
             addHex(loadTheYRegisterWithConstant);
-            addHex(trueAddress);
+            addHex(truePlaceholder);
             //loads the print string op
             addHex(loadTheXRegisterWithConstant);
             addHex(printStringInYAddress);
@@ -387,13 +387,13 @@ function codeGenPrint(position, depth) {
             addHex(printIntegerInYRegister);
             //loads the false location into y
             addHex(loadTheYRegisterWithConstant);
-            addHex(falseAddress);
+            addHex(falsePlaceholder);
             //jumps if 
             addHex(branchNBytesIfZFlagIsZero);
             addHex("02");
             //loads the true location into y
             addHex(loadTheYRegisterWithConstant);
-            addHex(trueAddress);
+            addHex(truePlaceholder);
             //loads the print str op into x
             addHex(loadTheXRegisterWithConstant);
             addHex(printStringInYAddress);

@@ -92,11 +92,11 @@ header {
 }
 
 select{
-    background-color: pink;
+    background-color: lightpink;
     margin-bottom: 25px;
     margin-left: 25px;
     margin-right: 25px;
-    width: 200px;
+    width: 275px;
     height: 50px;
     font-size: 20px;
     border: solid;
@@ -104,4 +104,26 @@ select{
 
 .MainCategory{
     font-size: 30px;
+    color: brown;
+}
+
+.MainCategorySuccess{
+    font-size: 30px;
+    color: forestgreen;
+}
+
+
+.SubCategoryFails{
+    font-size: 20px;
+    color: red;
+}
+
+.SubCategorySuccess{
+    font-size: 20px;
+    color: green;
+}
+
+.SubCategoryWarning{
+    font-size: 20px;
+    color: lightgoldenrodyellow;
 }
